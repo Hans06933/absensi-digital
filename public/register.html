@@ -3,97 +3,611 @@
 <head>
     <!-- Tag PWA -->
     <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#0f172a">
+    <meta name="theme-color" content="#111111">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3135/3135715.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daftar Akun Pegawai</title>
-    
+    <title>Daftar Akun Pegawai (Lokal)</title>
+
     <!-- CSS Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        * { box-sizing: border-box; }
+
+        html, body {
+            margin: 0;
+            min-height: 100%;
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        }
+
+        body {
+            background:
+                radial-gradient(circle at 12% 42%, rgba(239,28,42,.22), transparent 30%),
+                radial-gradient(circle at 88% 58%, rgba(30,80,210,.17), transparent 32%),
+                linear-gradient(135deg, #070707 0%, #19080b 34%, #080808 53%, #070b14 78%, #040404 100%);
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        /* ================= ANIMATED BACKGROUND ================= */
+        .portal-bg {
+            position: fixed;
+            inset: 0;
+            overflow: hidden;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .portal-bg::before {
+            content: "";
+            position: absolute;
+            inset: -25%;
+            background:
+                linear-gradient(115deg, transparent 43%, rgba(255,255,255,.055) 44%, transparent 45%),
+                linear-gradient(115deg, transparent 58%, rgba(255,255,255,.035) 59%, transparent 60%);
+            background-size: 420px 420px;
+            transform: rotate(-8deg);
+            animation: bgMove 18s linear infinite;
+        }
+
+        .portal-bg::after {
+            content: "";
+            position: absolute;
+            left: 50%;
+            bottom: -48vh;
+            width: 95vw;
+            height: 95vw;
+            transform: translateX(-50%);
+            border-radius: 50%;
+            background: repeating-radial-gradient(
+                circle,
+                rgba(255,255,255,.08) 0 1px,
+                transparent 2px 36px
+            );
+            opacity: .25;
+            animation: ringSpin 28s linear infinite;
+        }
+
+        .light-beam {
+            position: absolute;
+            width: 75vw;
+            height: 2px;
+            transform: rotate(-17deg);
+            opacity: .55;
+            animation: beamMove 8s ease-in-out infinite alternate;
+        }
+
+        .beam-red {
+            left: -15vw;
+            top: 26%;
+            background: linear-gradient(90deg, transparent, rgba(239,28,42,.95), transparent);
+            box-shadow: 0 0 25px rgba(239,28,42,.7);
+        }
+
+        .beam-blue {
+            right: -15vw;
+            top: 53%;
+            background: linear-gradient(90deg, transparent, rgba(35,94,230,.95), transparent);
+            box-shadow: 0 0 25px rgba(35,94,230,.65);
+            animation-delay: -3s;
+        }
+
+        .floating-logo {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            border: 1px solid rgba(255,255,255,.07);
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            color: rgba(255,255,255,.055);
+            font-size: 145px;
+            font-weight: 900;
+            font-style: italic;
+            text-shadow: 0 0 35px rgba(239,28,42,.18);
+            animation: floatLogo 7s ease-in-out infinite;
+        }
+
+        .floating-logo::before,
+        .floating-logo::after {
+            content: "";
+            position: absolute;
+            border: 1px solid rgba(255,255,255,.05);
+            border-radius: 50%;
+        }
+
+        .floating-logo::before { inset: 18px; }
+        .floating-logo::after { inset: 45px; border-color: rgba(239,28,42,.08); }
+
+        .logo-left { left: -105px; top: 11%; }
+        .logo-right { right: -105px; bottom: 10%; animation-delay: -3.5s; }
+
+        .bg-dot {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.7);
+            box-shadow: 0 0 12px rgba(255,255,255,.45);
+            animation: dotFloat 5s ease-in-out infinite;
+        }
+
+        .dot1 { left: 12%; top: 21%; }
+        .dot2 { left: 22%; top: 76%; animation-delay: -1s; }
+        .dot3 { right: 15%; top: 20%; animation-delay: -2s; }
+        .dot4 { right: 10%; top: 73%; animation-delay: -3s; }
+
+        @keyframes bgMove {
+            from { transform: translate3d(-3%, -2%, 0) rotate(-8deg); }
+            to { transform: translate3d(3%, 2%, 0) rotate(-8deg); }
+        }
+
+        @keyframes ringSpin {
+            to { transform: translateX(-50%) rotate(360deg); }
+        }
+
+        @keyframes beamMove {
+            from { transform: translateX(-4%) rotate(-17deg); opacity: .28; }
+            to { transform: translateX(9%) rotate(-17deg); opacity: .75; }
+        }
+
+        @keyframes floatLogo {
+            0%,100% { transform: translateY(0) rotate(-8deg); }
+            50% { transform: translateY(-18px) rotate(2deg); }
+        }
+
+        @keyframes dotFloat {
+            0%,100% { transform: translateY(0); opacity: .3; }
+            50% { transform: translateY(-18px); opacity: 1; }
+        }
+
+        /* ================= PAGE ================= */
+        .register-page {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px 18px 0;
+        }
+
+        .register-container {
+            width: 100%;
+            max-width: 540px;
+            margin: auto;
+        }
+
+        /* ================= CARD ================= */
+        .register-card {
+            position: relative;
+            overflow: hidden;
+            padding: 36px 42px 32px;
+            border-radius: 25px;
+            background: linear-gradient(145deg, rgba(255,255,255,.98), rgba(242,244,248,.96));
+            color: #17213b;
+            border: 1px solid rgba(255,255,255,.8);
+            box-shadow:
+                0 30px 90px rgba(0,0,0,.52),
+                0 0 45px rgba(239,28,42,.08);
+        }
+
+        .register-card::before {
+            content: "";
+            position: absolute;
+            width: 190px;
+            height: 190px;
+            right: -110px;
+            top: -115px;
+            border-radius: 50%;
+            background: rgba(239,28,42,.08);
+        }
+
+        .register-card::after {
+            content: "";
+            position: absolute;
+            width: 250px;
+            height: 100px;
+            left: -95px;
+            bottom: -70px;
+            border-radius: 50%;
+            background: rgba(30,64,175,.08);
+        }
+
+        /* ================= BRAND ================= */
+        .brand {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 13px;
+            margin-bottom: 24px;
+        }
+
+        .brand-mark {
+            position: relative;
+            width: 62px;
+            height: 62px;
+            flex: 0 0 62px;
+            display: grid;
+            place-items: center;
+            border: 4px solid #dc1e2f;
+            border-right-color: #1d5fe9;
+            border-radius: 50%;
+            color: #1d355f;
+            font-size: 38px;
+            font-weight: 900;
+            font-style: italic;
+            box-shadow: 0 8px 22px rgba(220,30,47,.14);
+        }
+
+        .brand-mark::after {
+            content: "";
+            position: absolute;
+            width: 40px;
+            height: 4px;
+            bottom: 8px;
+            left: 7px;
+            border-radius: 99px;
+            background: linear-gradient(90deg, #dc1e2f, #1d5fe9);
+            transform: rotate(-22deg);
+        }
+
+        .brand-name {
+            margin: 0;
+            color: #172b55;
+            font-size: 20px;
+            font-weight: 850;
+            letter-spacing: .02em;
+        }
+
+        .brand-name span { color: #dc1e2f; }
+
+        .brand-tagline {
+            margin-top: 2px;
+            color: #7a8499;
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: .28em;
+        }
+
+        /* ================= TITLE ================= */
+        .register-heading {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            margin-bottom: 23px;
+        }
+
+        .register-heading h1 {
+            margin: 0;
+            color: #18294b;
+            font-size: clamp(28px, 7vw, 39px);
+            font-weight: 900;
+            line-height: 1.08;
+            letter-spacing: -.035em;
+        }
+
+        .register-heading h1 span { color: #d91f2f; }
+
+        .heading-line {
+            width: 103px;
+            height: 4px;
+            margin: 17px auto 15px;
+            border-radius: 99px;
+            background: linear-gradient(90deg, #1767e8 0 50%, #d91f2f 50% 100%);
+        }
+
+        .register-heading p {
+            margin: 0 auto;
+            max-width: 390px;
+            color: #69748a;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        /* ================= FORM ================= */
+        .register-form {
+            position: relative;
+            z-index: 2;
+        }
+
+        .field {
+            margin-bottom: 13px;
+        }
+
+        .field label {
+            display: block;
+            margin-bottom: 7px;
+            color: #17294b;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .field label i {
+            width: 16px;
+            color: #d91f2f;
+            margin-right: 4px;
+        }
+
+        .input-wrap {
+            position: relative;
+        }
+
+        .input-wrap > i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #8993a5;
+            z-index: 2;
+        }
+
+        .register-input {
+            width: 100%;
+            height: 48px;
+            padding: 0 14px 0 43px;
+            border: 1px solid #cbd2dd;
+            border-radius: 11px;
+            background: #f8f9fb;
+            color: #1c2942;
+            outline: none;
+            font-size: 13px;
+            transition: .25s ease;
+        }
+
+        .register-input::placeholder { color: #a1a9b7; }
+
+        .register-input:focus {
+            border-color: #d91f2f;
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(217,31,47,.08);
+        }
+
+        /* ================= BUTTON ================= */
+        .register-btn {
+            width: 100%;
+            min-height: 54px;
+            margin-top: 5px;
+            border: 0;
+            border-radius: 12px;
+            background: linear-gradient(90deg, #df1e2f 0%, #c51e36 35%, #245fe0 100%);
+            color: #fff;
+            font-size: 14px;
+            font-weight: 850;
+            cursor: pointer;
+            box-shadow: 0 12px 24px rgba(54,59,150,.22);
+            transition: transform .2s ease, box-shadow .2s ease, filter .2s ease;
+        }
+
+        .register-btn:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.04);
+            box-shadow: 0 16px 30px rgba(54,59,150,.28);
+        }
+
+        .register-btn:active { transform: translateY(0); }
+        .register-btn:disabled { opacity: .7; cursor: wait; }
+
+        /* ================= LOGIN LINK ================= */
+        .login-area {
+            position: relative;
+            z-index: 2;
+            margin-top: 22px;
+            padding-top: 18px;
+            border-top: 1px solid #e1e5eb;
+            text-align: center;
+            color: #747f92;
+            font-size: 12px;
+        }
+
+        .login-area a {
+            color: #1464e7;
+            font-weight: 800;
+            text-decoration: none;
+            margin-left: 4px;
+        }
+
+        .login-area a:hover { text-decoration: underline; }
+
+        /* ================= FOOTER ================= */
+        .register-footer {
+            width: 100vw;
+            margin-top: 28px;
+            padding: 18px 20px 22px;
+            text-align: center;
+            color: rgba(255,255,255,.72);
+            font-size: 12px;
+            background: linear-gradient(90deg, rgba(25,4,6,.9), rgba(5,10,25,.92));
+            border-top: 1px solid rgba(255,255,255,.08);
+        }
+
+        @media (max-width: 640px) {
+            .register-page { padding: 18px 12px 0; }
+            .register-card {
+                padding: 29px 22px 27px;
+                border-radius: 22px;
+            }
+
+            .brand-mark {
+                width: 54px;
+                height: 54px;
+                flex-basis: 54px;
+                font-size: 32px;
+            }
+
+            .brand-name { font-size: 17px; }
+            .brand-tagline {
+                font-size: 7px;
+                letter-spacing: .21em;
+            }
+
+            .register-heading h1 { font-size: 29px; }
+
+            .floating-logo {
+                width: 220px;
+                height: 220px;
+                font-size: 105px;
+            }
+
+            .logo-left { left: -125px; top: 9%; }
+            .logo-right { right: -125px; bottom: 14%; }
+
+            .register-footer { margin-top: 18px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .portal-bg::before,
+            .portal-bg::after,
+            .light-beam,
+            .floating-logo,
+            .bg-dot {
+                animation: none !important;
+            }
+        }
+    </style>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen flex items-center justify-center p-4 font-sans">
 
-    <div class="w-full max-w-md bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow-2xl">
-        <div class="text-center mb-6">
-            <div class="w-12 h-12 bg-blue-600/20 text-blue-500 rounded-full flex items-center justify-center mx-auto mb-3">
-                <i class="fa-solid fa-user-plus text-2xl"></i>
-            </div>
-            <h1 class="text-xl font-bold text-white">Registrasi Pegawai</h1>
-            <p class="text-xs text-slate-400 mt-1">Buat akun untuk mendapatkan QR Code Absensi</p>
-        </div>
-
-        <form onsubmit="handleRegister(event)" class="space-y-3.5">
-            <div>
-                <label class="block text-xs font-medium text-slate-300 mb-1">NIP (Nomor Induk Pegawai)</label>
-                <input type="text" id="nip" placeholder="Contoh: 12345" required
-                    class="w-full px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition">
-            </div>
-
-            <div>
-                <label class="block text-xs font-medium text-slate-300 mb-1">Nama Lengkap</label>
-                <input type="text" id="full_name" placeholder="Nama lengkap Anda" required
-                    class="w-full px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition">
-            </div>
-
-            <div>
-                <label class="block text-xs font-medium text-slate-300 mb-1">Email</label>
-                <input type="email" id="email" placeholder="email@domain.com" required
-                    class="w-full px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition">
-            </div>
-
-            <div>
-                <label class="block text-xs font-medium text-slate-300 mb-1">No. Telepon (Opsional)</label>
-                <input type="tel" id="phone" placeholder="08123456789"
-                    class="w-full px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition">
-            </div>
-
-            <div>
-                <label class="block text-xs font-medium text-slate-300 mb-1">Password</label>
-                <input type="password" id="password" placeholder="••••••••" required
-                    class="w-full px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition">
-            </div>
-
-            <button type="submit" 
-                class="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-2.5 rounded-xl text-xs transition flex items-center justify-center gap-2 mt-2">
-                <i class="fa-solid fa-user-check"></i> Daftar Sekarang
-            </button>
-        </form>
-
-        <div class="text-center mt-5 pt-4 border-t border-slate-700/60">
-            <p class="text-xs text-slate-400">Sudah punya akun? 
-                <a href="/" class="text-blue-400 font-semibold hover:underline">Masuk di sini</a>
-            </p>
-        </div>
+<body>
+    <!-- Background animasi dengan lambang perusahaan -->
+    <div class="portal-bg" aria-hidden="true">
+        <div class="floating-logo logo-left">A</div>
+        <div class="floating-logo logo-right">A</div>
+        <div class="light-beam beam-red"></div>
+        <div class="light-beam beam-blue"></div>
+        <span class="bg-dot dot1"></span>
+        <span class="bg-dot dot2"></span>
+        <span class="bg-dot dot3"></span>
+        <span class="bg-dot dot4"></span>
     </div>
 
-    <!-- Main JavaScript -->
+    <div class="register-page">
+        <div class="register-container">
+
+            <div class="register-card">
+
+                <!-- Logo dan nama perusahaan -->
+                <div class="brand">
+                    <div class="brand-mark">A</div>
+                    <div>
+                        <p class="brand-name">PT. ANDALAN <span>MAJU</span></p>
+                        <div class="brand-tagline">INNOVATE • GROW • EXCEL</div>
+                    </div>
+                </div>
+
+                <!-- Judul -->
+                <div class="register-heading">
+                    <h1>DAFTAR <span>AKUN</span></h1>
+                    <div class="heading-line"></div>
+                    <p>
+                        Lengkapi data diri Anda untuk membuat akun pegawai
+                        dan mendapatkan QR Code Absensi.
+                    </p>
+                </div>
+
+                <!-- FORM ASLI: ID dan metode tetap dipertahankan -->
+                <form id="register-form" onsubmit="handleRegister(event)" class="register-form">
+
+                    <div class="field">
+                        <label>
+                            <i class="fa-regular fa-id-card"></i>
+                            NIP (Nomor Induk Pegawai)
+                        </label>
+                        <div class="input-wrap">
+                            <input type="text" id="nip" placeholder="Contoh: 12345" required
+                                class="register-input">
+                            <i class="fa-regular fa-id-card"></i>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label>
+                            <i class="fa-regular fa-user"></i>
+                            Nama Lengkap
+                        </label>
+                        <div class="input-wrap">
+                            <input type="text" id="full_name" placeholder="Nama lengkap Anda" required
+                                class="register-input">
+                            <i class="fa-regular fa-user"></i>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label>
+                            <i class="fa-regular fa-envelope"></i>
+                            Email
+                        </label>
+                        <div class="input-wrap">
+                            <input type="email" id="email" placeholder="email@domain.com" required
+                                class="register-input">
+                            <i class="fa-regular fa-envelope"></i>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label>
+                            <i class="fa-solid fa-phone"></i>
+                            No. Telepon (Opsional)
+                        </label>
+                        <div class="input-wrap">
+                            <input type="tel" id="phone" placeholder="08123456789"
+                                class="register-input">
+                            <i class="fa-solid fa-phone"></i>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label>
+                            <i class="fa-solid fa-lock"></i>
+                            Password
+                        </label>
+                        <div class="input-wrap">
+                            <input type="password" id="password" placeholder="••••••••" required
+                                class="register-input">
+                            <i class="fa-solid fa-lock"></i>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="submit-btn" class="register-btn">
+                        <i class="fa-solid fa-user-check mr-2"></i> Daftar Sekarang
+                    </button>
+                </form>
+
+                <!-- Kembali ke portal -->
+                <div class="login-area">
+                    <span>Sudah punya akun?</span>
+                    <a href="/user.html">
+                        Masuk di sini
+                    </a>
+                </div>
+
+            </div>
+        </div>
+
+        <footer class="register-footer">
+            © 2026 PT. ANDALAN MAJU. All Rights Reserved.
+        </footer>
+    </div>
+
+    <!-- Main JavaScript: DIPERTAHANKAN -->
     <script>
-        // ============================================================
-        // SERVICE WORKER - PWA REGISTRATION
-        // ============================================================
+        // Registrasi Service Worker PWA
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/sw.js')
-                    .then(registration => {
-                        console.log('✅ PWA Service Worker registered successfully!');
-                        console.log('Scope:', registration.scope);
-                    })
-                    .catch(error => {
-                        console.error('❌ PWA Service Worker registration failed:', error);
-                    });
+                    .then(reg => console.log('✅ PWA Service Worker terdaftar:', reg.scope))
+                    .catch(err => console.error('❌ Service Worker gagal:', err));
             });
         }
 
-        // ============================================================
-        // REGISTER FUNCTIONALITY
-        // ============================================================
-
         async function handleRegister(e) {
             e.preventDefault();
-            
-            // Ambil data dari form
+
             const payload = {
                 nip: document.getElementById('nip').value.trim(),
                 full_name: document.getElementById('full_name').value.trim(),
@@ -102,7 +616,6 @@
                 password: document.getElementById('password').value
             };
 
-            // Validasi tambahan
             if (payload.nip.length < 3) {
                 alert('NIP minimal 3 karakter!');
                 document.getElementById('nip').focus();
@@ -115,12 +628,12 @@
                 return;
             }
 
-            // Disable button untuk mencegah double submit
-            const submitBtn = document.querySelector('button[type="submit"]');
+            const submitBtn = document.getElementById('submit-btn');
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Memproses...';
 
             try {
+                // Endpoint otomatis ke server Node.js lokal (localhost:3000)
                 const res = await fetch('/api/users/register', {
                     method: 'POST',
                     headers: { 
@@ -133,9 +646,8 @@
                 const result = await res.json();
 
                 if (result.success) {
-                    alert('✅ Registrasi Berhasil! Anda akan diarahkan ke Dashboard.');
-                    // Redirect ke halaman utama dengan parameter NIP
-                    window.location.href = `/?nip=${payload.nip}`;
+                    alert('✅ Registrasi Berhasil! Data tersimpan di MySQL lokal.');
+                    window.location.href = `/?nip=${encodeURIComponent(payload.nip)}`;
                 } else {
                     alert(`❌ Gagal: ${result.message}`);
                     submitBtn.disabled = false;
@@ -143,33 +655,16 @@
                 }
             } catch (err) {
                 console.error('Error registering user:', err);
-                alert('❌ Terjadi kesalahan jaringan/server. Silakan coba lagi.');
+                alert('❌ Terjadi kesalahan jaringan. Pastikan backend Express lokal (node server.js) sedang berjalan.');
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = '<i class="fa-solid fa-user-check"></i> Daftar Sekarang';
             }
         }
 
-        // ============================================================
-        // KEYBOARD SHORTCUT: Enter to submit
-        // ============================================================
-        document.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter' && document.activeElement.tagName === 'INPUT') {
-                e.preventDefault();
-                document.querySelector('form').dispatchEvent(new Event('submit'));
-            }
-        });
-
-        // ============================================================
-        // AUTO-FOCUS: Fokus ke field NIP saat halaman dimuat
-        // ============================================================
         window.addEventListener('DOMContentLoaded', () => {
             document.getElementById('nip').focus();
-            console.log('🚀 Registrasi Pegawai page loaded successfully!');
         });
 
-        // ============================================================
-        // PREVENT FORM RESUBMISSION
-        // ============================================================
         if (window.history && window.history.replaceState) {
             window.history.replaceState(null, null, window.location.href);
         }

@@ -1,4 +1,5 @@
 const db = require('../config/db');
+const bcrypt = require('bcryptjs');
 
 // Register Pegawai Baru (Pendaftaran Mandiri)
 exports.registerUser = async (req, res) => {
@@ -12,7 +13,6 @@ exports.registerUser = async (req, res) => {
     }
 
     try {
-        // Cek apakah NIP atau Email sudah digunakan
         const [existing] = await db.query('SELECT id FROM users WHERE nip = ? OR email = ?', [nip, email]);
         if (existing.length > 0) {
             return res.status(400).json({ 
@@ -21,10 +21,12 @@ exports.registerUser = async (req, res) => {
             });
         }
 
-        // Simpan data pegawai baru
+        // Enkripsi Password Sebelum Disimpan
+        const hashedPassword = await bcrypt.hash(password, 10);
+
         await db.query(
             'INSERT INTO users (nip, full_name, email, phone, password) VALUES (?, ?, ?, ?, ?)',
-            [nip, full_name, email, phone || null, password]
+            [nip, full_name, email, phone || null, hashedPassword]
         );
 
         res.status(201).json({
@@ -41,10 +43,10 @@ exports.registerUser = async (req, res) => {
     }
 };
 
-// Get All Users (Untuk Admin)
+// Get All Users
 exports.getAllUsers = async (req, res) => {
     try {
-        const [rows] = await db.query('SELECT * FROM users ORDER BY id DESC');
+        const [rows] = await db.query('SELECT id, nip, full_name, email, phone, created_at FROM users ORDER BY id DESC');
         res.json({ success: true, data: rows });
     } catch (error) {
         console.error('Error getAllUsers:', error);
@@ -58,7 +60,7 @@ exports.getAllUsers = async (req, res) => {
 // Get User By ID
 exports.getUserById = async (req, res) => {
     try {
-        const [rows] = await db.query('SELECT * FROM users WHERE id = ?', [req.params.id]);
+        const [rows] = await db.query('SELECT id, nip, full_name, email, phone FROM users WHERE id = ?', [req.params.id]);
         if (rows.length === 0) {
             return res.status(404).json({ 
                 success: false, 
@@ -74,7 +76,7 @@ exports.getUserById = async (req, res) => {
     }
 };
 
-// Create User (Manual dari Admin)
+// Create User (Manual Admin)
 exports.createUser = async (req, res) => {
     const { nip, full_name, email, phone, password } = req.body;
 
@@ -94,9 +96,11 @@ exports.createUser = async (req, res) => {
             });
         }
 
+        const hashedPassword = await bcrypt.hash(password, 10);
+
         const [result] = await db.query(
             'INSERT INTO users (nip, full_name, email, phone, password) VALUES (?, ?, ?, ?, ?)',
-            [nip, full_name, email, phone || null, password]
+            [nip, full_name, email, phone || null, hashedPassword]
         );
 
         res.status(201).json({
@@ -123,8 +127,9 @@ exports.updateUser = async (req, res) => {
         let params = [nip, full_name, email, phone || null, id];
 
         if (password && password.trim() !== '') {
+            const hashedPassword = await bcrypt.hash(password, 10);
             query = 'UPDATE users SET nip = ?, full_name = ?, email = ?, phone = ?, password = ? WHERE id = ?';
-            params = [nip, full_name, email, phone || null, password, id];
+            params = [nip, full_name, email, phone || null, hashedPassword, id];
         }
 
         await db.query(query, params);
@@ -152,12 +157,11 @@ exports.deleteUser = async (req, res) => {
     }
 };
 
-// Get User Dashboard by NIP (Untuk Halaman User)
+// Get User Dashboard by NIP
 exports.getUserDashboard = async (req, res) => {
     try {
         const { nip } = req.params;
         
-        // 1. Cek apakah user dengan NIP tersebut ada
         const [userRows] = await db.query('SELECT id, nip, full_name, email, phone FROM users WHERE nip = ?', [nip]);
         
         if (userRows.length === 0) {
@@ -169,13 +173,11 @@ exports.getUserDashboard = async (req, res) => {
         
         const user = userRows[0];
         
-        // 2. Ambil riwayat absensi dari tabel attendances
         const [attendances] = await db.query(
             'SELECT id, scan_time, status FROM attendances WHERE user_id = ? ORDER BY scan_time DESC LIMIT 10', 
             [user.id]
         );
         
-        // 3. Kirim response dengan data user dan riwayat absensi
         res.json({
             success: true,
             data: {

@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Portal Pegawai - Absensi PWA</title>
+
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#111111">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Absensi User">
+    <link rel="manifest" href="/manifest-user.json">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3135/3135715.png">
+
+    <!-- CSS & Libraries -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        * { box-sizing: border-box; }
+
+        html, body {
+            margin: 0;
+            min-height: 100%;
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        }
+
+        body {
+            background:
+                radial-gradient(circle at 15% 45%, rgba(239, 28, 42, .22), transparent 30%),
+                radial-gradient(circle at 85% 45%, rgba(24, 89, 255, .16), transparent 32%),
+                linear-gradient(135deg, #090909 0%, #1b0a0c 34%, #080808 53%, #070b14 75%, #050505 100%);
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        /* ===== Animated background ===== */
+        .portal-bg {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .portal-bg::before {
+            content: "";
+            position: absolute;
+            inset: -20%;
+            background:
+                linear-gradient(115deg, transparent 43%, rgba(255,255,255,.055) 44%, transparent 45%),
+                linear-gradient(115deg, transparent 58%, rgba(255,255,255,.035) 59%, transparent 60%);
+            background-size: 420px 420px;
+            transform: rotate(-8deg);
+            animation: bgMove 18s linear infinite;
+        }
+
+        .portal-bg::after {
+            content: "";
+            position: absolute;
+            left: 50%;
+            bottom: -34vh;
+            width: 90vw;
+            height: 90vw;
+            transform: translateX(-50%);
+            border-radius: 50%;
+            background:
+                repeating-radial-gradient(circle, rgba(255,255,255,.08) 0 1px, transparent 2px 36px);
+            opacity: .28;
+            animation: ringSpin 28s linear infinite;
+        }
+
+        .light-beam {
+            position: absolute;
+            width: 70vw;
+            height: 2px;
+            opacity: .55;
+            filter: blur(.3px);
+            transform: rotate(-17deg);
+            animation: beamMove 8s ease-in-out infinite alternate;
+        }
+
+        .beam-red {
+            left: -12vw;
+            top: 25%;
+            background: linear-gradient(90deg, transparent, rgba(239,28,42,.9), transparent);
+            box-shadow: 0 0 24px rgba(239,28,42,.65);
+        }
+
+        .beam-blue {
+            right: -12vw;
+            top: 48%;
+            background: linear-gradient(90deg, transparent, rgba(36,99,235,.95), transparent);
+            box-shadow: 0 0 24px rgba(36,99,235,.7);
+            animation-delay: -3s;
+        }
+
+        .floating-logo {
+            position: absolute;
+            display: grid;
+            place-items: center;
+            width: 300px;
+            height: 300px;
+            border: 1px solid rgba(255,255,255,.08);
+            border-radius: 50%;
+            color: rgba(255,255,255,.055);
+            font-size: 145px;
+            font-weight: 900;
+            font-style: italic;
+            letter-spacing: -20px;
+            text-shadow: 0 0 35px rgba(239,28,42,.18);
+            animation: floatLogo 7s ease-in-out infinite;
+        }
+
+        .floating-logo::before,
+        .floating-logo::after {
+            content: "";
+            position: absolute;
+            inset: 18px;
+            border: 1px solid rgba(255,255,255,.055);
+            border-radius: 50%;
+        }
+
+        .floating-logo::after {
+            inset: 44px;
+            border-color: rgba(239,28,42,.08);
+        }
+
+        .logo-left { left: -90px; top: 12%; }
+        .logo-right { right: -95px; bottom: 11%; animation-delay: -3.5s; }
+
+        .bg-dot {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.65);
+            box-shadow: 0 0 12px rgba(255,255,255,.4);
+            animation: dotFloat 5s ease-in-out infinite;
+        }
+
+        .dot1 { left: 11%; top: 23%; }
+        .dot2 { left: 20%; top: 73%; animation-delay: -1s; }
+        .dot3 { right: 16%; top: 19%; animation-delay: -2s; }
+        .dot4 { right: 9%; top: 70%; animation-delay: -3s; }
+
+        @keyframes bgMove {
+            from { transform: translate3d(-3%, -2%, 0) rotate(-8deg); }
+            to { transform: translate3d(3%, 2%, 0) rotate(-8deg); }
+        }
+        @keyframes ringSpin { to { transform: translateX(-50%) rotate(360deg); } }
+        @keyframes beamMove { from { transform: translateX(-4%) rotate(-17deg); opacity: .28; } to { transform: translateX(9%) rotate(-17deg); opacity: .75; } }
+        @keyframes floatLogo { 0%,100% { transform: translateY(0) rotate(-8deg); } 50% { transform: translateY(-18px) rotate(2deg); } }
+        @keyframes dotFloat { 0%,100% { transform: translateY(0); opacity: .3; } 50% { transform: translateY(-18px); opacity: 1; } }
+
+        /* ===== Page ===== */
+        .portal-page {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 28px 18px 0;
+        }
+
+        .portal-container {
+            width: 100%;
+            max-width: 540px;
+            margin: auto;
+        }
+
+        /* ===== Main card ===== */
+        .portal-card {
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(145deg, rgba(255,255,255,.97), rgba(242,244,248,.96));
+            color: #17213b;
+            border: 1px solid rgba(255,255,255,.78);
+            border-radius: 25px;
+            padding: 38px 42px 34px;
+            box-shadow:
+                0 30px 90px rgba(0,0,0,.5),
+                0 0 0 1px rgba(255,255,255,.12),
+                0 0 45px rgba(239,28,42,.08);
+        }
+
+        .portal-card::before {
+            content: "";
+            position: absolute;
+            width: 190px;
+            height: 190px;
+            right: -110px;
+            top: -115px;
+            border-radius: 50%;
+            background: rgba(239,28,42,.08);
+        }
+
+        .portal-card::after {
+            content: "";
+            position: absolute;
+            width: 250px;
+            height: 100px;
+            left: -95px;
+            bottom: -70px;
+            border-radius: 50%;
+            background: rgba(30,64,175,.08);
+        }
+
+        .brand {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 13px;
+            margin-bottom: 26px;
+        }
+
+        .brand-mark {
+            position: relative;
+            width: 62px;
+            height: 62px;
+            flex: 0 0 62px;
+            display: grid;
+            place-items: center;
+            border: 4px solid #dc1e2f;
+            border-right-color: #1d5fe9;
+            border-radius: 50%;
+            color: #1d355f;
+            font-size: 38px;
+            font-weight: 900;
+            font-style: italic;
+            line-height: 1;
+            transform: rotate(-2deg);
+            box-shadow: 0 8px 22px rgba(220,30,47,.14);
+        }
+
+        .brand-mark::after {
+            content: "";
+            position: absolute;
+            width: 40px;
+            height: 4px;
+            bottom: 8px;
+            left: 7px;
+            border-radius: 99px;
+            background: linear-gradient(90deg, #dc1e2f, #1d5fe9);
+            transform: rotate(-22deg);
+        }
+
+        .brand-copy {
+            text-align: left;
+        }
+
+        .brand-name {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 850;
+            letter-spacing: .02em;
+            color: #172b55;
+        }
+
+        .brand-name span { color: #dc1e2f; }
+        .brand-tagline {
+            margin-top: 2px;
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: .28em;
+            color: #7a8499;
+        }
+
+        .portal-heading {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            margin: 4px 0 25px;
+        }
+
+        .portal-heading h1 {
+            margin: 0;
+            font-size: clamp(30px, 7vw, 42px);
+            line-height: 1.05;
+            font-weight: 900;
+            letter-spacing: -.035em;
+            color: #18294b;
+        }
+
+        .portal-heading h1 span { color: #d91f2f; }
+
+        .heading-line {
+            width: 103px;
+            height: 4px;
+            margin: 19px auto 18px;
+            border-radius: 99px;
+            background: linear-gradient(90deg, #1767e8 0 50%, #d91f2f 50% 100%);
+        }
+
+        .welcome-title {
+            margin: 0;
+            font-size: 22px;
+            font-weight: 800;
+            color: #273654;
+        }
+
+        .welcome-desc {
+            margin: 7px auto 0;
+            max-width: 370px;
+            color: #69748a;
+            font-size: 13px;
+            line-height: 1.55;
+        }
+
+        .portal-form {
+            position: relative;
+            z-index: 2;
+            margin-top: 26px;
+        }
+
+        .portal-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #17294b;
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .portal-label i { color: #d91f2f; margin-right: 5px; }
+
+        .input-wrap {
+            position: relative;
+        }
+
+        .input-wrap i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #8791a4;
+            z-index: 2;
+        }
+
+        .portal-input {
+            width: 100%;
+            height: 56px;
+            padding: 0 16px 0 45px;
+            border: 1px solid #cbd2dd;
+            border-radius: 12px;
+            background: #f8f9fb;
+            color: #1c2942;
+            outline: none;
+            font-size: 14px;
+            font-weight: 650;
+            letter-spacing: .05em;
+            transition: .25s ease;
+        }
+
+        .portal-input::placeholder { color: #a1a9b7; font-weight: 500; }
+        .portal-input:focus {
+            border-color: #d91f2f;
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(217,31,47,.09);
+        }
+
+        .qr-btn {
+            width: 100%;
+            min-height: 58px;
+            margin-top: 17px;
+            border: 0;
+            border-radius: 12px;
+            background: linear-gradient(90deg, #df1e2f 0%, #c51e36 35%, #245fe0 100%);
+            color: #fff;
+            font-size: 15px;
+            font-weight: 850;
+            letter-spacing: .01em;
+            box-shadow: 0 12px 24px rgba(54,59,150,.22);
+            cursor: pointer;
+            transition: transform .2s ease, box-shadow .2s ease, filter .2s ease;
+        }
+
+        .qr-btn:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.04);
+            box-shadow: 0 16px 30px rgba(54,59,150,.28);
+        }
+
+        .qr-btn:active { transform: translateY(0); }
+        .qr-btn:disabled { opacity: .7; cursor: wait; }
+
+        .register-area {
+            position: relative;
+            z-index: 2;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #e1e5eb;
+            text-align: center;
+            font-size: 12px;
+            color: #747f92;
+        }
+
+        .register-area a {
+            display: inline;
+            margin-left: 4px;
+            color: #1464e7;
+            font-weight: 800;
+            text-decoration: none;
+        }
+
+        .register-area a:hover { text-decoration: underline; }
+
+        /* ===== Dashboard: same visual language, logic untouched ===== */
+        #dashboard-section {
+            background: rgba(248,249,252,.98) !important;
+            color: #17213b !important;
+            border: 0 !important;
+            border-radius: 25px !important;
+            box-shadow: 0 30px 90px rgba(0,0,0,.5) !important;
+        }
+
+        #dashboard-section h2,
+        #dashboard-section h3 { color: #17213b !important; }
+
+        #dashboard-section .bg-slate-900,
+        #dashboard-section .bg-slate-800 {
+            background: #f5f6f8 !important;
+            border-color: #dfe3ea !important;
+        }
+
+        #dashboard-section .text-white { color: #17213b !important; }
+        #dashboard-section .text-slate-300,
+        #dashboard-section .text-slate-400 { color: #707b8f !important; }
+        #dashboard-section .border-slate-700,
+        #dashboard-section .border-slate-700\/60,
+        #dashboard-section .border-slate-700\/50 { border-color: #dfe3ea !important; }
+
+        #dashboard-section .bg-blue-600 {
+            background: linear-gradient(90deg, #df1e2f, #245fe0) !important;
+        }
+
+        #dashboard-section .text-blue-400,
+        #dashboard-section .text-blue-500 { color: #d91f2f !important; }
+
+        #dashboard-section .hover\:bg-blue-500:hover { filter: brightness(1.05); }
+
+        /* ===== Footer ===== */
+        .portal-footer {
+            width: 100vw;
+            margin-top: 28px;
+            padding: 18px 20px 22px;
+            text-align: center;
+            color: rgba(255,255,255,.72);
+            font-size: 12px;
+            background: linear-gradient(90deg, rgba(25,4,6,.9), rgba(5,10,25,.92));
+            border-top: 1px solid rgba(255,255,255,.08);
+        }
+
+        /* ===== Mobile ===== */
+        @media (max-width: 640px) {
+            .portal-page { padding: 18px 12px 0; }
+            .portal-container { max-width: 500px; }
+            .portal-card { padding: 29px 22px 27px; border-radius: 22px; }
+            .brand-mark { width: 54px; height: 54px; flex-basis: 54px; font-size: 32px; }
+            .brand-name { font-size: 17px; }
+            .brand-tagline { font-size: 7px; letter-spacing: .21em; }
+            .portal-heading h1 { font-size: 31px; }
+            .welcome-title { font-size: 20px; }
+            .floating-logo { width: 220px; height: 220px; font-size: 105px; }
+            .logo-left { left: -125px; top: 9%; }
+            .logo-right { right: -125px; bottom: 14%; }
+            .portal-footer { margin-top: 18px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .portal-bg::before, .portal-bg::after, .light-beam,
+            .floating-logo, .bg-dot { animation: none !important; }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Animated company-themed background -->
+    <div class="portal-bg" aria-hidden="true">
+        <div class="floating-logo logo-left">A</div>
+        <div class="floating-logo logo-right">A</div>
+        <div class="light-beam beam-red"></div>
+        <div class="light-beam beam-blue"></div>
+        <span class="bg-dot dot1"></span>
+        <span class="bg-dot dot2"></span>
+        <span class="bg-dot dot3"></span>
+        <span class="bg-dot dot4"></span>
+    </div>
+
+    <div class="portal-page">
+        <div class="portal-container">
+
+            <!-- AUTH CONTAINER - IDs dan form tetap sama agar JavaScript tidak berubah -->
+            <main id="auth-section" class="portal-card">
+
+                <div class="brand">
+                    <div class="brand-mark">A</div>
+                    <div class="brand-copy">
+                        <p class="brand-name">PT. ANDALAN <span>MAJU</span></p>
+                        <div class="brand-tagline">INNOVATE • GROW • EXCEL</div>
+                    </div>
+                </div>
+
+                <div class="portal-heading">
+                    <h1>PORTAL <span>PEGAWAI</span></h1>
+                    <div class="heading-line"></div>
+                    <h2 class="welcome-title">Selamat Datang!</h2>
+                    <p class="welcome-desc">
+                        Silakan masukkan NIP Anda untuk mengakses portal pegawai.
+                    </p>
+                </div>
+
+                <form id="form-login" onsubmit="handleNipSubmit(event)" class="portal-form">
+                    <div>
+                        <label class="portal-label">
+                            <i class="fa-regular fa-id-card"></i> NIP
+                        </label>
+
+                        <div class="input-wrap">
+                            <input
+                                type="text"
+                                id="input-nip"
+                                placeholder="Masukkan NIP Anda"
+                                required
+                                class="portal-input">
+                            <i class="fa-regular fa-user"></i>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="submit-btn" class="qr-btn">
+                        <i class="fa-solid fa-qrcode mr-2"></i> TAMPILKAN QR
+                    </button>
+                </form>
+
+                <div class="register-area">
+                    <span>Belum punya akun?</span>
+                    <a href="register.html">
+                        Daftar akun baru disini
+                    </a>
+                </div>
+            </main>
+
+            <!-- DASHBOARD USER & QR CODE - semua ID tetap dipertahankan -->
+            <main id="dashboard-section" class="portal-card hidden space-y-6">
+
+                <div class="text-center relative">
+                    <div class="brand justify-center mb-4">
+                        <div class="brand-mark">A</div>
+                        <div class="brand-copy">
+                            <p class="brand-name">PT. ANDALAN <span>MAJU</span></p>
+                            <div class="brand-tagline">PORTAL PEGAWAI</div>
+                        </div>
+                    </div>
+
+                    <div class="w-16 h-16 bg-blue-600/20 text-blue-400 rounded-full flex items-center justify-center text-2xl mx-auto border border-blue-500/30">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+
+                    <h2 id="user-name" class="text-lg font-bold mt-3">-</h2>
+                    <p id="user-nip-display" class="text-xs font-mono font-semibold px-3 py-1 rounded-full inline-block mt-1">
+                        NIP: -
+                    </p>
+                </div>
+
+                <div class="border rounded-2xl p-6 flex flex-col items-center justify-center">
+                    <div class="bg-white p-3 rounded-xl shadow-md">
+                        <div id="qrcode" class="flex justify-center"></div>
+                    </div>
+                    <p class="text-[11px] mt-3 text-center flex items-center gap-1.5">
+                        <i class="fa-solid fa-qrcode"></i> Tunjukkan QR Code ini ke Scanner Admin
+                    </p>
+                </div>
+
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
+                            <i class="fa-regular fa-clock"></i> Riwayat Absensi
+                        </h3>
+                        <button onclick="loadUserLogs()" class="text-[11px] text-blue-400 hover:underline flex items-center gap-1">
+                            <i class="fa-solid fa-rotate"></i> Refresh
+                        </button>
+                    </div>
+                    <div id="logs-list" class="space-y-2 max-h-48 overflow-y-auto pr-1"></div>
+                </div>
+
+                <div class="border rounded-2xl p-4 space-y-4">
+                    <h3 class="text-sm font-bold flex items-center gap-2">
+                        <i class="fa-regular fa-file-lines text-blue-400"></i>
+                        Form Pengajuan Izin / Sakit
+                    </h3>
+
+                    <form id="leaveForm" enctype="multipart/form-data" class="space-y-3">
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">Jenis Pengajuan</label>
+                            <select name="type" id="leaveType" class="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white text-sm focus:outline-none focus:border-blue-500 transition" required>
+                                <option value="Sakit">Sakit</option>
+                                <option value="Izin">Izin</option>
+                                <option value="Cuti">Cuti</option>
+                            </select>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs text-slate-400 mb-1">Dari Tanggal</label>
+                                <input type="date" name="start_date" id="startDate" class="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white text-sm focus:outline-none focus:border-blue-500 transition" required>
+                            </div>
+                            <div>
+                                <label class="block text-xs text-slate-400 mb-1">Sampai Tanggal</label>
+                                <input type="date" name="end_date" id="endDate" class="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white text-sm focus:outline-none focus:border-blue-500 transition" required>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">Alasan / Keterangan</label>
+                            <textarea name="reason" id="leaveReason" rows="2" class="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white text-sm focus:outline-none focus:border-blue-500 transition placeholder-slate-500" placeholder="Tuliskan alasan..." required></textarea>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">Lampiran Bukti (Opsional)</label>
+                            <input type="file" name="attachment" id="leaveAttachment" class="w-full p-2 text-sm bg-slate-800 border border-slate-700 rounded-xl text-slate-300 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-blue-600 file:text-white file:text-xs file:font-semibold hover:file:bg-blue-500 transition">
+                        </div>
+
+                        <button type="submit" id="leaveSubmitBtn" class="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl text-sm transition flex items-center justify-center gap-2">
+                            <i class="fa-regular fa-paper-plane"></i> Kirim Pengajuan
+                        </button>
+                    </form>
+                </div>
+
+                <div class="border rounded-2xl p-4 space-y-3">
+                    <h3 class="text-sm font-bold flex items-center gap-2">
+                        <i class="fa-regular fa-clock text-amber-400"></i>
+                        Riwayat Pengajuan Izin
+                    </h3>
+                    <div id="leaveHistoryContainer" class="max-h-40 overflow-y-auto pr-1 space-y-2">
+                        <div id="leaveHistoryList" class="space-y-2"></div>
+                    </div>
+                </div>
+
+                <button onclick="logoutUser()" class="w-full py-2.5 bg-slate-700 hover:bg-slate-600 text-slate-300 font-semibold rounded-xl text-xs transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i> Keluar / Ganti NIP
+                </button>
+            </main>
+        </div>
+
+        <footer class="portal-footer">
+            © 2026 PT. ANDALAN MAJU. All Rights Reserved.
+        </footer>
+    </div>
+
+    <!-- SCRIPT LOGIC -->
+    <script>
+        const API_USERS = '/api/users';
+        const API_ATTENDANCE = '/api/attendance';
+        const API_LEAVES = '/api/leaves';
+        let activeUser = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const nipParam = urlParams.get('nip');
+            const savedNip = nipParam || localStorage.getItem('logged_user_nip');
+
+            if (savedNip) {
+                fetchAndActivateUser(savedNip);
+            } else {
+                document.getElementById('input-nip').focus();
+            }
+
+            registerServiceWorker();
+            
+            // Set default date untuk form izin
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('startDate').value = today;
+            document.getElementById('endDate').value = today;
+        });
+
+        // 1. Submit NIP Login
+        async function handleNipSubmit(e) {
+            e.preventDefault();
+            const nip = document.getElementById('input-nip').value.trim();
+            if (nip) {
+                await fetchAndActivateUser(nip);
+            }
+        }
+
+        // 2. Ambil data User dari API Server
+        async function fetchAndActivateUser(nip) {
+            const submitBtn = document.getElementById('submit-btn');
+            const originalText = submitBtn.innerHTML;
+
+            try {
+                submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Memproses...';
+                submitBtn.disabled = true;
+
+                const res = await fetch(API_USERS);
+                const result = await res.json();
+
+                if (result.success) {
+                    const usersList = Array.isArray(result.data) ? result.data : [result.data];
+                    const user = usersList.find(u => u && u.nip && u.nip.toString().toLowerCase() === nip.toString().toLowerCase());
+                    
+                    if (user) {
+                        activeUser = user;
+                        localStorage.setItem('logged_user_nip', user.nip);
+                        showDashboard(user);
+                    } else {
+                        alert(`❌ NIP [${nip}] belum terdaftar! Silakan mendaftar terlebih dahulu.`);
+                        logoutUser();
+                    }
+                } else {
+                    alert('❌ Gagal mengambil data pengguna.');
+                }
+            } catch (err) {
+                console.error('Error fetching user:', err);
+                alert('❌ Gagal terhubung ke backend Express lokal.');
+            } finally {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        }
+
+        // 3. Tampilkan Dashboard Pegawai & Hasilkan QR Code
+        function showDashboard(user) {
+            document.getElementById('auth-section').classList.add('hidden');
+            document.getElementById('dashboard-section').classList.remove('hidden');
+
+            document.getElementById('user-name').innerText = user.full_name || user.name || 'Pegawai';
+            document.getElementById('user-nip-display').innerText = `NIP: ${user.nip}`;
+
+            // Render QR Code dari NIP
+            const qrContainer = document.getElementById('qrcode');
+            qrContainer.innerHTML = '';
+            new QRCode(qrContainer, {
+                text: String(user.nip),
+                width: 170,
+                height: 170,
+                colorDark: "#0f172a",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+
+            loadUserLogs();
+            loadLeaveHistory();
+            
+            // Set NIP untuk form izin
+            document.getElementById('leaveForm').dataset.nip = user.nip;
+        }
+
+        // 4. Load Riwayat Absensi Pegawai
+        async function loadUserLogs() {
+            if (!activeUser) return;
+            const container = document.getElementById('logs-list');
+
+            container.innerHTML = `
+                <div class="flex justify-center items-center py-4">
+                    <i class="fa-solid fa-spinner fa-spin text-blue-400 text-sm"></i>
+                    <span class="ml-2 text-xs text-slate-400">Memuat riwayat...</span>
+                </div>
+            `;
+
+            try {
+                const res = await fetch(API_ATTENDANCE);
+                const result = await res.json();
+
+                if (result.success) {
+                    const logsData = Array.isArray(result.data) ? result.data : [];
+                    const myLogs = logsData.filter(log => log && log.nip && log.nip.toString() === activeUser.nip.toString());
+
+                    if (myLogs.length === 0) {
+                        container.innerHTML = `
+                            <div class="p-4 bg-slate-900 rounded-xl text-center border border-slate-700/50">
+                                <p class="text-xs text-slate-400">Belum ada data absensi</p>
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    const sortedLogs = myLogs.sort((a, b) => new Date(b.scan_time || b.created_at) - new Date(a.scan_time || a.created_at));
+
+                    container.innerHTML = sortedLogs.map(log => {
+                        const timeStamp = log.scan_time || log.created_at;
+                        const dateObj = timeStamp ? new Date(timeStamp) : new Date();
+                        const formattedDate = dateObj.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+                        const formattedTime = dateObj.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+
+                        const status = log.status || 'Masuk';
+                        const isLate = status === 'Terlambat';
+                        const badgeStyle = isLate ? 'bg-amber-500/20 text-amber-400 border-amber-500/30' : 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
+
+                        return `
+                            <div class="flex justify-between items-center bg-slate-900 p-2.5 rounded-xl border border-slate-700/60">
+                                <div class="flex items-center gap-2.5">
+                                    <div class="w-7 h-7 rounded-lg ${isLate ? 'bg-amber-500/20 text-amber-400' : 'bg-emerald-500/20 text-emerald-400'} flex items-center justify-center text-xs">
+                                        <i class="fa-regular ${isLate ? 'fa-clock' : 'fa-check-circle'}"></i>
+                                    </div>
+                                    <div>
+                                        <div class="font-semibold text-white text-xs">${formattedDate}</div>
+                                        <div class="text-[10px] text-slate-400 font-mono">${formattedTime} WIB</div>
+                                    </div>
+                                </div>
+                                <span class="px-2 py-0.5 rounded-md font-semibold text-[10px] border ${badgeStyle}">
+                                    ${status}
+                                </span>
+                            </div>
+                        `;
+                    }).join('');
+                }
+            } catch (err) {
+                container.innerHTML = `<div class="p-3 text-center text-xs text-red-400 bg-red-900/20 rounded-xl border border-red-800/50">Gagal memuat log</div>`;
+            }
+        }
+
+        // 5. Load Riwayat Pengajuan Izin
+        async function loadLeaveHistory() {
+            if (!activeUser) return;
+            const container = document.getElementById('leaveHistoryList');
+
+            container.innerHTML = `
+                <div class="flex justify-center items-center py-2">
+                    <i class="fa-solid fa-spinner fa-spin text-blue-400 text-xs"></i>
+                    <span class="ml-2 text-xs text-slate-400">Memuat riwayat...</span>
+                </div>
+            `;
+
+            try {
+                const res = await fetch(`${API_LEAVES}?nip=${activeUser.nip}`);
+                const result = await res.json();
+
+                if (result.success && result.data && result.data.length > 0) {
+                    const sortedData = result.data.sort((a, b) => new Date(b.created_at || b.id) - new Date(a.created_at || a.id));
+                    
+                    container.innerHTML = sortedData.map(item => {
+                        let statusBadge = '';
+                        if (item.status === 'Pending' || !item.status) {
+                            statusBadge = '<span class="px-2 py-0.5 bg-yellow-500/20 text-yellow-400 text-[10px] rounded-md border border-yellow-500/30">Pending</span>';
+                        } else if (item.status === 'Approved' || item.status === 'Disetujui') {
+                            statusBadge = '<span class="px-2 py-0.5 bg-green-500/20 text-green-400 text-[10px] rounded-md border border-green-500/30">Disetujui</span>';
+                        } else if (item.status === 'Rejected' || item.status === 'Ditolak') {
+                            statusBadge = '<span class="px-2 py-0.5 bg-red-500/20 text-red-400 text-[10px] rounded-md border border-red-500/30">Ditolak</span>';
+                        } else {
+                            statusBadge = `<span class="px-2 py-0.5 bg-slate-700 text-slate-300 text-[10px] rounded-md">${item.status || 'Pending'}</span>`;
+                        }
+
+                        const startDate = item.start_date ? new Date(item.start_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }) : '-';
+                        const endDate = item.end_date ? new Date(item.end_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }) : '-';
+
+                        return `
+                            <div class="flex justify-between items-center bg-slate-800 p-2.5 rounded-xl border border-slate-700/60">
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center gap-2">
+                                        <span class="font-semibold text-white text-xs">${item.type || 'Izin'}</span>
+                                        <span class="text-[10px] text-slate-400">${startDate} - ${endDate}</span>
+                                    </div>
+                                    <div class="text-[10px] text-slate-400 truncate">${item.reason || '-'}</div>
+                                </div>
+                                <div class="ml-2 flex-shrink-0">
+                                    ${statusBadge}
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                } else {
+                    container.innerHTML = `
+                        <div class="p-3 bg-slate-800 rounded-xl text-center border border-slate-700/50">
+                            <p class="text-xs text-slate-400">Belum ada pengajuan izin</p>
+                        </div>
+                    `;
+                }
+            } catch (err) {
+                console.error('Gagal memuat riwayat izin:', err);
+                container.innerHTML = `<div class="p-3 text-center text-xs text-red-400 bg-red-900/20 rounded-xl border border-red-800/50">Gagal memuat riwayat</div>`;
+            }
+        }
+
+        // 6. Handle Submit Form Izin
+        document.getElementById('leaveForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (!activeUser) {
+                alert('❌ Silakan login terlebih dahulu!');
+                return;
+            }
+
+            const formData = new FormData(e.target);
+            formData.append('nip', activeUser.nip);
+
+            const submitBtn = document.getElementById('leaveSubmitBtn');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Mengirim...';
+            submitBtn.disabled = true;
+
+            try {
+                const response = await fetch(API_LEAVES, {
+                    method: 'POST',
+                    body: formData
+                });
+                const result = await response.json();
+                
+                if (response.ok && result.success) {
+                    alert('✅ Pengajuan izin berhasil dikirim!');
+                    e.target.reset();
+                    // Reset tanggal ke hari ini
+                    const today = new Date().toISOString().split('T')[0];
+                    document.getElementById('startDate').value = today;
+                    document.getElementById('endDate').value = today;
+                    loadLeaveHistory();
+                } else {
+                    alert('❌ Gagal: ' + (result.message || 'Terjadi kesalahan'));
+                }
+            } catch (err) {
+                console.error('Error submitting leave:', err);
+                alert('❌ Terjadi kesalahan jaringan. Silakan coba lagi.');
+            } finally {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+
+        // 7. Logout User
+        function logoutUser() {
+            localStorage.removeItem('logged_user_nip');
+            activeUser = null;
+            document.getElementById('input-nip').value = '';
+            document.getElementById('dashboard-section').classList.add('hidden');
+            document.getElementById('auth-section').classList.remove('hidden');
+            
+            if (window.history && window.history.replaceState) {
+                window.history.replaceState(null, null, window.location.pathname);
+            }
+        }
+
+        // 8. Service Worker
+        function registerServiceWorker() {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/sw.js').catch(() => {});
+            }
+        }
+    </script>
+</body>
+</html>

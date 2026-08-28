@@ -1,6 +1,6 @@
 {
-  "short_name": "Absensi",
-  "name": "Sistem Absensi Digital",
+  "short_name": "Portal Pegawai",
+  "name": "Sistem Absensi Digital - Pegawai",
   "icons": [
     {
       "src": "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
@@ -13,7 +13,8 @@
       "sizes": "512x512"
     }
   ],
-  "start_url": "/",
+  "start_url": "/user.html",
+  "scope": "/",
   "background_color": "#0f172a",
   "theme_color": "#0f172a",
   "display": "standalone",
