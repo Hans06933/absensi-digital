@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Absensi & Management Pegawai</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+</head>
+<body class="bg-slate-100 font-sans text-slate-800 antialiased min-h-screen flex flex-col">
+
+    <!-- Top Navigation Bar -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="bg-blue-600 text-white p-2 rounded-lg font-bold">QR</div>
+                <h1 class="text-xl font-bold text-slate-900 tracking-tight">Absensi Digital</h1>
+            </div>
+            <button onclick="openScannerModal()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg shadow-sm transition flex items-center space-x-2 text-sm">
+                <span>📷 Scan Absensi</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full">
+        <!-- Action Header -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+            <div>
+                <h2 class="text-2xl font-bold text-slate-900">Manajemen Pegawai</h2>
+                <p class="text-sm text-slate-500">Kelola data pegawai dan cetak QR Code absensi.</p>
+            </div>
+            <button onclick="openModal()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-sm transition text-sm flex items-center space-x-2">
+                <span>+ Tambah Pegawai</span>
+            </button>
+        </div>
+
+        <!-- Table Card -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <!-- Table Controls -->
+            <div class="p-4 border-b border-slate-200 bg-slate-50/50 flex flex-col sm:flex-row justify-between gap-4">
+                <input type="text" id="search-input" onkeyup="filterUsers()" placeholder="Cari NIP atau Nama..." class="w-full sm:w-72 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <div class="text-xs text-slate-500 flex items-center">
+                    Total: <span id="total-users" class="font-bold text-slate-700 ml-1">0</span> Pegawai
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse text-sm">
+                    <thead>
+                        <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold">
+                            <th class="p-4">NIP</th>
+                            <th class="p-4">Nama Lengkap</th>
+                            <th class="p-4">Email</th>
+                            <th class="p-4">No. Telepon</th>
+                            <th class="p-4 text-center">QR Code</th>
+                            <th class="p-4 text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="user-table-body">
+                        <tr>
+                            <td colspan="6" class="p-6 text-center text-slate-400">Memuat data...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal Form Tambah / Edit -->
+    <div id="modal-user" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-xl shadow-xl w-full max-w-md p-6 m-4 relative">
+            <h3 id="modal-title" class="text-lg font-bold text-slate-900 mb-4">Tambah Pegawai Baru</h3>
+            <form id="form-user" onsubmit="handleFormSubmit(event)" class="space-y-4">
+                <input type="hidden" id="user-id">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">NIP</label>
+                    <input type="text" id="nip" required class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Nama Lengkap</label>
+                    <input type="text" id="full_name" required class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Email</label>
+                    <input type="email" id="email" required class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">No. Telepon</label>
+                    <input type="text" id="phone" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Password</label>
+                    <input type="password" id="password" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div class="flex justify-end space-x-2 pt-4 border-t border-slate-100">
+                    <button type="button" onclick="closeModal()" class="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg text-sm font-semibold">Batal</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-semibold">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal QR Code -->
+    <div id="modal-qr" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-xl shadow-xl p-6 m-4 text-center max-w-sm w-full">
+            <h3 id="qr-user-name" class="text-lg font-bold text-slate-900"></h3>
+            <p id="qr-user-nip" class="text-sm text-slate-500 mb-4"></p>
+            <div id="qrcode" class="flex justify-center p-4 bg-slate-50 rounded-lg mb-4 border border-slate-200"></div>
+            <button onclick="closeQrModal()" class="w-full py-2 bg-slate-800 text-white font-semibold rounded-lg text-sm">Tutup</button>
+        </div>
+    </div>
+
+    <!-- Modal Scanner QR -->
+    <div id="modal-scanner" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-xl shadow-xl p-6 m-4 max-w-md w-full">
+            <h3 class="text-lg font-bold text-slate-900 mb-2">Scan QR Code Absensi</h3>
+            <div id="reader" class="w-full rounded-lg overflow-hidden border border-slate-200"></div>
+            <div id="scan-result" class="mt-4 p-3 rounded-lg text-sm font-semibold text-center hidden"></div>
+            <button onclick="closeScannerModal()" class="w-full mt-4 py-2 bg-slate-800 text-white font-semibold rounded-lg text-sm">Batal / Tutup</button>
+        </div>
+    </div>
+
+    <script>
+        const API_USERS = '/api/users';
+        const API_SCAN = '/api/attendance/scan';
+
+        let globalUsersData = [];
+        let html5QrcodeScanner = null;
+
+        document.addEventListener('DOMContentLoaded', fetchUsers);
+
+        async function fetchUsers() {
+            const tbody = document.getElementById('user-table-body');
+            try {
+                const res = await fetch(API_USERS);
+                const result = await res.json();
+                if (result.success) {
+                    globalUsersData = result.data || [];
+                    renderTable(globalUsersData);
+                } else {
+                    tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-red-500">${result.message}</td></tr>`;
+                }
+            } catch (err) {
+                console.error(err);
+                tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-red-500">Gagal terhubung ke API backend!</td></tr>`;
+            }
+        }
+
+        function renderTable(users) {
+            const tbody = document.getElementById('user-table-body');
+            document.getElementById('total-users').innerText = users.length;
+
+            if (users.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-slate-400">Belum ada data pegawai.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = users.map(u => `
+                <tr class="hover:bg-slate-50 transition border-b border-slate-100">
+                    <td class="p-4 font-mono font-semibold text-blue-600">${u.nip}</td>
+                    <td class="p-4 text-slate-900 font-medium">${u.full_name}</td>
+                    <td class="p-4 text-slate-600">${u.email}</td>
+                    <td class="p-4 text-slate-600">${u.phone || '-'}</td>
+                    <td class="p-4 text-center">
+                        <button onclick="showQrModal('${u.nip}', '${u.full_name}')" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded text-xs font-semibold border border-slate-200">
+                            🔍 Lihat QR
+                        </button>
+                    </td>
+                    <td class="p-4 text-center">
+                        <button onclick="openModal(${u.id})" class="text-blue-600 hover:text-blue-800 font-medium text-xs mr-3">Edit</button>
+                        <button onclick="deleteUser(${u.id})" class="text-red-600 hover:text-red-800 font-medium text-xs">Hapus</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function filterUsers() {
+            const query = document.getElementById('search-input').value.toLowerCase();
+            const filtered = globalUsersData.filter(u => 
+                (u.full_name && u.full_name.toLowerCase().includes(query)) || 
+                (u.nip && u.nip.toLowerCase().includes(query))
+            );
+            renderTable(filtered);
+        }
+
+        function openModal(userId = null) {
+            document.getElementById('form-user').reset();
+            document.getElementById('user-id').value = '';
+
+            if (userId) {
+                const user = globalUsersData.find(u => u.id === userId);
+                if (user) {
+                    document.getElementById('modal-title').innerText = 'Edit Data Pegawai';
+                    document.getElementById('user-id').value = user.id;
+                    document.getElementById('nip').value = user.nip;
+                    document.getElementById('full_name').value = user.full_name;
+                    document.getElementById('email').value = user.email;
+                    document.getElementById('phone').value = user.phone || '';
+                    document.getElementById('password').required = false;
+                }
+            } else {
+                document.getElementById('modal-title').innerText = 'Tambah Pegawai Baru';
+                document.getElementById('password').required = true;
+            }
+            document.getElementById('modal-user').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('modal-user').classList.add('hidden');
+        }
+
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+            const id = document.getElementById('user-id').value;
+            const payload = {
+                nip: document.getElementById('nip').value,
+                full_name: document.getElementById('full_name').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                password: document.getElementById('password').value
+            };
+
+            const url = id ? `${API_USERS}/${id}` : API_USERS;
+            const method = id ? 'PUT' : 'POST';
+
+            try {
+                const res = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await res.json();
+                if (result.success) {
+                    alert('Berhasil menyimpan data!');
+                    closeModal();
+                    fetchUsers();
+                } else {
+                    alert('Gagal: ' + result.message);
+                }
+            } catch (err) {
+                alert('Terjadi kesalahan saat menyimpan data');
+            }
+        }
+
+        async function deleteUser(id) {
+            if (!confirm('Apakah Anda yakin ingin menghapus pegawai ini?')) return;
+            try {
+                const res = await fetch(`${API_USERS}/${id}`, { method: 'DELETE' });
+                const result = await res.json();
+                if (result.success) {
+                    alert('Data berhasil dihapus');
+                    fetchUsers();
+                } else {
+                    alert('Gagal menghapus: ' + result.message);
+                }
+            } catch (err) {
+                alert('Terjadi kesalahan koneksi server');
+            }
+        }
+
+        function showQrModal(nip, name) {
+            document.getElementById('qr-user-name').innerText = name;
+            document.getElementById('qr-user-nip').innerText = `NIP: ${nip}`;
+            const container = document.getElementById('qrcode');
+            container.innerHTML = '';
+            new QRCode(container, { text: nip, width: 180, height: 180 });
+            document.getElementById('modal-qr').classList.remove('hidden');
+        }
+
+        function closeQrModal() {
+            document.getElementById('modal-qr').classList.add('hidden');
+        }
+
+        function openScannerModal() {
+            document.getElementById('modal-scanner').classList.remove('hidden');
+            const resultDiv = document.getElementById('scan-result');
+            resultDiv.classList.add('hidden');
+
+            html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 });
+            html5QrcodeScanner.render(onScanSuccess);
+        }
+
+        async function onScanSuccess(decodedText) {
+            html5QrcodeScanner.clear();
+            const resultDiv = document.getElementById('scan-result');
+            resultDiv.classList.remove('hidden', 'bg-red-100', 'text-red-700', 'bg-emerald-100', 'text-emerald-700');
+            resultDiv.innerText = 'Memproses...';
+
+            try {
+                const res = await fetch(API_SCAN, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ qr_payload: decodedText })
+                });
+                const result = await res.json();
+
+                if (result.success) {
+                    resultDiv.classList.add('bg-emerald-100', 'text-emerald-700');
+                    resultDiv.innerText = result.message;
+                } else {
+                    resultDiv.classList.add('bg-red-100', 'text-red-700');
+                    resultDiv.innerText = result.message;
+                }
+            } catch (err) {
+                resultDiv.classList.add('bg-red-100', 'text-red-700');
+                resultDiv.innerText = 'Gagal terhubung ke server API!';
+            }
+        }
+
+        function closeScannerModal() {
+            if (html5QrcodeScanner) {
+                html5QrcodeScanner.clear().catch(() => {});
+            }
+            document.getElementById('modal-scanner').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
