@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <!-- Meta PWA & Mobile Optimization -->
+    <meta name="theme-color" content="#1a2a6c">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Absensi">
+    <link rel="manifest" href="/manifest-admin.json">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3135/3135715.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Persetujuan Izin - Absensi Digital</title>
+    
+    <!-- CSS Libraries -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        * {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* ===== SIDEBAR ITEM BASE ===== */
+        .sidebar-item {
+            position: relative;
+            overflow: hidden;
+            transition: background 0.25s ease, color 0.25s ease, padding-left 0.25s ease, transform 0.15s ease;
+            animation: slideInLeft 0.35s ease backwards;
+        }
+        .sidebar-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%) scaleY(0);
+            width: 4px;
+            height: 70%;
+            background: #fbbf24;
+            border-radius: 0 4px 4px 0;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-origin: center;
+        }
+        .sidebar-item:hover {
+            background: rgba(255, 255, 255, 0.06);
+            padding-left: 1rem;
+        }
+        .sidebar-item:hover i {
+            transform: scale(1.1);
+            color: #fbbf24;
+        }
+        .sidebar-item i {
+            transition: transform 0.25s ease, color 0.25s ease;
+        }
+        .sidebar-item.sidebar-active {
+            background: linear-gradient(90deg, rgba(251, 191, 36, 0.15) 0%, rgba(45, 67, 115, 0.4) 100%);
+            padding-left: 1rem;
+        }
+        .sidebar-item.sidebar-active::before {
+            transform: translateY(-50%) scaleY(1);
+        }
+        .sidebar-item.sidebar-active i {
+            color: #fbbf24 !important;
+            transform: scale(1.15);
+        }
+        .sidebar-item.sidebar-active span {
+            color: #ffffff !important;
+            font-weight: 600;
+            letter-spacing: 0.01em;
+        }
+        .sidebar-item:active {
+            transform: scale(0.97);
+            background: rgba(251, 191, 36, 0.2);
+        }
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-8px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        .sidebar-item:nth-child(2) { animation-delay: 0.03s; }
+        .sidebar-item:nth-child(3) { animation-delay: 0.06s; }
+        .sidebar-item:nth-child(4) { animation-delay: 0.09s; }
+        .sidebar-item:nth-child(5) { animation-delay: 0.12s; }
+        .sidebar-item:nth-child(6) { animation-delay: 0.15s; }
+        .sidebar-item:nth-child(7) { animation-delay: 0.18s; }
+
+        body.page-exit {
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .company-gradient {
+            background: linear-gradient(135deg, #0f1a3d, #1a2a6c, #2d4373);
+        }
+        .stat-card {
+            transition: all 0.3s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-4px);
+        }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #1a2a6c; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #2d4373; }
+
+        .table-wrapper {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scroll-behavior: smooth;
+        }
+        .table-wrapper table {
+            min-width: 700px;
+            width: 100%;
+        }
+        .touch-target { min-height: 44px; min-width: 44px; }
+        .modal-backdrop {
+            -webkit-backdrop-filter: blur(4px);
+            backdrop-filter: blur(4px);
+        }
+        @media (max-width: 640px) {
+            .table-wrapper table { min-width: 600px; }
+        }
+        @supports (padding: max(0px)) {
+            .safe-bottom { padding-bottom: max(1rem, env(safe-area-inset-bottom)); }
+        }
+        input, select, textarea { font-size: 16px !important; }
+        #mobile-sidebar {
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        button, .clickable {
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+        button:active, .clickable:active { transform: scale(0.97); }
+
+        /* Filter button state */
+        .filter-btn {
+            transition: all 0.2s ease;
+        }
+        .filter-btn.active {
+            background-color: #1a2a6c;
+            color: white;
+            box-shadow: 0 2px 8px rgba(26, 42, 108, 0.3);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 font-sans text-slate-800 antialiased min-h-screen flex overflow-x-hidden">
+
+    <!-- ============================================ -->
+    <!-- SIDEBAR DESKTOP -->
+    <!-- ============================================ -->
+    <aside class="w-64 min-h-screen company-gradient text-white flex-shrink-0 hidden md:flex flex-col shadow-2xl sticky top-0 overflow-y-auto">
+        <div class="p-4 sm:p-6 border-b border-white/10">
+            <div class="flex items-center gap-3">
+                <div class="bg-amber-400 text-[#1a2a6c] p-2 rounded-lg font-bold shadow-lg flex-shrink-0">
+                    <i class="fa-solid fa-qrcode text-lg"></i>
+                </div>
+                <div class="min-w-0">
+                    <h1 class="text-base sm:text-lg font-bold tracking-tight truncate">Absensi<span class="text-amber-400">Digital</span></h1>
+                </div>
+            </div>
+            <div class="mt-3 pt-3 border-t border-white/10">
+                <p class="text-[10px] sm:text-xs text-amber-400 font-bold tracking-wider truncate">PT. ANDALAN MAJU</p>
+                <p class="text-[8px] sm:text-[10px] text-white/50 italic truncate">INNOVATE · GROW · EXCEL</p>
+            </div>
+        </div>
+        <nav class="flex-1 p-3 sm:p-4 space-y-0.5 overflow-y-auto">
+            <p class="text-[9px] sm:text-[10px] text-white/40 uppercase tracking-wider font-semibold px-3 mb-2">Menu Utama</p>
+            
+            <a href="dashboard.html" data-nav="dashboard" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-xs sm:text-sm">
+                <i class="fa-solid fa-gauge-high w-5 text-center text-sm sm:text-base"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="index.html" data-nav="pegawai" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-xs sm:text-sm">
+                <i class="fa-solid fa-users w-5 text-center text-sm sm:text-base"></i>
+                <span>Manajemen Pegawai</span>
+            </a>
+            <a href="rekap.html" data-nav="rekap" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-xs sm:text-sm">
+                <i class="fa-regular fa-calendar-check w-5 text-center text-sm sm:text-base"></i>
+                <span>Rekap Absensi</span>
+            </a>
+            <a href="pengajuan-izin.html" data-nav="izin" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-xs sm:text-sm">
+                <i class="fa-regular fa-file-lines w-5 text-center text-sm sm:text-base"></i>
+                <span>Pengajuan Izin</span>
+            </a>
+            <a href="pengaturan.html" data-nav="pengaturan" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-xs sm:text-sm">
+                <i class="fa-solid fa-gear w-5 text-center text-sm sm:text-base"></i>
+                <span>Pengaturan</span>
+            </a>
+            
+            <div class="border-t border-white/10 my-3"></div>
+            
+            <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-xs sm:text-sm">
+                <i class="fa-solid fa-arrow-right-from-bracket w-5 text-center text-sm sm:text-base"></i>
+                <span>Logout</span>
+            </a>
+        </nav>
+        <div class="p-3 sm:p-4 border-t border-white/10 text-[8px] sm:text-[10px] text-white/40 text-center">
+            © 2026 PT. ANDALAN MAJU
+        </div>
+    </aside>
+
+    <!-- ============================================ -->
+    <!-- MAIN CONTENT -->
+    <!-- ============================================ -->
+    <div class="flex-1 min-h-screen flex flex-col w-full min-w-0">
+
+        <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+            <div class="px-3 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between">
+                <button onclick="toggleSidebar()" class="md:hidden text-slate-600 hover:text-slate-900 text-xl touch-target p-2 -ml-2">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                
+                <div class="flex items-center space-x-2 md:hidden min-w-0">
+                    <div class="bg-[#1a2a6c] text-white p-1.5 sm:p-2 rounded-lg font-bold shadow-md flex-shrink-0">
+                        <i class="fa-solid fa-qrcode text-xs sm:text-sm"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <h1 class="text-xs sm:text-sm font-bold text-slate-900 tracking-tight truncate">Absensi<span class="text-[#1a2a6c]">Digital</span></h1>
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-2 sm:gap-3">
+                    <button onclick="loadLeaves()" class="px-2.5 sm:px-4 py-1.5 sm:py-2 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-lg shadow-sm transition flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm touch-target">
+                        <i class="fa-solid fa-rotate text-xs sm:text-sm"></i>
+                        <span class="hidden xs:inline">Refresh</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div id="mobile-overlay" class="fixed inset-0 bg-black/50 z-40 hidden" onclick="toggleSidebar()"></div>
+        <aside id="mobile-sidebar" class="fixed top-0 left-0 h-full w-72 max-w-[80vw] company-gradient text-white z-50 -translate-x-full md:hidden shadow-2xl overflow-y-auto">
+            <div class="p-4 border-b border-white/10">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3 min-w-0">
+                        <div class="bg-amber-400 text-[#1a2a6c] p-2 rounded-lg font-bold shadow-lg flex-shrink-0">
+                            <i class="fa-solid fa-qrcode text-lg"></i>
+                        </div>
+                        <div class="min-w-0">
+                            <h1 class="text-base font-bold tracking-tight truncate">Absensi<span class="text-amber-400">Digital</span></h1>
+                        </div>
+                    </div>
+                    <button onclick="toggleSidebar()" class="text-white/70 hover:text-white text-2xl p-1 -mr-2 touch-target">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                <div class="mt-3 pt-3 border-t border-white/10">
+                    <p class="text-xs text-amber-400 font-bold tracking-wider truncate">PT. ANDALAN MAJU</p>
+                    <p class="text-[10px] text-white/50 italic truncate">PHP · JS · API</p>
+                </div>
+            </div>
+            <nav class="p-3 space-y-0.5 overflow-y-auto">
+                <p class="text-[10px] text-white/40 uppercase tracking-wider font-semibold px-3 mb-2">Menu Utama</p>
+                <a href="dashboard.html" data-nav="dashboard" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-sm">
+                    <i class="fa-solid fa-gauge-high w-5 text-center"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="index.html" data-nav="pegawai" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-sm">
+                    <i class="fa-solid fa-users w-5 text-center"></i>
+                    <span>Manajemen Pegawai</span>
+                </a>
+                <a href="rekap.html" data-nav="rekap" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-sm">
+                    <i class="fa-regular fa-calendar-check w-5 text-center"></i>
+                    <span>Rekap Absensi</span>
+                </a>
+                <a href="pengajuan-izin.html" data-nav="izin" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-sm">
+                    <i class="fa-regular fa-file-lines w-5 text-center"></i>
+                    <span>Pengajuan Izin</span>
+                </a>
+                <a href="pengaturan.html" data-nav="pengaturan" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-sm">
+                    <i class="fa-solid fa-gear w-5 text-center"></i>
+                    <span>Pengaturan</span>
+                </a>
+                <div class="border-t border-white/10 my-3"></div>
+                <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-sm">
+                    <i class="fa-solid fa-arrow-right-from-bracket w-5 text-center"></i>
+                    <span>Logout</span>
+                </a>
+            </nav>
+            <div class="p-4 border-t border-white/10 text-[10px] text-white/40 text-center">
+                © 2026 PT. ANDALAN MAJU
+            </div>
+        </aside>
+
+        <main class="flex-1 max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 w-full space-y-6 sm:space-y-8 min-w-0">
+            
+            <!-- HEADER SECTION -->
+            <section>
+                <div class="flex flex-wrap items-start sm:items-center justify-between gap-3 mb-4 sm:mb-6">
+                    <div class="min-w-0">
+                        <h2 class="text-lg sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
+                            <i class="fa-solid fa-envelope-open-text text-amber-500 text-base sm:text-xl"></i>
+                            <span class="truncate">Persetujuan Izin</span>
+                        </h2>
+                        <p class="text-xs sm:text-sm text-slate-500 truncate">Kelola pengajuan izin, sakit, dan cuti pegawai.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- STAT CARDS -->
+            <section>
+                <div class="grid grid-cols-3 gap-2 sm:gap-4 mb-4 sm:mb-6">
+                    <div class="bg-white p-3 sm:p-4 rounded-xl border border-slate-200 shadow-sm stat-card hover:shadow-md transition">
+                        <div class="flex items-center gap-2 sm:gap-4">
+                            <div class="p-2 sm:p-3 bg-amber-100 text-amber-600 rounded-lg">
+                                <i class="fa-solid fa-hourglass-half text-base sm:text-lg"></i>
+                            </div>
+                            <div class="min-w-0">
+                                <p class="text-[8px] sm:text-xs font-semibold uppercase text-slate-400 truncate">Pending</p>
+                                <h3 id="stat-pending" class="text-base sm:text-xl font-bold text-slate-900">0</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-3 sm:p-4 rounded-xl border border-slate-200 shadow-sm stat-card hover:shadow-md transition">
+                        <div class="flex items-center gap-2 sm:gap-4">
+                            <div class="p-2 sm:p-3 bg-emerald-100 text-emerald-600 rounded-lg">
+                                <i class="fa-solid fa-check-circle text-base sm:text-lg"></i>
+                            </div>
+                            <div class="min-w-0">
+                                <p class="text-[8px] sm:text-xs font-semibold uppercase text-slate-400 truncate">Disetujui</p>
+                                <h3 id="stat-approved" class="text-base sm:text-xl font-bold text-slate-900">0</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-3 sm:p-4 rounded-xl border border-slate-200 shadow-sm stat-card hover:shadow-md transition">
+                        <div class="flex items-center gap-2 sm:gap-4">
+                            <div class="p-2 sm:p-3 bg-rose-100 text-rose-600 rounded-lg">
+                                <i class="fa-solid fa-circle-xmark text-base sm:text-lg"></i>
+                            </div>
+                            <div class="min-w-0">
+                                <p class="text-[8px] sm:text-xs font-semibold uppercase text-slate-400 truncate">Ditolak</p>
+                                <h3 id="stat-rejected" class="text-base sm:text-xl font-bold text-slate-900">0</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TABLE SECTION -->
+            <section>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                    <!-- Search & Filter Bar -->
+                    <div class="p-3 sm:p-4 border-b border-slate-200 bg-slate-50/50 flex flex-wrap items-center gap-3">
+                        <div class="relative flex-1 min-w-[150px]">
+                            <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                            <input type="text" id="search-input" onkeyup="filterLeaves()" placeholder="Cari NIP atau Nama..." 
+                                class="w-full pl-8 pr-3 py-1.5 sm:py-2 border border-slate-300 rounded-lg text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#1a2a6c]">
+                        </div>
+                        <div class="flex items-center gap-1 flex-shrink-0 flex-wrap">
+                            <button onclick="setFilter('all')" data-filter="all" class="filter-btn active px-2.5 sm:px-3 py-1.5 rounded-lg text-[10px] sm:text-xs font-semibold border border-slate-200 bg-white hover:bg-slate-100">
+                                Semua
+                            </button>
+                            <button onclick="setFilter('Pending')" data-filter="Pending" class="filter-btn px-2.5 sm:px-3 py-1.5 rounded-lg text-[10px] sm:text-xs font-semibold border border-slate-200 bg-white hover:bg-slate-100">
+                                Pending
+                            </button>
+                            <button onclick="setFilter('Approved')" data-filter="Approved" class="filter-btn px-2.5 sm:px-3 py-1.5 rounded-lg text-[10px] sm:text-xs font-semibold border border-slate-200 bg-white hover:bg-slate-100">
+                                Disetujui
+                            </button>
+                            <button onclick="setFilter('Rejected')" data-filter="Rejected" class="filter-btn px-2.5 sm:px-3 py-1.5 rounded-lg text-[10px] sm:text-xs font-semibold border border-slate-200 bg-white hover:bg-slate-100">
+                                Ditolak
+                            </button>
+                        </div>
+                        <div class="text-[10px] sm:text-xs text-slate-500 flex items-center gap-2 flex-shrink-0 ml-auto">
+                            <span>Total: <span id="total-leaves" class="font-bold text-slate-700">0</span></span>
+                        </div>
+                    </div>
+
+                    <div class="table-wrapper">
+                        <table class="w-full text-left border-collapse text-xs sm:text-sm">
+                            <thead>
+                                <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold">
+                                    <th class="p-2 sm:p-4 whitespace-nowrap">NIP & Nama</th>
+                                    <th class="p-2 sm:p-4 whitespace-nowrap">Jenis</th>
+                                    <th class="p-2 sm:p-4 whitespace-nowrap hidden sm:table-cell">Tanggal</th>
+                                    <th class="p-2 sm:p-4 whitespace-nowrap hidden md:table-cell">Alasan</th>
+                                    <th class="p-2 sm:p-4 whitespace-nowrap">Status</th>
+                                    <th class="p-2 sm:p-4 text-center whitespace-nowrap">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="leaveTableBody" class="text-xs sm:text-sm">
+                                <tr>
+                                    <td colspan="6" class="p-4 sm:p-6 text-center text-slate-400">
+                                        <i class="fa-solid fa-spinner fa-spin mr-2"></i>
+                                        Memuat pengajuan...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <footer class="text-center py-3 sm:py-4 border-t border-slate-200 mt-4 sm:mt-6 safe-bottom">
+                <p class="text-[10px] sm:text-xs text-slate-400">© 2026 PT. ANDALAN MAJU. All Rights Reserved.</p>
+            </footer>
+
+        </main>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- MODAL: DETAIL IZIN -->
+    <!-- ============================================ -->
+    <div id="modal-detail" class="fixed inset-0 bg-slate-900/50 modal-backdrop z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md p-4 sm:p-6 relative max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
+                    <i class="fa-regular fa-file-lines text-[#1a2a6c]"></i>
+                    <span>Detail Pengajuan</span>
+                </h3>
+                <button onclick="closeDetailModal()" class="text-slate-400 hover:text-slate-700 text-xl touch-target">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div id="detail-content" class="space-y-3 text-sm">
+                <!-- Content will be injected here -->
+            </div>
+            <button onclick="closeDetailModal()" class="w-full mt-4 py-2 bg-[#1a2a6c] hover:bg-[#2d4373] text-white font-semibold rounded-lg text-xs sm:text-sm transition touch-target">Tutup</button>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- JAVASCRIPT -->
+    <!-- ============================================ -->
+    <script>
+        // ============================================================
+        // SERVICE WORKER - PWA REGISTRATION
+        // ============================================================
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('✅ Service Worker PWA registered successfully!');
+                    })
+                    .catch(error => {
+                        console.error('❌ SW registration failed:', error);
+                    });
+            });
+        }
+
+        // ============================================================
+        // SIDEBAR TOGGLE (Mobile)
+        // ============================================================
+        function toggleSidebar() {
+            const sidebar = document.getElementById('mobile-sidebar');
+            const overlay = document.getElementById('mobile-overlay');
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        }
+
+        // ============================================================
+        // AUTO-DETECT ACTIVE SIDEBAR LINK
+        // ============================================================
+        function setActiveSidebar() {
+            const path = window.location.pathname.split('/').pop() || 'pengajuan-izin.html';
+            
+            const pageMap = {
+                'dashboard.html': 'dashboard',
+                'index.html': 'pegawai',
+                'rekap.html': 'rekap',
+                'riwayat.html': 'riwayat',
+                'pengajuan-izin.html': 'izin',
+                'pengaturan.html': 'pengaturan'
+            };
+            
+            const activeNav = pageMap[path] || 'izin';
+            
+            document.querySelectorAll('.sidebar-item[data-nav]').forEach(item => {
+                if (item.dataset.nav === activeNav) {
+                    item.classList.add('sidebar-active');
+                } else {
+                    item.classList.remove('sidebar-active');
+                }
+            });
+        }
+
+        // ============================================================
+        // SMOOTH PAGE TRANSITION
+        // ============================================================
+        function initSmoothNav() {
+            document.querySelectorAll('.sidebar-item[data-nav]').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    const href = this.getAttribute('href');
+                    if (href && href !== '#' && !href.startsWith('http')) {
+                        e.preventDefault();
+                        document.body.classList.add('page-exit');
+                        setTimeout(() => {
+                            window.location.href = href;
+                        }, 180);
+                    }
+                });
+            });
+        }
+
+        // ============================================================
+        // API ENDPOINTS & GLOBAL VARIABLES
+        // ============================================================
+        const API_LEAVES = '/api/leaves';
+
+        let globalLeavesData = [];
+        let currentFilter = 'all';
+
+        // ============================================================
+        // DOM CONTENT LOADED
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', () => {
+            setActiveSidebar();
+            initSmoothNav();
+            loadLeaves();
+            console.log('🚀 Persetujuan Izin loaded successfully!');
+        });
+
+        // ============================================================
+        // LOAD LEAVES (KONEKSI DATABASE)
+        // ============================================================
+        async function loadLeaves() {
+            const tbody = document.getElementById('leaveTableBody');
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="6" class="p-4 sm:p-6 text-center text-slate-400">
+                        <i class="fa-solid fa-spinner fa-spin mr-2"></i>
+                        Memuat pengajuan...
+                    </td>
+                </tr>
+            `;
+
+            try {
+                const res = await fetch(API_LEAVES);
+                const result = await res.json();
+
+                if (result.success && result.data) {
+                    globalLeavesData = result.data;
+                    updateStats(globalLeavesData);
+                    applyFilterAndSearch();
+                } else {
+                    globalLeavesData = [];
+                    updateStats([]);
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="6" class="p-6 text-center text-slate-400">
+                                <i class="fa-regular fa-file-lines fa-2x block mb-2 text-slate-300"></i>
+                                Tidak ada pengajuan izin.
+                            </td>
+                        </tr>
+                    `;
+                }
+            } catch (err) {
+                console.error('Gagal memuat data izin:', err);
+                globalLeavesData = [];
+                updateStats([]);
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="p-6 text-center text-red-500">
+                            <i class="fa-regular fa-circle-exclamation text-2xl block mb-2"></i>
+                            Gagal terhubung ke server API.
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        // ============================================================
+        // UPDATE STAT CARDS
+        // ============================================================
+        function updateStats(data) {
+            let pending = 0;
+            let approved = 0;
+            let rejected = 0;
+
+            data.forEach(item => {
+                const status = (item.status || 'Pending').toLowerCase();
+                if (status === 'pending') pending++;
+                else if (status === 'approved') approved++;
+                else if (status === 'rejected') rejected++;
+            });
+
+            document.getElementById('stat-pending').innerText = pending;
+            document.getElementById('stat-approved').innerText = approved;
+            document.getElementById('stat-rejected').innerText = rejected;
+        }
+
+        // ============================================================
+        // FILTER BUTTON HANDLER
+        // ============================================================
+        function setFilter(filter) {
+            currentFilter = filter;
+            
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                if (btn.dataset.filter === filter) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+
+            applyFilterAndSearch();
+        }
+
+        // ============================================================
+        // SEARCH HANDLER
+        // ============================================================
+        function filterLeaves() {
+            applyFilterAndSearch();
+        }
+
+        // ============================================================
+        // APPLY FILTER + SEARCH
+        // ============================================================
+        function applyFilterAndSearch() {
+            const query = document.getElementById('search-input').value.toLowerCase().trim();
+            
+            let filtered = [...globalLeavesData];
+
+            // Filter by status
+            if (currentFilter !== 'all') {
+                filtered = filtered.filter(item => {
+                    const status = (item.status || 'Pending');
+                    return status.toLowerCase() === currentFilter.toLowerCase();
+                });
+            }
+
+            // Filter by search query
+            if (query) {
+                filtered = filtered.filter(item => 
+                    (item.nip && item.nip.toLowerCase().includes(query)) ||
+                    (item.full_name && item.full_name.toLowerCase().includes(query))
+                );
+            }
+
+            // Sort: Pending first, then by date
+            filtered.sort((a, b) => {
+                const statusA = (a.status || 'Pending').toLowerCase();
+                const statusB = (b.status || 'Pending').toLowerCase();
+                if (statusA === 'pending' && statusB !== 'pending') return -1;
+                if (statusA !== 'pending' && statusB === 'pending') return 1;
+                return new Date(b.created_at || b.id) - new Date(a.created_at || a.id);
+            });
+
+            renderTable(filtered);
+        }
+
+        // ============================================================
+        // RENDER TABLE
+        // ============================================================
+        function renderTable(data) {
+            const tbody = document.getElementById('leaveTableBody');
+            document.getElementById('total-leaves').innerText = data.length;
+
+            if (data.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="p-6 text-center text-slate-400">
+                            <i class="fa-solid fa-search fa-2x block mb-2 text-slate-300"></i>
+                            Tidak ada pengajuan yang cocok dengan filter.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = data.map(item => {
+                const status = (item.status || 'Pending');
+                const statusLower = status.toLowerCase();
+                
+                let statusBadge = '';
+                if (statusLower === 'pending') {
+                    statusBadge = `<span class="inline-flex items-center gap-1.5 px-2 py-0.5 sm:px-3 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium bg-amber-100 text-amber-700">
+                        <i class="fa-solid fa-hourglass-half"></i> Pending
+                    </span>`;
+                } else if (statusLower === 'approved') {
+                    statusBadge = `<span class="inline-flex items-center gap-1.5 px-2 py-0.5 sm:px-3 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium bg-emerald-100 text-emerald-700">
+                        <i class="fa-solid fa-check-circle"></i> Disetujui
+                    </span>`;
+                } else if (statusLower === 'rejected') {
+                    statusBadge = `<span class="inline-flex items-center gap-1.5 px-2 py-0.5 sm:px-3 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium bg-rose-100 text-rose-700">
+                        <i class="fa-solid fa-circle-xmark"></i> Ditolak
+                    </span>`;
+                } else {
+                    statusBadge = `<span class="inline-flex items-center gap-1.5 px-2 py-0.5 sm:px-3 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium bg-slate-100 text-slate-700">
+                        <i class="fa-solid fa-circle-info"></i> ${status}
+                    </span>`;
+                }
+
+                const startDate = item.start_date 
+                    ? new Date(item.start_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
+                    : '-';
+                const endDate = item.end_date 
+                    ? new Date(item.end_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
+                    : '-';
+
+                // Action buttons (only for pending)
+                let actionButtons = '';
+                if (statusLower === 'pending') {
+                    actionButtons = `
+                        <button onclick="event.stopPropagation(); approveLeave(${item.id})" class="px-2 sm:px-3 py-1 sm:py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-[10px] sm:text-xs font-semibold transition shadow-sm touch-target">
+                            <i class="fa-regular fa-check-circle"></i> Setujui
+                        </button>
+                        <button onclick="event.stopPropagation(); rejectLeave(${item.id})" class="px-2 sm:px-3 py-1 sm:py-1.5 bg-rose-600 hover:bg-rose-500 text-white rounded-lg text-[10px] sm:text-xs font-semibold transition shadow-sm touch-target">
+                            <i class="fa-regular fa-circle-xmark"></i> Tolak
+                        </button>
+                    `;
+                } else {
+                    actionButtons = `
+                        <button onclick="event.stopPropagation(); showDetail(${item.id})" class="px-2 sm:px-3 py-1 sm:py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-[10px] sm:text-xs font-semibold border border-slate-200 transition touch-target">
+                            <i class="fa-regular fa-eye"></i> Detail
+                        </button>
+                    `;
+                }
+
+                return `
+                    <tr class="hover:bg-slate-50 transition border-b border-slate-100 cursor-pointer" onclick="showDetail(${item.id})">
+                        <td class="p-2 sm:p-4">
+                            <div class="font-medium text-slate-900 text-[10px] sm:text-xs">${item.full_name || 'Pegawai'}</div>
+                            <div class="text-[10px] sm:text-xs text-slate-500 font-mono">${item.nip || '-'}</div>
+                        </td>
+                        <td class="p-2 sm:p-4">
+                            <span class="px-2 py-0.5 sm:px-2.5 sm:py-1 bg-blue-100 text-blue-700 rounded-full text-[10px] sm:text-xs font-semibold">${item.type || 'Izin'}</span>
+                        </td>
+                        <td class="p-2 sm:p-4 text-[10px] sm:text-xs text-slate-600 hidden sm:table-cell whitespace-nowrap">
+                            ${startDate} <span class="text-slate-400">s/d</span> ${endDate}
+                        </td>
+                        <td class="p-2 sm:p-4 text-[10px] sm:text-xs text-slate-700 max-w-xs hidden md:table-cell">
+                            <div class="truncate">${item.reason || '-'}</div>
+                        </td>
+                        <td class="p-2 sm:p-4">${statusBadge}</td>
+                        <td class="p-2 sm:p-4 text-center space-x-1 sm:space-x-2 whitespace-nowrap">
+                            ${actionButtons}
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // ============================================================
+        // APPROVE / REJECT LEAVE
+        // ============================================================
+        async function approveLeave(id) {
+            if (!confirm('Apakah Anda yakin ingin MENYETUJUI pengajuan ini?')) return;
+            await updateLeaveStatus(id, 'Approved');
+        }
+
+        async function rejectLeave(id) {
+            if (!confirm('Apakah Anda yakin ingin MENOLAK pengajuan ini?')) return;
+            await updateLeaveStatus(id, 'Rejected');
+        }
+
+        async function updateLeaveStatus(id, status) {
+            try {
+                const res = await fetch(`${API_LEAVES}/${id}/status`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status })
+                });
+                const result = await res.json();
+                if (result.success) {
+                    alert(`✅ Pengajuan berhasil di-${status === 'Approved' ? 'setujui' : 'tolak'}`);
+                    loadLeaves();
+                } else {
+                    alert('❌ Gagal: ' + (result.message || 'Terjadi kesalahan'));
+                }
+            } catch (err) {
+                console.error('Error updating leave status:', err);
+                alert('❌ Terjadi kesalahan jaringan. Silakan coba lagi.');
+            }
+        }
+
+        // ============================================================
+        // SHOW DETAIL MODAL
+        // ============================================================
+        function showDetail(id) {
+            const item = globalLeavesData.find(l => l.id === id);
+            if (!item) return;
+
+            const status = (item.status || 'Pending');
+            const statusLower = status.toLowerCase();
+            
+            let statusBadge = '';
+            if (statusLower === 'pending') {
+                statusBadge = `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-700"><i class="fa-solid fa-hourglass-half"></i> Pending</span>`;
+            } else if (statusLower === 'approved') {
+                statusBadge = `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-700"><i class="fa-solid fa-check-circle"></i> Disetujui</span>`;
+            } else if (statusLower === 'rejected') {
+                statusBadge = `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-rose-100 text-rose-700"><i class="fa-solid fa-circle-xmark"></i> Ditolak</span>`;
+            }
+
+            const startDate = item.start_date 
+                ? new Date(item.start_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
+                : '-';
+            const endDate = item.end_date 
+                ? new Date(item.end_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
+                : '-';
+
+            const attachmentHtml = item.attachment 
+                ? `<a href="${item.attachment}" target="_blank" class="inline-flex items-center gap-1.5 text-blue-600 hover:text-blue-800 font-semibold text-xs mt-1">
+                       <i class="fa-solid fa-paperclip"></i> Lihat Bukti Lampiran
+                   </a>` 
+                : '<span class="text-xs text-slate-400 italic">Tanpa lampiran</span>';
+
+            let actionButtons = '';
+            if (statusLower === 'pending') {
+                actionButtons = `
+                    <div class="grid grid-cols-2 gap-2 mt-4">
+                        <button onclick="approveLeave(${item.id}); closeDetailModal();" class="py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold transition touch-target">
+                            <i class="fa-regular fa-check-circle mr-1"></i> Setujui
+                        </button>
+                        <button onclick="rejectLeave(${item.id}); closeDetailModal();" class="py-2 bg-rose-600 hover:bg-rose-500 text-white rounded-lg text-xs font-semibold transition touch-target">
+                            <i class="fa-regular fa-circle-xmark mr-1"></i> Tolak
+                        </button>
+                    </div>
+                `;
+            }
+
+            document.getElementById('detail-content').innerHTML = `
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-semibold text-slate-500 uppercase">Status</span>
+                        ${statusBadge}
+                    </div>
+                    <div class="border-t border-slate-100 pt-3 space-y-2">
+                        <div class="flex items-start gap-3">
+                            <i class="fa-solid fa-user text-[#1a2a6c] mt-1 w-4 text-center"></i>
+                            <div>
+                                <p class="text-xs font-semibold text-slate-500 uppercase">Nama</p>
+                                <p class="text-sm font-medium text-slate-900">${item.full_name || 'Pegawai'}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <i class="fa-solid fa-id-card text-[#1a2a6c] mt-1 w-4 text-center"></i>
+                            <div>
+                                <p class="text-xs font-semibold text-slate-500 uppercase">NIP</p>
+                                <p class="text-sm font-mono font-medium text-slate-900">${item.nip || '-'}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <i class="fa-regular fa-file-lines text-[#1a2a6c] mt-1 w-4 text-center"></i>
+                            <div>
+                                <p class="text-xs font-semibold text-slate-500 uppercase">Jenis Izin</p>
+                                <p class="text-sm font-medium text-slate-900">${item.type || 'Izin'}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <i class="fa-regular fa-calendar text-[#1a2a6c] mt-1 w-4 text-center"></i>
+                            <div>
+                                <p class="text-xs font-semibold text-slate-500 uppercase">Tanggal</p>
+                                <p class="text-sm font-medium text-slate-900">${startDate} <span class="text-slate-400">s/d</span> ${endDate}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <i class="fa-regular fa-comment-dots text-[#1a2a6c] mt-1 w-4 text-center"></i>
+                            <div>
+                                <p class="text-xs font-semibold text-slate-500 uppercase">Alasan</p>
+                                <p class="text-sm text-slate-700">${item.reason || '-'}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <i class="fa-solid fa-paperclip text-[#1a2a6c] mt-1 w-4 text-center"></i>
+                            <div>
+                                <p class="text-xs font-semibold text-slate-500 uppercase">Bukti</p>
+                                ${attachmentHtml}
+                            </div>
+                        </div>
+                    </div>
+                    ${actionButtons}
+                </div>
+            `;
+
+            document.getElementById('modal-detail').classList.remove('hidden');
+        }
+
+        function closeDetailModal() {
+            document.getElementById('modal-detail').classList.add('hidden');
+        }
+
+        // ============================================================
+        // KEYBOARD SHORTCUTS
+        // ============================================================
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeDetailModal();
+            }
+        });
+
+        console.log('✅ Persetujuan Izin App initialized successfully!');
+    </script>
+</body>
+</html>

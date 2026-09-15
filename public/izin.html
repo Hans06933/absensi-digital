@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Pengajuan Izin - Absensi Digital</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .company-gradient { background: linear-gradient(to bottom, #1a2a6c, #2a5298); }
+    .sidebar-active { background-color: rgba(255, 255, 255, 0.15); font-weight: 600; color: #fff; }
+  </style>
+</head>
+<body class="bg-slate-50 font-sans text-slate-800 flex min-h-screen">
+
+  <aside class="w-64 min-h-screen company-gradient text-white flex-shrink-0 hidden md:flex flex-col shadow-2xl sticky top-0">
+    <div class="p-6 border-b border-white/10">
+      <h1 class="text-lg font-bold">Absensi<span class="text-amber-400">Digital</span></h1>
+    </div>
+    <nav class="flex-1 p-4 space-y-1">
+      <a href="dashboard.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-sm"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+      <a href="index.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-sm"><i class="fa-solid fa-users"></i> Manajemen Pegawai</a>
+      <a href="rekap.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-sm"><i class="fa-regular fa-calendar-check"></i> Rekap Absensi</a>
+      <a href="izin.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white sidebar-active text-sm"><i class="fa-regular fa-file-lines"></i> Pengajuan Izin</a>
+    </nav>
+  </aside>
+
+  <main class="flex-1 p-6">
+    <h2 class="text-2xl font-bold mb-6">Daftar Pengajuan Izin / Cuti</h2>
+
+    <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+      <table class="w-full text-left border-collapse">
+        <thead class="bg-slate-100 border-b border-slate-200 text-xs text-slate-600 uppercase">
+          <tr>
+            <th class="p-4">Pegawai</th>
+            <th class="p-4">Tipe</th>
+            <th class="p-4">Tanggal</th>
+            <th class="p-4">Alasan</th>
+            <th class="p-4">Status</th>
+            <th class="p-4 text-center">Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="table-leaves" class="divide-y divide-slate-100 text-sm"></tbody>
+      </table>
+    </div>
+  </main>
+
+  <script>
+    async function fetchLeaves() {
+      try {
+        const res = await fetch('/api/leaves').then(r => r.json());
+        const tbody = document.getElementById('table-leaves');
+        tbody.innerHTML = '';
+        if (res.success && res.data.length > 0) {
+          res.data.forEach(item => {
+            tbody.innerHTML += `
+              <tr class="hover:bg-slate-50">
+                <td class="p-4 font-medium">${item.full_name || item.nip}</td>
+                <td class="p-4">${item.type}</td>
+                <td class="p-4">${item.start_date} s/d ${item.end_date}</td>
+                <td class="p-4">${item.reason}</td>
+                <td class="p-4"><span class="px-2.5 py-1 rounded-full text-xs font-semibold ${
+                  item.status === 'Approved' ? 'bg-emerald-100 text-emerald-600' :
+                  item.status === 'Rejected' ? 'bg-rose-100 text-rose-600' : 'bg-amber-100 text-amber-600'
+                }">${item.status}</span></td>
+                <td class="p-4 text-center space-x-2">
+                  ${item.status === 'Pending' ? `
+                    <button onclick="updateStatus(${item.id}, 'Approved')" class="px-2 py-1 bg-emerald-600 text-white rounded text-xs">Setujui</button>
+                    <button onclick="updateStatus(${item.id}, 'Rejected')" class="px-2 py-1 bg-rose-600 text-white rounded text-xs">Tolak</button>
+                  ` : '-'}
+                </td>
+              </tr>`;
+          });
+        } else {
+          tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-400">Tidak ada pengajuan izin</td></tr>`;
+        }
+      } catch (err) {
+        console.error('Gagal mengambil data izin:', err);
+      }
+    }
+
+    async function updateStatus(id, status) {
+      try {
+        const res = await fetch(`/api/leaves/${id}/status`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status })
+        }).then(r => r.json());
+        if (res.success) fetchLeaves();
+      } catch (err) {
+        console.error('Gagal memperbarui status:', err);
+      }
+    }
+
+    fetchLeaves();
+  </script>
+</body>
+</html>

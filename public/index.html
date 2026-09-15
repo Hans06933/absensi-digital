@@ -12,7 +12,7 @@
     <meta charset="UTF-8">
     <!-- IMPORTANT: Prevent zoom out on mobile -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Sistem Absensi & Management Pegawai</title>
+    <title>Manajemen Pegawai - Absensi Digital</title>
     
     <!-- CSS Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -24,19 +24,91 @@
         * {
             -webkit-tap-highlight-color: transparent;
         }
-        .sidebar-active {
-            background: linear-gradient(135deg, #1a2a6c, #2d4373);
-            border-left: 4px solid #fbbf24;
+
+        /* ===== SIDEBAR ITEM BASE ===== */
+        .sidebar-item {
+            position: relative;
+            overflow: hidden;
+            transition: background 0.25s ease, color 0.25s ease, padding-left 0.25s ease, transform 0.15s ease;
+            animation: slideInLeft 0.35s ease backwards;
         }
-        .sidebar-active i {
-            color: #fbbf24 !important;
+
+        /* Animated left indicator bar (garis kuning) */
+        .sidebar-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%) scaleY(0);
+            width: 4px;
+            height: 70%;
+            background: #fbbf24;
+            border-radius: 0 4px 4px 0;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-origin: center;
         }
-        .sidebar-active span {
-            color: white !important;
-        }
+
+        /* Hover state */
         .sidebar-item:hover {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.06);
+            padding-left: 1rem;
         }
+        .sidebar-item:hover i {
+            transform: scale(1.1);
+            color: #fbbf24;
+        }
+        .sidebar-item i {
+            transition: transform 0.25s ease, color 0.25s ease;
+        }
+
+        /* Active state - indicator muncul */
+        .sidebar-item.sidebar-active {
+            background: linear-gradient(90deg, rgba(251, 191, 36, 0.15) 0%, rgba(45, 67, 115, 0.4) 100%);
+            padding-left: 1rem;
+        }
+        .sidebar-item.sidebar-active::before {
+            transform: translateY(-50%) scaleY(1);
+        }
+        .sidebar-item.sidebar-active i {
+            color: #fbbf24 !important;
+            transform: scale(1.15);
+        }
+        .sidebar-item.sidebar-active span {
+            color: #ffffff !important;
+            font-weight: 600;
+            letter-spacing: 0.01em;
+        }
+
+        /* Click ripple effect */
+        .sidebar-item:active {
+            transform: scale(0.97);
+            background: rgba(251, 191, 36, 0.2);
+        }
+
+        /* Staggered fade-in animation */
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        .sidebar-item:nth-child(2) { animation-delay: 0.03s; }
+        .sidebar-item:nth-child(3) { animation-delay: 0.06s; }
+        .sidebar-item:nth-child(4) { animation-delay: 0.09s; }
+        .sidebar-item:nth-child(5) { animation-delay: 0.12s; }
+        .sidebar-item:nth-child(6) { animation-delay: 0.15s; }
+        .sidebar-item:nth-child(7) { animation-delay: 0.18s; }
+
+        /* Fade-out page transition */
+        body.page-exit {
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
         .company-gradient {
             background: linear-gradient(135deg, #0f1a3d, #1a2a6c, #2d4373);
         }
@@ -129,7 +201,7 @@
 <body class="bg-slate-50 font-sans text-slate-800 antialiased min-h-screen flex overflow-x-hidden">
 
     <!-- ============================================ -->
-    <!-- SIDEBAR -->
+    <!-- SIDEBAR DESKTOP -->
     <!-- ============================================ -->
     <aside class="w-64 min-h-screen company-gradient text-white flex-shrink-0 hidden md:flex flex-col shadow-2xl sticky top-0 overflow-y-auto">
         <div class="p-4 sm:p-6 border-b border-white/10">
@@ -139,10 +211,6 @@
                 </div>
                 <div class="min-w-0">
                     <h1 class="text-base sm:text-lg font-bold tracking-tight truncate">Absensi<span class="text-amber-400">Digital</span></h1>
-                    <span class="text-[8px] sm:text-[9px] text-emerald-400 font-bold uppercase tracking-wider flex items-center gap-1">
-                        <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full inline-block animate-pulse"></span>
-                        ENV: LOCALHOST
-                    </span>
                 </div>
             </div>
             <div class="mt-3 pt-3 border-t border-white/10">
@@ -153,34 +221,30 @@
         <nav class="flex-1 p-3 sm:p-4 space-y-0.5 overflow-y-auto">
             <p class="text-[9px] sm:text-[10px] text-white/40 uppercase tracking-wider font-semibold px-3 mb-2">Menu Utama</p>
             
-            <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white transition-all duration-200 text-xs sm:text-sm">
+            <a href="dashboard.html" data-nav="dashboard" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-xs sm:text-sm">
                 <i class="fa-solid fa-gauge-high w-5 text-center text-sm sm:text-base"></i>
                 <span>Dashboard</span>
             </a>
-            <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white transition-all duration-200 text-xs sm:text-sm sidebar-active">
+            <a href="index.html" data-nav="pegawai" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-xs sm:text-sm">
                 <i class="fa-solid fa-users w-5 text-center text-sm sm:text-base"></i>
                 <span>Manajemen Pegawai</span>
             </a>
-            <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white transition-all duration-200 text-xs sm:text-sm">
+            <a href="rekap.html" data-nav="rekap" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-xs sm:text-sm">
                 <i class="fa-regular fa-calendar-check w-5 text-center text-sm sm:text-base"></i>
                 <span>Rekap Absensi</span>
             </a>
-            <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white transition-all duration-200 text-xs sm:text-sm">
-                <i class="fa-regular fa-clock w-5 text-center text-sm sm:text-base"></i>
-                <span>Riwayat Absensi</span>
-            </a>
-            <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white transition-all duration-200 text-xs sm:text-sm">
+            <a href="pengajuan-izin.html" data-nav="izin" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-xs sm:text-sm">
                 <i class="fa-regular fa-file-lines w-5 text-center text-sm sm:text-base"></i>
                 <span>Pengajuan Izin</span>
             </a>
-            <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white transition-all duration-200 text-xs sm:text-sm">
+            <a href="pengaturan.html" data-nav="pengaturan" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-xs sm:text-sm">
                 <i class="fa-solid fa-gear w-5 text-center text-sm sm:text-base"></i>
                 <span>Pengaturan</span>
             </a>
             
             <div class="border-t border-white/10 my-3"></div>
             
-            <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white transition-all duration-200 text-xs sm:text-sm">
+            <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-xs sm:text-sm">
                 <i class="fa-solid fa-arrow-right-from-bracket w-5 text-center text-sm sm:text-base"></i>
                 <span>Logout</span>
             </a>
@@ -211,10 +275,6 @@
                 </div>
                 
                 <div class="flex items-center gap-2 sm:gap-3">
-                    <span class="text-[8px] sm:text-[10px] text-emerald-600 font-bold uppercase tracking-wider hidden sm:flex items-center gap-1 flex-shrink-0">
-                        <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full inline-block animate-pulse"></span>
-                        ENV: LIVE CODING
-                    </span>
                     <button onclick="openScannerModal()" class="px-2.5 sm:px-4 py-1.5 sm:py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg shadow-sm transition flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm touch-target">
                         <i class="fa-solid fa-camera text-xs sm:text-sm"></i>
                         <span class="hidden xs:inline">Scan</span>
@@ -247,20 +307,28 @@
             </div>
             <nav class="p-3 space-y-0.5 overflow-y-auto">
                 <p class="text-[10px] text-white/40 uppercase tracking-wider font-semibold px-3 mb-2">Menu Utama</p>
-                <a href="index.html" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white transition-all duration-200 text-sm sidebar-active">
-                    <i class="fa-solid fa-users w-5 text-center"></i>
+                <a href="dashboard.html" data-nav="dashboard" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-sm">
+                    <i class="fa-solid fa-gauge-high w-5 text-center"></i>
                     <span>Dashboard</span>
                 </a>
-                <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white transition-all duration-200 text-sm">
+                <a href="index.html" data-nav="pegawai" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-sm">
+                    <i class="fa-solid fa-users w-5 text-center"></i>
+                    <span>Manajemen Pegawai</span>
+                </a>
+                <a href="rekap.html" data-nav="rekap" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-sm">
                     <i class="fa-regular fa-calendar-check w-5 text-center"></i>
                     <span>Rekap Absensi</span>
                 </a>
-                <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white transition-all duration-200 text-sm">
+                <a href="pengajuan-izin.html" data-nav="izin" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-sm">
                     <i class="fa-regular fa-file-lines w-5 text-center"></i>
                     <span>Pengajuan Izin</span>
                 </a>
+                <a href="pengaturan.html" data-nav="pengaturan" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-sm">
+                    <i class="fa-solid fa-gear w-5 text-center"></i>
+                    <span>Pengaturan</span>
+                </a>
                 <div class="border-t border-white/10 my-3"></div>
-                <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white transition-all duration-200 text-sm">
+                <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-sm">
                     <i class="fa-solid fa-arrow-right-from-bracket w-5 text-center"></i>
                     <span>Logout</span>
                 </a>
@@ -272,7 +340,9 @@
 
         <main class="flex-1 max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 w-full space-y-6 sm:space-y-8 min-w-0">
             
-            <!-- SECTION 1: MANAJEMEN PEGAWAI -->
+            <!-- ============================================ -->
+            <!-- SECTION: MANAJEMEN PEGAWAI (HANYA INI YANG DITAMPILKAN) -->
+            <!-- ============================================ -->
             <section>
                 <div class="flex flex-wrap items-start sm:items-center justify-between gap-3 mb-4 sm:mb-6">
                     <div class="min-w-0">
@@ -298,11 +368,6 @@
                         </div>
                         <div class="text-[10px] sm:text-xs text-slate-500 flex items-center gap-2 flex-shrink-0">
                             <span>Total: <span id="total-users" class="font-bold text-slate-700">0</span></span>
-                            <span class="text-slate-300 hidden xs:inline">|</span>
-                            <span class="hidden xs:flex items-center gap-1">
-                                <i class="fa-solid fa-arrow-up-a-z text-[#1a2a6c] text-[10px]"></i>
-                                <span class="text-slate-400">A-Z</span>
-                            </span>
                         </div>
                     </div>
 
@@ -335,134 +400,19 @@
                 </div>
             </section>
 
-            <!-- SECTION 2: REKAP ABSENSI -->
-            <section>
-                <div class="flex flex-wrap items-start sm:items-center justify-between gap-3 mb-4 sm:mb-6">
-                    <div class="min-w-0">
-                        <h2 class="text-lg sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
-                            <i class="fa-regular fa-calendar-check text-[#1a2a6c] text-base sm:text-xl"></i>
-                            <span class="truncate">Rekap Absensi</span>
-                        </h2>
-                        <p class="text-xs sm:text-sm text-slate-500 truncate">Batas hadir tepat waktu <strong class="text-[#1a2a6c]">10:00 AM</strong>.</p>
-                    </div>
-                    <div class="flex items-center gap-2 flex-shrink-0">
-                        <input type="date" id="attendance-date" onchange="loadAttendanceRecap()" 
-                            class="px-2 sm:px-3 py-1.5 sm:py-2 border border-slate-300 rounded-lg text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#1a2a6c] bg-white w-[120px] sm:w-auto">
-                        <button onclick="loadAttendanceRecap()" class="px-2.5 sm:px-3 py-1.5 sm:py-2 bg-[#1a2a6c] hover:bg-[#2d4373] text-white font-semibold rounded-lg text-xs sm:text-sm flex items-center gap-1 shadow-sm transition touch-target">
-                            <i class="fa-solid fa-rotate text-xs"></i>
-                            <span class="hidden xs:inline">Refresh</span>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-3 gap-2 sm:gap-4 mb-4 sm:mb-6">
-                    <div class="bg-white p-3 sm:p-4 rounded-xl border border-slate-200 shadow-sm stat-card hover:shadow-md transition">
-                        <div class="flex items-center gap-2 sm:gap-4">
-                            <div class="p-2 sm:p-3 bg-[#1a2a6c]/10 text-[#1a2a6c] rounded-lg">
-                                <i class="fa-solid fa-list-check text-base sm:text-lg"></i>
-                            </div>
-                            <div class="min-w-0">
-                                <p class="text-[8px] sm:text-xs font-semibold uppercase text-slate-400 truncate">Total Log</p>
-                                <h3 id="stat-total" class="text-base sm:text-xl font-bold text-slate-900">0</h3>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="bg-white p-3 sm:p-4 rounded-xl border border-slate-200 shadow-sm stat-card hover:shadow-md transition">
-                        <div class="flex items-center gap-2 sm:gap-4">
-                            <div class="p-2 sm:p-3 bg-emerald-100 text-emerald-600 rounded-lg">
-                                <i class="fa-solid fa-check-circle text-base sm:text-lg"></i>
-                            </div>
-                            <div class="min-w-0">
-                                <p class="text-[8px] sm:text-xs font-semibold uppercase text-slate-400 truncate">Hadir</p>
-                                <h3 id="stat-hadir" class="text-base sm:text-xl font-bold text-slate-900">0</h3>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="bg-white p-3 sm:p-4 rounded-xl border border-slate-200 shadow-sm stat-card hover:shadow-md transition">
-                        <div class="flex items-center gap-2 sm:gap-4">
-                            <div class="p-2 sm:p-3 bg-amber-100 text-amber-600 rounded-lg">
-                                <i class="fa-solid fa-clock text-base sm:text-lg"></i>
-                            </div>
-                            <div class="min-w-0">
-                                <p class="text-[8px] sm:text-xs font-semibold uppercase text-slate-400 truncate">Terlambat</p>
-                                <h3 id="stat-terlambat" class="text-base sm:text-xl font-bold text-slate-900">0</h3>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                    <div class="table-wrapper">
-                        <table class="w-full text-left border-collapse text-xs sm:text-sm">
-                            <thead>
-                                <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold">
-                                    <th class="p-2 sm:p-4 whitespace-nowrap">
-                                        <div class="flex items-center gap-1 text-[#1a2a6c]">
-                                            Waktu <i class="fa-solid fa-arrow-down-wide-short text-[8px] sm:text-[10px]"></i>
-                                        </div>
-                                    </th>
-                                    <th class="p-2 sm:p-4 whitespace-nowrap">NIP</th>
-                                    <th class="p-2 sm:p-4 whitespace-nowrap">
-                                        <div class="flex items-center gap-1 text-[#1a2a6c]">
-                                            Nama <i class="fa-solid fa-arrow-down-a-z text-[8px] sm:text-[10px]"></i>
-                                        </div>
-                                    </th>
-                                    <th class="p-2 sm:p-4 whitespace-nowrap">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody id="recapTableBody">
-                                <tr>
-                                    <td colspan="4" class="p-4 sm:p-6 text-center text-slate-400 text-xs sm:text-sm">
-                                        <i class="fa-solid fa-spinner fa-spin mr-2"></i>
-                                        Memuat rekap...
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
-
-            <!-- SECTION 3: PERSETUJUAN IZIN -->
-            <section>
-                <div class="flex flex-wrap items-start sm:items-center justify-between gap-3 mb-4 sm:mb-6">
-                    <div class="min-w-0">
-                        <h2 class="text-lg sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
-                            <i class="fa-solid fa-envelope-open-text text-amber-500 text-base sm:text-xl"></i>
-                            <span class="truncate">Persetujuan Izin</span>
-                        </h2>
-                        <p class="text-xs sm:text-sm text-slate-500 truncate">Kelola pengajuan izin, sakit, dan cuti.</p>
-                    </div>
-                    <button onclick="loadAdminLeaves()" class="px-2.5 sm:px-4 py-1.5 sm:py-2 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-lg shadow-sm transition text-xs sm:text-sm flex items-center gap-1 touch-target flex-shrink-0">
-                        <i class="fa-solid fa-rotate text-xs"></i>
-                        <span class="hidden xs:inline">Refresh</span>
-                    </button>
-                </div>
-
-                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                    <div class="table-wrapper">
-                        <table class="w-full text-left border-collapse text-xs sm:text-sm">
-                            <thead>
-                                <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold">
-                                    <th class="p-2 sm:p-4 whitespace-nowrap">NIP & Nama</th>
-                                    <th class="p-2 sm:p-4 whitespace-nowrap">Jenis</th>
-                                    <th class="p-2 sm:p-4 whitespace-nowrap hidden sm:table-cell">Tanggal</th>
-                                    <th class="p-2 sm:p-4 whitespace-nowrap hidden md:table-cell">Alasan / Bukti</th>
-                                    <th class="p-2 sm:p-4 text-center whitespace-nowrap">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody id="adminLeaveTable" class="text-xs sm:text-sm">
-                                <tr>
-                                    <td colspan="5" class="p-4 sm:p-6 text-center text-slate-400">
-                                        <i class="fa-solid fa-spinner fa-spin mr-2"></i>
-                                        Memuat pengajuan...
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
+            <!-- ============================================ -->
+            <!-- HIDDEN CONTAINERS (untuk kompatibilitas JS yang tidak diubah) -->
+            <!-- Section Rekap & Izin di-COMMENT agar tidak tampil, tapi ID-nya tetap ada -->
+            <!-- ============================================ -->
+            <div style="display:none !important;" aria-hidden="true">
+                <!-- Placeholder untuk stat element (dipakai loadAttendanceRecap jika dipanggil) -->
+                <span id="stat-total">0</span>
+                <span id="stat-hadir">0</span>
+                <span id="stat-terlambat">0</span>
+                <input type="date" id="attendance-date">
+                <table><tbody id="recapTableBody"></tbody></table>
+                <table><tbody id="adminLeaveTable"></tbody></table>
+            </div>
 
             <footer class="text-center py-3 sm:py-4 border-t border-slate-200 mt-4 sm:mt-6 safe-bottom">
                 <p class="text-[10px] sm:text-xs text-slate-400">© 2026 PT. ANDALAN MAJU. All Rights Reserved.</p>
@@ -472,7 +422,7 @@
     </div>
 
     <!-- ============================================ -->
-    <!-- MODALS (Sama seperti sebelumnya, dengan perbaikan responsive) -->
+    <!-- MODALS -->
     <!-- ============================================ -->
 
     <!-- Modal Form Tambah / Edit -->
@@ -543,7 +493,7 @@
     </div>
 
     <!-- ============================================ -->
-    <!-- JAVASCRIPT (SAMA PERSIS - TIDAK DIUBAH) -->
+    <!-- JAVASCRIPT -->
     <!-- ============================================ -->
     <script>
         // ============================================================
@@ -573,7 +523,52 @@
         }
 
         // ============================================================
+        // AUTO-DETECT ACTIVE SIDEBAR LINK (berdasarkan URL halaman)
+        // ============================================================
+        function setActiveSidebar() {
+            const path = window.location.pathname.split('/').pop() || 'index.html';
+            
+            const pageMap = {
+                'dashboard.html': 'dashboard',
+                'index.html': 'pegawai',
+                'rekap.html': 'rekap',
+                'riwayat.html': 'riwayat',
+                'pengajuan-izin.html': 'izin',
+                'pengaturan.html': 'pengaturan'
+            };
+            
+            const activeNav = pageMap[path] || 'pegawai';
+            
+            document.querySelectorAll('.sidebar-item[data-nav]').forEach(item => {
+                if (item.dataset.nav === activeNav) {
+                    item.classList.add('sidebar-active');
+                } else {
+                    item.classList.remove('sidebar-active');
+                }
+            });
+        }
+
+        // ============================================================
+        // SMOOTH PAGE TRANSITION (fade out sebelum pindah halaman)
+        // ============================================================
+        function initSmoothNav() {
+            document.querySelectorAll('.sidebar-item[data-nav]').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    const href = this.getAttribute('href');
+                    if (href && href !== '#' && !href.startsWith('http')) {
+                        e.preventDefault();
+                        document.body.classList.add('page-exit');
+                        setTimeout(() => {
+                            window.location.href = href;
+                        }, 180);
+                    }
+                });
+            });
+        }
+
+        // ============================================================
         // API ENDPOINTS & GLOBAL VARIABLES
+        // (TIDAK DIUBAH - koneksi database tetap utuh)
         // ============================================================
         const API_USERS = '/api/users';
         const API_SCAN = '/api/attendance/scan';
@@ -588,16 +583,21 @@
         // ============================================================
         document.addEventListener('DOMContentLoaded', () => {
             const today = new Date().toISOString().split('T')[0];
-            document.getElementById('attendance-date').value = today;
+            const dateInput = document.getElementById('attendance-date');
+            if (dateInput) dateInput.value = today;
 
+            // NEW: Sidebar auto-active + smooth transition
+            setActiveSidebar();
+            initSmoothNav();
+
+            // Database / API (TIDAK DIUBAH)
             fetchUsers();
-            loadAttendanceRecap();
-            loadAdminLeaves();
-            console.log('🚀 Dashboard Absensi loaded successfully!');
+            console.log('🚀 Manajemen Pegawai loaded successfully!');
         });
 
         // ============================================================
         // USER MANAGEMENT FUNCTIONS
+        // (TIDAK DIUBAH - koneksi database tetap utuh)
         // ============================================================
 
         async function fetchUsers() {
@@ -712,7 +712,7 @@
         }
 
         // ============================================================
-        // HANDLE FORM SUBMIT
+        // HANDLE FORM SUBMIT (TIDAK DIUBAH)
         // ============================================================
         async function handleFormSubmit(e) {
             e.preventDefault();
@@ -789,7 +789,7 @@
         }
 
         // ============================================================
-        // QR CODE FUNCTIONS
+        // QR CODE FUNCTIONS (TIDAK DIUBAH)
         // ============================================================
 
         function showQrModal(nip, name) {
@@ -813,320 +813,7 @@
         }
 
         // ============================================================
-        // HELPER FUNCTION: GET STATUS BADGE
-        // ============================================================
-
-        function getStatusBadge(status, scanTime) {
-            if (scanTime) {
-                const date = new Date(scanTime);
-                const hours = date.getHours();
-                const minutes = date.getMinutes();
-                const isLate = hours > 10 || (hours === 10 && minutes > 0);
-                
-                if (isLate) {
-                    return `<span class="inline-flex items-center gap-1.5 px-2 py-0.5 sm:px-3 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium bg-amber-100 text-amber-700">
-                                <i class="fa-solid fa-clock"></i> Terlambat
-                            </span>`;
-                } else {
-                    return `<span class="inline-flex items-center gap-1.5 px-2 py-0.5 sm:px-3 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium bg-emerald-100 text-emerald-700">
-                                <i class="fa-solid fa-check-circle"></i> Hadir
-                            </span>`;
-                }
-            }
-            
-            const normalizedStatus = (status || '').toLowerCase().trim();
-            
-            switch (normalizedStatus) {
-                case 'masuk':
-                    return `<span class="inline-flex items-center gap-1.5 px-2 py-0.5 sm:px-3 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium bg-emerald-100 text-emerald-700">
-                                <i class="fa-solid fa-door-open"></i> Masuk
-                            </span>`;
-                case 'pulang':
-                    return `<span class="inline-flex items-center gap-1.5 px-2 py-0.5 sm:px-3 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium bg-blue-100 text-blue-700">
-                                <i class="fa-solid fa-door-closed"></i> Pulang
-                            </span>`;
-                case 'sakit':
-                    return `<span class="inline-flex items-center gap-1.5 px-2 py-0.5 sm:px-3 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium bg-blue-100 text-blue-700">
-                                <i class="fa-solid fa-bed-pulse"></i> Sakit
-                            </span>`;
-                case 'izin':
-                    return `<span class="inline-flex items-center gap-1.5 px-2 py-0.5 sm:px-3 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium bg-purple-100 text-purple-700">
-                                <i class="fa-solid fa-envelope-open-text"></i> Izin
-                            </span>`;
-                case 'cuti':
-                    return `<span class="inline-flex items-center gap-1.5 px-2 py-0.5 sm:px-3 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium bg-rose-100 text-rose-700">
-                                <i class="fa-solid fa-suitcase-rolling"></i> Cuti
-                            </span>`;
-                default:
-                    return `<span class="inline-flex items-center gap-1.5 px-2 py-0.5 sm:px-3 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium bg-slate-100 text-slate-700">
-                                <i class="fa-solid fa-circle-info"></i> ${status || 'Unknown'}
-                            </span>`;
-            }
-        }
-
-        // ============================================================
-        // ATTENDANCE RECAP FUNCTIONS
-        // ============================================================
-
-        async function loadAttendanceRecap() {
-            const filterDate = document.getElementById('attendance-date').value;
-            const tbody = document.getElementById('recapTableBody');
-
-            try {
-                const [resAtt, resLeave] = await Promise.all([
-                    fetch(`${API_ATTENDANCE}${filterDate ? '?date=' + filterDate : ''}`),
-                    fetch(API_LEAVES)
-                ]);
-                
-                const dataAtt = await resAtt.json();
-                const dataLeave = await resLeave.json();
-
-                let combinedRecords = [];
-                let hadirCount = 0;
-                let terlambatCount = 0;
-
-                if (dataAtt.success && dataAtt.data) {
-                    dataAtt.data.forEach(item => {
-                        const scanDate = new Date(item.scan_time);
-                        const hours = scanDate.getHours();
-                        const minutes = scanDate.getMinutes();
-                        const isLate = hours > 10 || (hours === 10 && minutes > 0);
-                        
-                        if (isLate) terlambatCount++;
-                        else hadirCount++;
-                        
-                        combinedRecords.push({
-                            nip: item.nip,
-                            full_name: item.full_name,
-                            time: item.scan_time,
-                            status: item.status,
-                            type: 'Absensi QR',
-                            isLate: isLate
-                        });
-                    });
-                }
-
-                if (dataLeave.success && dataLeave.data) {
-                    const approvedLeaves = dataLeave.data.filter(l => l.status === 'Approved');
-                    
-                    approvedLeaves.forEach(leave => {
-                        const startDate = new Date(leave.start_date);
-                        const endDate = new Date(leave.end_date);
-                        
-                        if (filterDate) {
-                            const targetDate = new Date(filterDate);
-                            targetDate.setHours(0, 0, 0, 0);
-                            startDate.setHours(0, 0, 0, 0);
-                            endDate.setHours(0, 0, 0, 0);
-                            
-                            if (targetDate >= startDate && targetDate <= endDate) {
-                                combinedRecords.push({
-                                    nip: leave.nip,
-                                    full_name: leave.full_name || 'Pegawai',
-                                    time: leave.start_date,
-                                    status: leave.type,
-                                    type: 'Pengajuan',
-                                    isLate: false
-                                });
-                            }
-                        } else {
-                            const today = new Date();
-                            today.setHours(0, 0, 0, 0);
-                            startDate.setHours(0, 0, 0, 0);
-                            endDate.setHours(0, 0, 0, 0);
-                            
-                            if (today >= startDate && today <= endDate) {
-                                combinedRecords.push({
-                                    nip: leave.nip,
-                                    full_name: leave.full_name || 'Pegawai',
-                                    time: leave.start_date,
-                                    status: leave.type,
-                                    type: 'Pengajuan',
-                                    isLate: false
-                                });
-                            }
-                        }
-                    });
-                }
-
-                document.getElementById('stat-total').innerText = combinedRecords.length;
-                document.getElementById('stat-hadir').innerText = hadirCount;
-                document.getElementById('stat-terlambat').innerText = terlambatCount;
-
-                if (combinedRecords.length === 0) {
-                    tbody.innerHTML = `
-                        <tr>
-                            <td colspan="4" class="p-6 text-center text-slate-400">
-                                <i class="fa-regular fa-calendar fa-2x block mb-2 text-slate-300"></i>
-                                Tidak ada data kehadiran atau izin.
-                            </td>
-                        </tr>
-                    `;
-                    return;
-                }
-
-                combinedRecords.sort((a, b) => new Date(b.time) - new Date(a.time));
-
-                let rows = '';
-                combinedRecords.forEach(rec => {
-                    const formattedTime = new Date(rec.time).toLocaleString('id-ID', {
-                        dateStyle: 'medium',
-                        timeStyle: 'short'
-                    });
-
-                    let badgeHtml;
-                    if (rec.type === 'Absensi QR') {
-                        if (rec.isLate) {
-                            badgeHtml = `<span class="inline-flex items-center gap-1.5 px-2 py-0.5 sm:px-3 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium bg-amber-100 text-amber-700">
-                                            <i class="fa-solid fa-clock"></i> Terlambat
-                                        </span>`;
-                        } else {
-                            badgeHtml = `<span class="inline-flex items-center gap-1.5 px-2 py-0.5 sm:px-3 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium bg-emerald-100 text-emerald-700">
-                                            <i class="fa-solid fa-check-circle"></i> Hadir
-                                        </span>`;
-                        }
-                    } else {
-                        badgeHtml = getStatusBadge(rec.status);
-                    }
-
-                    rows += `
-                        <tr class="hover:bg-slate-50 transition border-b border-slate-100">
-                            <td class="p-2 sm:p-4 font-mono text-slate-600 text-[10px] sm:text-xs">${formattedTime}</td>
-                            <td class="p-2 sm:p-4 font-mono font-semibold text-[#1a2a6c] text-[10px] sm:text-xs">${rec.nip || '-'}</td>
-                            <td class="p-2 sm:p-4 font-medium text-slate-900 text-[10px] sm:text-xs">
-                                ${rec.full_name || 'Tidak Diketahui'}
-                                ${rec.type === 'Pengajuan' ? '<span class="ml-1 text-[8px] sm:text-[10px] text-blue-500 font-normal">(Izin)</span>' : ''}
-                            </td>
-                            <td class="p-2 sm:p-4">${badgeHtml}</td>
-                        </tr>
-                    `;
-                });
-
-                tbody.innerHTML = rows;
-
-            } catch (err) {
-                console.error('Gagal memuat rekap:', err);
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="4" class="p-6 text-center text-red-500">
-                            <i class="fa-regular fa-circle-exclamation text-2xl block mb-2"></i>
-                            Gagal memuat data rekap.
-                        </td>
-                    </tr>
-                `;
-            }
-        }
-
-        // ============================================================
-        // LEAVE MANAGEMENT FUNCTIONS (ADMIN)
-        // ============================================================
-
-        async function loadAdminLeaves() {
-            try {
-                const res = await fetch(API_LEAVES);
-                const result = await res.json();
-                const tbody = document.getElementById('adminLeaveTable');
-                tbody.innerHTML = '';
-
-                if (result.success && result.data) {
-                    const pendingLeaves = result.data.filter(item => item.status === 'Pending' || !item.status);
-
-                    if (pendingLeaves.length === 0) {
-                        tbody.innerHTML = `
-                            <tr>
-                                <td colspan="5" class="p-6 text-center text-slate-400">
-                                    <i class="fa-regular fa-check-circle text-2xl block mb-2 text-slate-300"></i>
-                                    Tidak ada pengajuan izin yang pending.
-                                </td>
-                            </tr>
-                        `;
-                        return;
-                    }
-
-                    pendingLeaves.sort((a, b) => new Date(b.created_at || b.id) - new Date(a.created_at || a.id));
-
-                    pendingLeaves.forEach(item => {
-                        let attachmentLink = item.attachment 
-                            ? `<a href="${item.attachment}" target="_blank" class="text-blue-500 hover:underline text-xs block mt-1"><i class="fa-solid fa-paperclip"></i> Lihat Bukti</a>` 
-                            : '<span class="text-xs text-slate-400">Tanpa lampiran</span>';
-                        
-                        tbody.innerHTML += `
-                            <tr class="border-b border-slate-100 hover:bg-slate-50 transition">
-                                <td class="p-2 sm:p-4">
-                                    <div class="font-medium text-slate-900 text-[10px] sm:text-xs">${item.full_name || 'Pegawai'}</div>
-                                    <div class="text-[10px] sm:text-xs text-slate-500 font-mono">${item.nip}</div>
-                                </td>
-                                <td class="p-2 sm:p-4">
-                                    <span class="px-2 py-0.5 sm:px-2.5 sm:py-1 bg-blue-100 text-blue-700 rounded-full text-[10px] sm:text-xs font-semibold">${item.type || 'Izin'}</span>
-                                </td>
-                                <td class="p-2 sm:p-4 text-[10px] sm:text-xs text-slate-600 hidden sm:table-cell">
-                                    ${item.start_date ? new Date(item.start_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }) : '-'} 
-                                    <span class="text-slate-400">s/d</span> 
-                                    ${item.end_date ? new Date(item.end_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }) : '-'}
-                                </td>
-                                <td class="p-2 sm:p-4 text-[10px] sm:text-xs text-slate-700 max-w-xs hidden md:table-cell">
-                                    <div class="truncate">${item.reason || '-'}</div>
-                                    ${attachmentLink}
-                                </td>
-                                <td class="p-2 sm:p-4 text-center space-x-1 sm:space-x-2 whitespace-nowrap">
-                                    <button onclick="updateLeaveStatus(${item.id}, 'Approved')" class="px-2 sm:px-3 py-1 sm:py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-[10px] sm:text-xs font-semibold transition shadow-sm touch-target">
-                                        <i class="fa-regular fa-check-circle"></i> Setujui
-                                    </button>
-                                    <button onclick="updateLeaveStatus(${item.id}, 'Rejected')" class="px-2 sm:px-3 py-1 sm:py-1.5 bg-rose-600 hover:bg-rose-500 text-white rounded-lg text-[10px] sm:text-xs font-semibold transition shadow-sm touch-target">
-                                        <i class="fa-regular fa-circle-xmark"></i> Tolak
-                                    </button>
-                                </td>
-                            </tr>
-                        `;
-                    });
-                } else {
-                    tbody.innerHTML = `
-                        <tr>
-                            <td colspan="5" class="p-6 text-center text-slate-400">
-                                <i class="fa-regular fa-circle-exclamation text-2xl block mb-2 text-slate-300"></i>
-                                Gagal memuat data pengajuan.
-                            </td>
-                        </tr>
-                    `;
-                }
-            } catch (err) {
-                console.error('Gagal memuat data izin:', err);
-                document.getElementById('adminLeaveTable').innerHTML = `
-                    <tr>
-                        <td colspan="5" class="p-6 text-center text-red-500">
-                            <i class="fa-regular fa-circle-exclamation text-2xl block mb-2"></i>
-                            Gagal terhubung ke server.
-                        </td>
-                    </tr>
-                `;
-            }
-        }
-
-        async function updateLeaveStatus(id, status) {
-            if (!confirm(`Apakah Anda yakin ingin mengubah status pengajuan menjadi ${status === 'Approved' ? 'DISETUJUI' : 'DITOLAK'}?`)) return;
-
-            try {
-                const res = await fetch(`${API_LEAVES}/${id}/status`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ status })
-                });
-                const result = await res.json();
-                if (result.success) {
-                    alert(`✅ Pengajuan berhasil di-${status === 'Approved' ? 'setujui' : 'tolak'}`);
-                    loadAdminLeaves();
-                    loadAttendanceRecap();
-                } else {
-                    alert('❌ Gagal: ' + (result.message || 'Terjadi kesalahan'));
-                }
-            } catch (err) {
-                console.error('Error updating leave status:', err);
-                alert('❌ Terjadi kesalahan jaringan. Silakan coba lagi.');
-            }
-        }
-
-        // ============================================================
-        // SCANNER FUNCTIONS
+        // SCANNER FUNCTIONS (TIDAK DIUBAH - tetap untuk absensi QR)
         // ============================================================
 
         function openScannerModal() {
@@ -1164,7 +851,6 @@
                 if (result.success) {
                     resultDiv.className = 'mt-4 p-3 rounded-lg text-sm font-semibold text-center bg-emerald-100 text-emerald-700';
                     resultDiv.innerText = '✅ ' + result.message;
-                    loadAttendanceRecap();
                 } else {
                     resultDiv.className = 'mt-4 p-3 rounded-lg text-sm font-semibold text-center bg-red-100 text-red-700';
                     resultDiv.innerText = '❌ ' + result.message;
@@ -1198,7 +884,7 @@
             }
         });
 
-        console.log('✅ Absensi Digital App initialized successfully!');
+        console.log('✅ Manajemen Pegawai App initialized successfully!');
     </script>
 </body>
 </html>
