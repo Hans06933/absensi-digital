@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <!-- Meta PWA & Mobile Optimization -->
+    <meta name="theme-color" content="#1a2a6c">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Absensi">
+    <link rel="manifest" href="/manifest-admin.json">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3135/3135715.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Pengaturan - Absensi Digital</title>
+    
+    <!-- CSS Libraries -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        /* Custom styles for company theme */
+        * {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* ===== SIDEBAR ITEM BASE ===== */
+        .sidebar-item {
+            position: relative;
+            overflow: hidden;
+            transition: background 0.25s ease, color 0.25s ease, padding-left 0.25s ease, transform 0.15s ease;
+            animation: slideInLeft 0.35s ease backwards;
+        }
+
+        .sidebar-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%) scaleY(0);
+            width: 4px;
+            height: 70%;
+            background: #fbbf24;
+            border-radius: 0 4px 4px 0;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-origin: center;
+        }
+
+        .sidebar-item:hover {
+            background: rgba(255, 255, 255, 0.06);
+            padding-left: 1rem;
+        }
+        .sidebar-item:hover i {
+            transform: scale(1.1);
+            color: #fbbf24;
+        }
+        .sidebar-item i {
+            transition: transform 0.25s ease, color 0.25s ease;
+        }
+
+        .sidebar-item.sidebar-active {
+            background: linear-gradient(90deg, rgba(251, 191, 36, 0.15) 0%, rgba(45, 67, 115, 0.4) 100%);
+            padding-left: 1rem;
+        }
+        .sidebar-item.sidebar-active::before {
+            transform: translateY(-50%) scaleY(1);
+        }
+        .sidebar-item.sidebar-active i {
+            color: #fbbf24 !important;
+            transform: scale(1.15);
+        }
+        .sidebar-item.sidebar-active span {
+            color: #ffffff !important;
+            font-weight: 600;
+            letter-spacing: 0.01em;
+        }
+
+        .sidebar-item:active {
+            transform: scale(0.97);
+            background: rgba(251, 191, 36, 0.2);
+        }
+
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-8px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .company-gradient {
+            background: linear-gradient(135deg, #0f1a3d, #1a2a6c, #2d4373);
+        }
+        
+        /* Scrollbar styling */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        /* Hilangkan margin default pada body */
+        body { margin: 0; padding: 0; }
+    </style>
+</head>
+<body class="bg-slate-50 font-sans text-slate-800 antialiased overflow-hidden">
+
+    <!-- WRAPPER UTAMA (Flexbox) - Membuat Sidebar & Main Content Rapat -->
+    <div class="flex h-screen w-full overflow-hidden">
+
+        <!-- ============================================ -->
+        <!-- SIDEBAR DESKTOP -->
+        <!-- ============================================ -->
+        <aside class="w-64 h-full company-gradient text-white flex-shrink-0 hidden md:flex flex-col shadow-xl z-20">
+            <!-- Logo Section -->
+            <div class="p-5 border-b border-white/10">
+                <div class="flex items-center gap-3">
+                    <div class="bg-amber-400 text-[#1a2a6c] p-2 rounded-lg font-bold shadow-lg flex-shrink-0">
+                        <i class="fa-solid fa-qrcode text-lg"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <h1 class="text-lg font-bold tracking-tight truncate">Absensi<span class="text-amber-400">Digital</span></h1>
+                    </div>
+                </div>
+                <div class="mt-3 pt-3 border-t border-white/10">
+                    <p class="text-xs text-amber-400 font-bold tracking-wider truncate">PT. ANDALAN MAJU</p>
+                    <p class="text-[10px] text-white/50 italic truncate mt-0.5">INNOVATE · GROW · EXCEL</p>
+                </div>
+            </div>
+
+            <!-- Menu Navigasi -->
+            <nav class="flex-1 p-3 space-y-1 overflow-y-auto">
+                <p class="text-[10px] text-white/40 uppercase tracking-wider font-semibold px-3 mb-2 mt-2">Menu Utama</p>
+                
+                <a href="dashboard.html" data-nav="dashboard" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-sm">
+                    <i class="fa-solid fa-gauge-high w-5 text-center"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="index.html" data-nav="pegawai" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-sm">
+                    <i class="fa-solid fa-users w-5 text-center"></i>
+                    <span>Manajemen Pegawai</span>
+                </a>
+                <a href="rekap.html" data-nav="rekap" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-sm">
+                    <i class="fa-regular fa-calendar-check w-5 text-center"></i>
+                    <span>Rekap Absensi</span>
+                </a>
+                <a href="pengajuan-izin.html" data-nav="izin" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-sm">
+                    <i class="fa-regular fa-file-lines w-5 text-center"></i>
+                    <span>Pengajuan Izin</span>
+                </a>
+                <!-- Menu Pengaturan diberi class sidebar-active karena ini halaman pengaturan -->
+                <a href="pengaturan.html" data-nav="pengaturan" class="sidebar-item sidebar-active flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-sm">
+                    <i class="fa-solid fa-gear w-5 text-center"></i>
+                    <span>Pengaturan</span>
+                </a>
+                
+                <div class="border-t border-white/10 my-3"></div>
+                
+                <a href="#" onclick="logout()" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-sm">
+                    <i class="fa-solid fa-arrow-right-from-bracket w-5 text-center"></i>
+                    <span>Logout</span>
+                </a>
+            </nav>
+
+            <!-- Footer Sidebar -->
+            <div class="p-4 border-t border-white/10 text-[10px] text-white/40 text-center">
+                © 2026 PT. ANDALAN MAJU
+            </div>
+        </aside>
+
+        <!-- ============================================ -->
+        <!-- KONTEN UTAMA -->
+        <!-- ============================================ -->
+        <main class="flex-1 flex flex-col h-full overflow-hidden bg-gray-100 relative">
+            
+            <!-- Header Topbar -->
+            <header class="bg-white shadow-sm px-6 py-4 flex justify-between items-center flex-shrink-0 z-10">
+                <div class="flex items-center gap-3">
+                    <!-- Tombol Menu Mobile (Muncul di layar kecil) -->
+                    <button class="md:hidden text-gray-600 focus:outline-none">
+                        <i class="fa-solid fa-bars text-xl"></i>
+                    </button>
+                    <h1 class="text-xl font-bold text-gray-800">Pengaturan Sistem & Admin</h1>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="text-sm font-medium text-gray-600 hidden sm:block">Halo, <b>Administrator</b></span>
+                    <div class="w-10 h-10 bg-yellow-500 text-white rounded-full flex items-center justify-center font-bold shadow-sm">A</div>
+                </div>
+            </header>
+
+            <!-- Container Isi Pengaturan (Scrollable) -->
+            <div class="flex-1 overflow-y-auto p-6">
+                <div class="max-w-5xl mx-auto w-full space-y-6">
+
+                    <!-- Alert Notifikasi Berhasil/Gagal -->
+                    <div id="alert-box" class="hidden p-4 rounded-xl text-sm font-medium transition-all duration-300"></div>
+
+                    <!-- Bagian 1: Pengaturan Profil Admin / Kredensial -->
+                    <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
+                        <div class="flex items-center gap-3 mb-4 pb-3 border-b border-gray-100">
+                            <i class="fa-solid fa-user-shield text-yellow-500 text-xl"></i>
+                            <h2 class="text-lg font-bold text-gray-800">Keamanan & Profil Administrator</h2>
+                        </div>
+                        
+                        <form id="form-admin-setting" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Nama Administrator</label>
+                                <input type="text" id="admin-name" value="Administrator Utama" class="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-yellow-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Email Admin</label>
+                                <input type="email" id="admin-email" value="admin@absensi.com" class="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-yellow-500 outline-none">
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Password Baru <span class="text-xs text-gray-400">(Kosongkan jika tidak ingin mengubah password)</span></label>
+                                <input type="password" id="admin-password" placeholder="••••••••" class="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-yellow-500 outline-none">
+                            </div>
+                            <div class="md:col-span-2 flex justify-end">
+                                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-medium transition shadow-sm">
+                                    <i class="fa-solid fa-floppy-disk mr-2"></i> Simpan Perubahan Admin
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Bagian 2: Pengaturan Jam Absensi & Toleransi Keterlambatan -->
+                    <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
+                        <div class="flex items-center gap-3 mb-4 pb-3 border-b border-gray-100">
+                            <i class="fa-solid fa-clock text-yellow-500 text-xl"></i>
+                            <h2 class="text-lg font-bold text-gray-800">Konfigurasi Jam Kerja & Absensi</h2>
+                        </div>
+                        
+                        <form id="form-system-setting" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Jam Masuk Kantor</label>
+                                <input type="time" id="work-start-time" value="08:00" class="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-yellow-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Batas Toleransi Terlambat (Jam)</label>
+                                <input type="time" id="late-limit-time" value="10:00" class="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-yellow-500 outline-none">
+                                <p class="text-xs text-gray-500 mt-1">Absen setelah jam ini akan otomatis tercatat sebagai "Terlambat".</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Jam Pulang Kantor</label>
+                                <input type="time" id="work-end-time" value="17:00" class="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-yellow-500 outline-none">
+                            </div>
+                            <div class="flex items-center">
+                                <label class="flex items-center cursor-pointer mt-6">
+                                    <input type="checkbox" id="auto-status-toggle" checked class="sr-only peer">
+                                    <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                    <span class="ml-3 text-sm font-medium text-gray-700">Aktifkan Validasi Scan QR Otomatis</span>
+                                </label>
+                            </div>
+                            <div class="md:col-span-2 flex justify-end">
+                                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-medium transition shadow-sm">
+                                    <i class="fa-solid fa-floppy-disk mr-2"></i> Simpan Konfigurasi Jam
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Bagian 3: Manajemen Sistem & Database -->
+                    <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
+                        <div class="flex items-center gap-3 mb-4 pb-3 border-b border-gray-100">
+                            <i class="fa-solid fa-database text-yellow-500 text-xl"></i>
+                            <h2 class="text-lg font-bold text-gray-800">Pengelolaan Sistem & Penyimpanan</h2>
+                        </div>
+                        
+                        <div class="flex flex-col md:flex-row justify-between items-center gap-4 py-2">
+                            <div>
+                                <h4 class="font-semibold text-gray-800">Bersihkan Cache & Log Aktivitas</h4>
+                                <p class="text-xs text-gray-500">Menghapus file cache temporary untuk mengoptimalkan performa server lokal.</p>
+                            </div>
+                            <button onclick="clearSystemCache()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-xl text-sm font-medium transition">
+                                <i class="fa-solid fa-broom mr-1"></i> Bersihkan Cache
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Script untuk form submit
+        document.getElementById('form-admin-setting').addEventListener('submit', function(e) {
+            e.preventDefault();
+            showAlert('Pengaturan admin berhasil diperbarui!', 'success');
+        });
+
+        document.getElementById('form-system-setting').addEventListener('submit', function(e) {
+            e.preventDefault();
+            showAlert('Konfigurasi jam kerja berhasil disimpan!', 'success');
+        });
+
+        function clearSystemCache() {
+            alert('Cache sistem berhasil dibersihkan!');
+        }
+
+        function showAlert(message, type) {
+            const alertBox = document.getElementById('alert-box');
+            alertBox.textContent = message;
+            alertBox.className = `p-4 rounded-xl text-sm font-medium ${type === 'success' ? 'bg-green-100 text-green-700 border border-green-200' : 'bg-red-100 text-red-700 border border-red-200'}`;
+            alertBox.classList.remove('hidden');
+            setTimeout(() => {
+                alertBox.classList.add('hidden');
+            }, 4000);
+        }
+
+        function logout() {
+            if (confirm('Apakah Anda yakin ingin keluar dari sesi admin?')) {
+                window.location.href = 'index.html';
+            }
+        }
+    </script>
+</body>
+</html>

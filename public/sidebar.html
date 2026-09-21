@@ -1,0 +1,84 @@
+<!-- SIDEBAR KOMPONEN -->
+<div class="p-5 border-b border-white/10 flex items-center gap-3">
+    <div class="bg-yellow-400 text-gray-900 p-2 rounded-xl flex items-center justify-center font-bold text-lg shadow-sm">
+        <i class="fa-solid fa-qrcode"></i>
+    </div>
+    <div>
+        <span class="text-lg font-bold tracking-tight text-white">Absensi<span class="text-yellow-400">Digital</span></span>
+        <!-- Tambahan Subtitle Perusahaan -->
+        <div class="text-[10px] text-gray-400 tracking-wider font-semibold uppercase mt-0.5">PT. ANDALAN MAJU</div>
+        <div class="text-[9px] text-gray-500 italic tracking-widest mt-0.5">INNOVATE - GROW - EXCEL</div>
+    </div>
+</div>
+
+<!-- Menu Navigasi -->
+<nav class="flex-1 p-4 space-y-1.5 text-sm overflow-y-auto">
+    <div class="text-[11px] text-gray-400 uppercase tracking-wider mb-2 px-3 font-semibold">MENU UTAMA</div>
+    
+    <!-- Dashboard (Active State) -->
+    <a href="dashboard.html" class="nav-link relative flex items-center gap-3.5 px-4 py-3 rounded-xl bg-gradient-to-r from-white/10 to-transparent text-white font-semibold transition" data-page="dashboard.html">
+        <div class="absolute left-0 top-2 bottom-2 w-1.5 bg-yellow-400 rounded-r-full"></div>
+        <i class="fa-solid fa-gauge w-5 text-center text-yellow-400"></i> Dashboard
+    </a>
+
+    <!-- Manajemen Pegawai -->
+    <a href="index.html" class="nav-link flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-white/5 text-gray-300 transition" data-page="pegawai.html">
+        <i class="fa-solid fa-users w-5 text-center"></i> Manajemen Pegawai
+    </a>
+
+    <!-- Rekap Absensi -->
+    <a href="rekap.html" class="nav-link flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-white/5 text-gray-300 transition" data-page="rekap.html">
+        <i class="fa-solid fa-calendar-check w-5 text-center"></i> Rekap Absensi
+    </a>
+
+    <!-- Pengajuan Izin -->
+    <a href="pengajuan-izin.html" class="nav-link flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-white/5 text-gray-300 transition" data-page="izin.html">
+        <i class="fa-solid fa-file-lines w-5 text-center"></i> Pengajuan Izin
+    </a>
+
+    <!-- Pengaturan -->
+    <a href="pengaturan.html" class="nav-link flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-white/5 text-gray-300 transition" data-page="pengaturan.html">
+        <i class="fa-solid fa-gear w-5 text-center"></i> Pengaturan
+    </a>
+
+    <!-- Logout (Dipindahkan ke dalam nav sesuai Gambar 2) -->
+    <button onclick="logout()" class="w-full flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-red-500/10 text-gray-300 hover:text-red-400 transition text-sm font-medium mt-1">
+        <i class="fa-solid fa-right-from-bracket w-5 text-center"></i> Logout
+    </button>
+</nav>
+
+<script>
+    // Skrip otomatis mendeteksi halaman aktif dan memberikan gaya menu aktif + garis kuning
+    document.addEventListener("DOMContentLoaded", function() {
+        const currentPage = window.location.pathname.split("/").pop();
+        
+        // Jika currentPage kosong (misal buka folder root), anggap dashboard
+        const pageTarget = currentPage === "" ? "dashboard.html" : currentPage;
+
+        document.querySelectorAll(".nav-link").forEach(link => {
+            // Reset class ke default terlebih dahulu
+            link.className = "nav-link flex items-center gap-3.5 px-4 py-3 rounded-xl hover:bg-white/5 text-gray-300 transition";
+            
+            // Hapus elemen garis kuning jika ada (untuk reset)
+            const existingIndicator = link.querySelector('.absolute.left-0');
+            if (existingIndicator) existingIndicator.remove();
+            
+            // Reset warna icon
+            const icon = link.querySelector('i');
+            if(icon) icon.classList.remove('text-yellow-400');
+
+            // Terapkan style aktif jika cocok
+            if (link.getAttribute("data-page") === pageTarget) {
+                link.className = "nav-link relative flex items-center gap-3.5 px-4 py-3 rounded-xl bg-gradient-to-r from-white/10 to-transparent text-white font-semibold transition";
+                
+                // Tambahkan garis kuning
+                const indicator = document.createElement('div');
+                indicator.className = "absolute left-0 top-2 bottom-2 w-1.5 bg-yellow-400 rounded-r-full";
+                link.prepend(indicator);
+                
+                // Ubah warna icon jadi kuning
+                if(icon) icon.classList.add('text-yellow-400');
+            }
+        });
+    });
+</script>
