@@ -3,11 +3,12 @@
 <head>
     <!-- Tag PWA -->
     <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#111111">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3135/3135715.png">
+    <meta name="theme-color" content="#1f2937">
+    <meta name="apple-touch-icon" href="logo.png">
+    <link rel="icon" type="image/png" href="logo.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daftar Akun Pegawai (Lokal)</title>
+    <title>Daftar Akun Pegawai - Kominfo Kabupaten Tangerang</title>
 
     <!-- CSS Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -22,148 +23,19 @@
             font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
         }
 
+        /* ===== Background ===== */
         body {
-            background:
-                radial-gradient(circle at 12% 42%, rgba(239,28,42,.22), transparent 30%),
-                radial-gradient(circle at 88% 58%, rgba(30,80,210,.17), transparent 32%),
-                linear-gradient(135deg, #070707 0%, #19080b 34%, #080808 53%, #070b14 78%, #040404 100%);
-            color: #fff;
+            background: #f8fafc;
+            background-image:
+                radial-gradient(circle at 0% 0%, rgba(31,41,55,.04), transparent 40%),
+                radial-gradient(circle at 100% 100%, rgba(212,160,23,.05), transparent 40%);
+            color: #1f2937;
             overflow-x: hidden;
         }
 
-        /* ================= ANIMATED BACKGROUND ================= */
-        .portal-bg {
-            position: fixed;
-            inset: 0;
-            overflow: hidden;
-            z-index: 0;
-            pointer-events: none;
-        }
+        .portal-bg { display: none; }
 
-        .portal-bg::before {
-            content: "";
-            position: absolute;
-            inset: -25%;
-            background:
-                linear-gradient(115deg, transparent 43%, rgba(255,255,255,.055) 44%, transparent 45%),
-                linear-gradient(115deg, transparent 58%, rgba(255,255,255,.035) 59%, transparent 60%);
-            background-size: 420px 420px;
-            transform: rotate(-8deg);
-            animation: bgMove 18s linear infinite;
-        }
-
-        .portal-bg::after {
-            content: "";
-            position: absolute;
-            left: 50%;
-            bottom: -48vh;
-            width: 95vw;
-            height: 95vw;
-            transform: translateX(-50%);
-            border-radius: 50%;
-            background: repeating-radial-gradient(
-                circle,
-                rgba(255,255,255,.08) 0 1px,
-                transparent 2px 36px
-            );
-            opacity: .25;
-            animation: ringSpin 28s linear infinite;
-        }
-
-        .light-beam {
-            position: absolute;
-            width: 75vw;
-            height: 2px;
-            transform: rotate(-17deg);
-            opacity: .55;
-            animation: beamMove 8s ease-in-out infinite alternate;
-        }
-
-        .beam-red {
-            left: -15vw;
-            top: 26%;
-            background: linear-gradient(90deg, transparent, rgba(239,28,42,.95), transparent);
-            box-shadow: 0 0 25px rgba(239,28,42,.7);
-        }
-
-        .beam-blue {
-            right: -15vw;
-            top: 53%;
-            background: linear-gradient(90deg, transparent, rgba(35,94,230,.95), transparent);
-            box-shadow: 0 0 25px rgba(35,94,230,.65);
-            animation-delay: -3s;
-        }
-
-        .floating-logo {
-            position: absolute;
-            width: 300px;
-            height: 300px;
-            border: 1px solid rgba(255,255,255,.07);
-            border-radius: 50%;
-            display: grid;
-            place-items: center;
-            color: rgba(255,255,255,.055);
-            font-size: 145px;
-            font-weight: 900;
-            font-style: italic;
-            text-shadow: 0 0 35px rgba(239,28,42,.18);
-            animation: floatLogo 7s ease-in-out infinite;
-        }
-
-        .floating-logo::before,
-        .floating-logo::after {
-            content: "";
-            position: absolute;
-            border: 1px solid rgba(255,255,255,.05);
-            border-radius: 50%;
-        }
-
-        .floating-logo::before { inset: 18px; }
-        .floating-logo::after { inset: 45px; border-color: rgba(239,28,42,.08); }
-
-        .logo-left { left: -105px; top: 11%; }
-        .logo-right { right: -105px; bottom: 10%; animation-delay: -3.5s; }
-
-        .bg-dot {
-            position: absolute;
-            width: 5px;
-            height: 5px;
-            border-radius: 50%;
-            background: rgba(255,255,255,.7);
-            box-shadow: 0 0 12px rgba(255,255,255,.45);
-            animation: dotFloat 5s ease-in-out infinite;
-        }
-
-        .dot1 { left: 12%; top: 21%; }
-        .dot2 { left: 22%; top: 76%; animation-delay: -1s; }
-        .dot3 { right: 15%; top: 20%; animation-delay: -2s; }
-        .dot4 { right: 10%; top: 73%; animation-delay: -3s; }
-
-        @keyframes bgMove {
-            from { transform: translate3d(-3%, -2%, 0) rotate(-8deg); }
-            to { transform: translate3d(3%, 2%, 0) rotate(-8deg); }
-        }
-
-        @keyframes ringSpin {
-            to { transform: translateX(-50%) rotate(360deg); }
-        }
-
-        @keyframes beamMove {
-            from { transform: translateX(-4%) rotate(-17deg); opacity: .28; }
-            to { transform: translateX(9%) rotate(-17deg); opacity: .75; }
-        }
-
-        @keyframes floatLogo {
-            0%,100% { transform: translateY(0) rotate(-8deg); }
-            50% { transform: translateY(-18px) rotate(2deg); }
-        }
-
-        @keyframes dotFloat {
-            0%,100% { transform: translateY(0); opacity: .3; }
-            50% { transform: translateY(-18px); opacity: 1; }
-        }
-
-        /* ================= PAGE ================= */
+        /* ===== Page ===== */
         .register-page {
             position: relative;
             z-index: 1;
@@ -182,336 +54,379 @@
             margin: auto;
         }
 
-        /* ================= CARD ================= */
+        /* ===== Card ===== */
         .register-card {
             position: relative;
-            overflow: hidden;
+            background: #ffffff;
+            color: #1f2937;
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
             padding: 36px 42px 32px;
-            border-radius: 25px;
-            background: linear-gradient(145deg, rgba(255,255,255,.98), rgba(242,244,248,.96));
-            color: #17213b;
-            border: 1px solid rgba(255,255,255,.8);
             box-shadow:
-                0 30px 90px rgba(0,0,0,.52),
-                0 0 45px rgba(239,28,42,.08);
+                0 1px 2px rgba(0,0,0,.03),
+                0 8px 24px rgba(31,41,55,.06);
         }
 
-        .register-card::before {
-            content: "";
-            position: absolute;
-            width: 190px;
-            height: 190px;
-            right: -110px;
-            top: -115px;
-            border-radius: 50%;
-            background: rgba(239,28,42,.08);
-        }
-
-        .register-card::after {
-            content: "";
-            position: absolute;
-            width: 250px;
-            height: 100px;
-            left: -95px;
-            bottom: -70px;
-            border-radius: 50%;
-            background: rgba(30,64,175,.08);
-        }
-
-        /* ================= BRAND ================= */
+        /* ===== Brand ===== */
         .brand {
             position: relative;
             z-index: 2;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 13px;
-            margin-bottom: 24px;
+            gap: 14px;
+            margin-bottom: 26px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid #f1f5f9;
+            text-align: center;
         }
 
         .brand-mark {
             position: relative;
-            width: 62px;
-            height: 62px;
-            flex: 0 0 62px;
-            display: grid;
-            place-items: center;
-            border: 4px solid #dc1e2f;
-            border-right-color: #1d5fe9;
-            border-radius: 50%;
-            color: #1d355f;
-            font-size: 38px;
-            font-weight: 900;
-            font-style: italic;
-            box-shadow: 0 8px 22px rgba(220,30,47,.14);
+            width: 100%;
+            max-width: 320px;
+            height: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #ffffff;
+            padding: 0;
+            overflow: visible;
+            border: none;
         }
 
-        .brand-mark::after {
-            content: "";
-            position: absolute;
-            width: 40px;
-            height: 4px;
-            bottom: 8px;
-            left: 7px;
-            border-radius: 99px;
-            background: linear-gradient(90deg, #dc1e2f, #1d5fe9);
-            transform: rotate(-22deg);
+        .brand-mark img {
+            width: 100%;
+            height: auto;
+            max-height: 68px;
+            object-fit: contain;
+            display: block;
         }
 
         .brand-name {
             margin: 0;
-            color: #172b55;
-            font-size: 20px;
-            font-weight: 850;
-            letter-spacing: .02em;
+            color: #111827;
+            font-size: 15px;
+            font-weight: 800;
+            letter-spacing: .04em;
+            line-height: 1.25;
         }
 
-        .brand-name span { color: #dc1e2f; }
+        .brand-name span { color: #1f2937; }
 
         .brand-tagline {
-            margin-top: 2px;
-            color: #7a8499;
+            margin-top: 4px;
+            color: #9ca3af;
             font-size: 9px;
-            font-weight: 800;
-            letter-spacing: .28em;
+            font-weight: 700;
+            letter-spacing: .22em;
+            text-transform: uppercase;
         }
 
-        /* ================= TITLE ================= */
+        /* ===== Title ===== */
         .register-heading {
             position: relative;
             z-index: 2;
             text-align: center;
-            margin-bottom: 23px;
+            margin-bottom: 22px;
         }
 
         .register-heading h1 {
             margin: 0;
-            color: #18294b;
-            font-size: clamp(28px, 7vw, 39px);
-            font-weight: 900;
-            line-height: 1.08;
-            letter-spacing: -.035em;
+            color: #111827;
+            font-size: clamp(26px, 6vw, 32px);
+            font-weight: 800;
+            line-height: 1.1;
+            letter-spacing: -.02em;
         }
 
-        .register-heading h1 span { color: #d91f2f; }
+        .register-heading h1 span { color: #1f2937; }
 
         .heading-line {
-            width: 103px;
-            height: 4px;
-            margin: 17px auto 15px;
-            border-radius: 99px;
-            background: linear-gradient(90deg, #1767e8 0 50%, #d91f2f 50% 100%);
+            width: 56px;
+            height: 3px;
+            margin: 15px auto 14px;
+            border-radius: 2px;
+            background: linear-gradient(90deg, #1f2937 0%, #d4a017 100%);
         }
 
         .register-heading p {
             margin: 0 auto;
             max-width: 390px;
-            color: #69748a;
+            color: #6b7280;
             font-size: 13px;
-            line-height: 1.5;
+            line-height: 1.55;
         }
 
-        /* ================= FORM ================= */
+        /* ===== Foto Profil Uploader ===== */
+        .photo-uploader {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .photo-preview {
+            position: relative;
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            background: #f3f4f6;
+            border: 3px dashed #cbd5e1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all .2s ease;
+        }
+
+        .photo-preview:hover {
+            border-color: #1f2937;
+            background: #f9fafb;
+        }
+
+        .photo-preview.has-photo {
+            border-style: solid;
+            border-color: #1f2937;
+        }
+
+        .photo-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none;
+        }
+
+        .photo-preview.has-photo img {
+            display: block;
+        }
+
+        .photo-preview .placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: #9ca3af;
+            font-size: 10px;
+            font-weight: 600;
+            text-align: center;
+            padding: 8px;
+        }
+
+        .photo-preview.has-photo .placeholder {
+            display: none;
+        }
+
+        .photo-preview .placeholder i {
+            font-size: 22px;
+            color: #cbd5e1;
+        }
+
+        .photo-hint {
+            font-size: 10.5px;
+            color: #9ca3af;
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        /* ===== Form ===== */
         .register-form {
             position: relative;
             z-index: 2;
         }
 
         .field {
-            margin-bottom: 13px;
+            margin-bottom: 15px;
         }
 
         .field label {
-            display: block;
+            display: flex;
+            align-items: center;
             margin-bottom: 7px;
-            color: #17294b;
-            font-size: 12px;
-            font-weight: 800;
+            color: #374151;
+            font-size: 12.5px;
+            font-weight: 600;
         }
 
         .field label i {
             width: 16px;
-            color: #d91f2f;
-            margin-right: 4px;
+            color: #1f2937;
+            margin-right: 7px;
+            font-size: 13px;
         }
 
-        .input-wrap {
-            position: relative;
-        }
+        .input-wrap { position: relative; }
 
         .input-wrap > i {
             position: absolute;
-            left: 15px;
+            left: 14px;
             top: 50%;
             transform: translateY(-50%);
-            color: #8993a5;
+            color: #9ca3af;
             z-index: 2;
+            font-size: 14px;
+            pointer-events: none;
         }
 
         .register-input {
             width: 100%;
             height: 48px;
-            padding: 0 14px 0 43px;
-            border: 1px solid #cbd2dd;
-            border-radius: 11px;
-            background: #f8f9fb;
-            color: #1c2942;
+            padding: 0 14px 0 42px;
+            border: 1px solid #d1d5db;
+            border-radius: 9px;
+            background: #ffffff;
+            color: #1f2937;
             outline: none;
-            font-size: 13px;
-            transition: .25s ease;
+            font-size: 13.5px;
+            font-weight: 500;
+            transition: border-color .15s ease, box-shadow .15s ease;
         }
 
-        .register-input::placeholder { color: #a1a9b7; }
+        .register-input::placeholder { color: #9ca3af; font-weight: 400; }
 
         .register-input:focus {
-            border-color: #d91f2f;
-            background: #fff;
-            box-shadow: 0 0 0 4px rgba(217,31,47,.08);
+            border-color: #1f2937;
+            box-shadow: 0 0 0 3px rgba(31,41,55,.08);
         }
 
-        /* ================= BUTTON ================= */
+        /* ===== Button ===== */
         .register-btn {
             width: 100%;
-            min-height: 54px;
-            margin-top: 5px;
+            min-height: 52px;
+            margin-top: 10px;
             border: 0;
-            border-radius: 12px;
-            background: linear-gradient(90deg, #df1e2f 0%, #c51e36 35%, #245fe0 100%);
+            border-radius: 9px;
+            background: #1f2937;
             color: #fff;
             font-size: 14px;
-            font-weight: 850;
+            font-weight: 700;
+            letter-spacing: .02em;
             cursor: pointer;
-            box-shadow: 0 12px 24px rgba(54,59,150,.22);
-            transition: transform .2s ease, box-shadow .2s ease, filter .2s ease;
+            transition: background .15s ease, transform .1s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
-        .register-btn:hover {
-            transform: translateY(-2px);
-            filter: brightness(1.04);
-            box-shadow: 0 16px 30px rgba(54,59,150,.28);
-        }
+        .register-btn:hover { background: #111827; }
+        .register-btn:active { transform: scale(.99); background: #000000; }
+        .register-btn:disabled { opacity: .65; cursor: wait; }
 
-        .register-btn:active { transform: translateY(0); }
-        .register-btn:disabled { opacity: .7; cursor: wait; }
-
-        /* ================= LOGIN LINK ================= */
+        /* ===== Login link ===== */
         .login-area {
             position: relative;
             z-index: 2;
             margin-top: 22px;
-            padding-top: 18px;
-            border-top: 1px solid #e1e5eb;
+            padding-top: 20px;
+            border-top: 1px solid #f1f5f9;
             text-align: center;
-            color: #747f92;
-            font-size: 12px;
+            color: #6b7280;
+            font-size: 12.5px;
         }
 
         .login-area a {
-            color: #1464e7;
-            font-weight: 800;
+            color: #1f2937;
+            font-weight: 700;
             text-decoration: none;
             margin-left: 4px;
         }
 
         .login-area a:hover { text-decoration: underline; }
 
-        /* ================= FOOTER ================= */
+        /* ===== Footer ===== */
         .register-footer {
             width: 100vw;
             margin-top: 28px;
             padding: 18px 20px 22px;
             text-align: center;
-            color: rgba(255,255,255,.72);
+            color: #9ca3af;
             font-size: 12px;
-            background: linear-gradient(90deg, rgba(25,4,6,.9), rgba(5,10,25,.92));
-            border-top: 1px solid rgba(255,255,255,.08);
+            background: transparent;
+            border-top: 1px solid #e5e7eb;
         }
 
+        .register-footer span { color: #6b7280; font-weight: 600; }
+
+        /* ===== Mobile ===== */
         @media (max-width: 640px) {
             .register-page { padding: 18px 12px 0; }
             .register-card {
-                padding: 29px 22px 27px;
-                border-radius: 22px;
+                padding: 28px 22px 26px;
+                border-radius: 12px;
             }
 
-            .brand-mark {
-                width: 54px;
-                height: 54px;
-                flex-basis: 54px;
-                font-size: 32px;
-            }
-
-            .brand-name { font-size: 17px; }
+            .brand-mark { max-width: 260px; }
+            .brand-mark img { max-height: 58px; }
+            .brand-name { font-size: 13.5px; }
             .brand-tagline {
-                font-size: 7px;
-                letter-spacing: .21em;
+                font-size: 8px;
+                letter-spacing: .18em;
             }
 
-            .register-heading h1 { font-size: 29px; }
+            .register-heading h1 { font-size: 25px; }
+            .register-footer { margin-top: 20px; }
 
-            .floating-logo {
-                width: 220px;
-                height: 220px;
-                font-size: 105px;
-            }
-
-            .logo-left { left: -125px; top: 9%; }
-            .logo-right { right: -125px; bottom: 14%; }
-
-            .register-footer { margin-top: 18px; }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            .portal-bg::before,
-            .portal-bg::after,
-            .light-beam,
-            .floating-logo,
-            .bg-dot {
-                animation: none !important;
+            .photo-preview {
+                width: 96px;
+                height: 96px;
             }
         }
     </style>
 </head>
 
 <body>
-    <!-- Background animasi dengan lambang perusahaan -->
-    <div class="portal-bg" aria-hidden="true">
-        <div class="floating-logo logo-left">A</div>
-        <div class="floating-logo logo-right">A</div>
-        <div class="light-beam beam-red"></div>
-        <div class="light-beam beam-blue"></div>
-        <span class="bg-dot dot1"></span>
-        <span class="bg-dot dot2"></span>
-        <span class="bg-dot dot3"></span>
-        <span class="bg-dot dot4"></span>
-    </div>
-
     <div class="register-page">
         <div class="register-container">
 
             <div class="register-card">
 
-                <!-- Logo dan nama perusahaan -->
+                <!-- Logo dan nama instansi -->
                 <div class="brand">
-                    <div class="brand-mark">A</div>
+                    <div class="brand-mark">
+                        <img src="logo.png" alt="Kominfo Kabupaten Tangerang">
+                    </div>
                     <div>
-                        <p class="brand-name">PT. ANDALAN <span>MAJU</span></p>
-                        <div class="brand-tagline">INNOVATE • GROW • EXCEL</div>
+                        <p class="brand-name">KOMINFO <span>KAB. TANGERANG</span></p>
+                        <div class="brand-tagline">Dinas Komunikasi & Informatika</div>
                     </div>
                 </div>
 
                 <!-- Judul -->
                 <div class="register-heading">
                     <h1>DAFTAR <span>AKUN</span></h1>
-                    <div class="heading-line"></div>
                     <p>
                         Lengkapi data diri Anda untuk membuat akun pegawai
                         dan mendapatkan QR Code Absensi.
                     </p>
                 </div>
 
-                <!-- FORM ASLI: ID dan metode tetap dipertahankan -->
-                <form id="register-form" onsubmit="handleRegister(event)" class="register-form">
+                <!-- FORM dengan upload foto -->
+                <form id="register-form" onsubmit="handleRegister(event)" class="register-form" enctype="multipart/form-data">
+
+                    <!-- Foto Profil -->
+                    <div class="photo-uploader">
+                        <label for="photo" class="photo-preview" id="photoPreview">
+                            <img id="photoImg" src="" alt="Preview Foto">
+                            <div class="placeholder">
+                                <i class="fa-solid fa-camera"></i>
+                                <span>Tambah<br>Foto</span>
+                            </div>
+                        </label>
+                        <input
+                            type="file"
+                            id="photo"
+                            name="photo"
+                            accept="image/png, image/jpeg, image/jpg"
+                            style="display: none;">
+                        <div class="photo-hint">
+                            Klik untuk upload foto profil<br>
+                            <span style="color:#cbd5e1;">(JPG/PNG, maks 5 MB — opsional)</span>
+                        </div>
+                    </div>
 
                     <div class="field">
                         <label>
@@ -519,7 +434,7 @@
                             NIP (Nomor Induk Pegawai)
                         </label>
                         <div class="input-wrap">
-                            <input type="text" id="nip" placeholder="Contoh: 12345" required
+                            <input type="text" id="nip" placeholder="Contoh: 3603020612040004" required
                                 class="register-input">
                             <i class="fa-regular fa-id-card"></i>
                         </div>
@@ -574,14 +489,14 @@
                     </div>
 
                     <button type="submit" id="submit-btn" class="register-btn">
-                        <i class="fa-solid fa-user-check mr-2"></i> Daftar Sekarang
+                        <i class="fa-solid fa-user-check"></i> Daftar Sekarang
                     </button>
                 </form>
 
                 <!-- Kembali ke portal -->
                 <div class="login-area">
                     <span>Sudah punya akun?</span>
-                    <a href="/user.html">
+                    <a href="user.html">
                         Masuk di sini
                     </a>
                 </div>
@@ -590,13 +505,12 @@
         </div>
 
         <footer class="register-footer">
-            © 2026 PT. ANDALAN MAJU. All Rights Reserved.
+            © 2026 <span>Dinas Komunikasi dan Informatika</span> Kabupaten Tangerang
         </footer>
     </div>
 
-    <!-- Main JavaScript: DIPERTAHANKAN -->
+    <!-- Main JavaScript -->
     <script>
-        // Registrasi Service Worker PWA
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/sw.js')
@@ -605,27 +519,79 @@
             });
         }
 
+        // ============================================================
+        // PREVIEW FOTO PROFIL
+        // ============================================================
+        const photoInput = document.getElementById('photo');
+        const photoPreview = document.getElementById('photoPreview');
+        const photoImg = document.getElementById('photoImg');
+
+        photoInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            // Validasi tipe file
+            const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+            if (!allowedTypes.includes(file.type)) {
+                alert('❌ Hanya file JPG atau PNG yang diizinkan!');
+                photoInput.value = '';
+                return;
+            }
+
+            // Validasi ukuran (max 5 MB)
+            if (file.size > 5 * 1024 * 1024) {
+                alert('❌ Ukuran file terlalu besar! Maksimal 5 MB.');
+                photoInput.value = '';
+                return;
+            }
+
+            // Preview
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                photoImg.src = ev.target.result;
+                photoPreview.classList.add('has-photo');
+            };
+            reader.readAsDataURL(file);
+        });
+
+        // ============================================================
+        // HANDLE REGISTER — KIRIM SEBAGAI FormData (multipart/form-data)
+        // ============================================================
         async function handleRegister(e) {
             e.preventDefault();
 
-            const payload = {
-                nip: document.getElementById('nip').value.trim(),
-                full_name: document.getElementById('full_name').value.trim(),
-                email: document.getElementById('email').value.trim(),
-                phone: document.getElementById('phone').value.trim(),
-                password: document.getElementById('password').value
-            };
+            const nip = document.getElementById('nip').value.trim();
+            const full_name = document.getElementById('full_name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const password = document.getElementById('password').value;
+            const photo = photoInput.files[0];
 
-            if (payload.nip.length < 3) {
+            // Validasi dasar
+            if (nip.length < 3) {
                 alert('NIP minimal 3 karakter!');
                 document.getElementById('nip').focus();
                 return;
             }
 
-            if (payload.password.length < 6) {
+            if (password.length < 6) {
                 alert('Password minimal 6 karakter!');
                 document.getElementById('password').focus();
                 return;
+            }
+
+            // ============================================================
+            // BANGUN FORMDATA (bukan JSON — supaya server bisa parse file)
+            // ============================================================
+            const formData = new FormData();
+            formData.append('nip', nip);
+            formData.append('full_name', full_name);
+            formData.append('email', email);
+            formData.append('phone', phone || '');
+            formData.append('password', password);
+
+            if (photo) {
+                formData.append('photo', photo);
             }
 
             const submitBtn = document.getElementById('submit-btn');
@@ -633,21 +599,19 @@
             submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Memproses...';
 
             try {
-                // Endpoint otomatis ke server Node.js lokal (localhost:3000)
                 const res = await fetch('/api/users/register', {
                     method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify(payload)
+                    body: formData
+                    // ⚠️ JANGAN set 'Content-Type' manual!
+                    // Browser otomatis set:
+                    //    multipart/form-data; boundary=...
                 });
 
                 const result = await res.json();
 
                 if (result.success) {
-                    alert('✅ Registrasi Berhasil! Data tersimpan di MySQL lokal.');
-                    window.location.href = `/?nip=${encodeURIComponent(payload.nip)}`;
+                    alert('✅ Registrasi Berhasil! Silakan masuk dengan NIP Anda.');
+                    window.location.href = `user.html?nip=${encodeURIComponent(nip)}`;
                 } else {
                     alert(`❌ Gagal: ${result.message}`);
                     submitBtn.disabled = false;

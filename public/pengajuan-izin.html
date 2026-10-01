@@ -2,27 +2,27 @@
 <html lang="id">
 <head>
     <!-- Meta PWA & Mobile Optimization -->
-    <meta name="theme-color" content="#1a2a6c">
+    <meta name="theme-color" content="#1f2937">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Absensi">
+    <meta name="apple-mobile-web-app-title" content="Absensi Kominfo">
     <link rel="manifest" href="/manifest-admin.json">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3135/3135715.png">
+    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="apple-touch-icon" href="logo.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Persetujuan Izin - Absensi Digital</title>
-    
+    <title>Persetujuan Izin - Kominfo Kabupaten Tangerang</title>
+
     <!-- CSS Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    
-    <style>
-        * {
-            -webkit-tap-highlight-color: transparent;
-        }
 
-        /* ===== SIDEBAR ITEM BASE ===== */
+    <style>
+        * { -webkit-tap-highlight-color: transparent; }
+
+        /* ===== SIDEBAR ITEM ===== */
         .sidebar-item {
             position: relative;
             overflow: hidden;
@@ -37,7 +37,7 @@
             transform: translateY(-50%) scaleY(0);
             width: 4px;
             height: 70%;
-            background: #fbbf24;
+            background: #d4a017;
             border-radius: 0 4px 4px 0;
             transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             transform-origin: center;
@@ -48,31 +48,30 @@
         }
         .sidebar-item:hover i {
             transform: scale(1.1);
-            color: #fbbf24;
+            color: #d4a017;
         }
-        .sidebar-item i {
-            transition: transform 0.25s ease, color 0.25s ease;
-        }
+        .sidebar-item i { transition: transform 0.25s ease, color 0.25s ease; }
+
         .sidebar-item.sidebar-active {
-            background: linear-gradient(90deg, rgba(251, 191, 36, 0.15) 0%, rgba(45, 67, 115, 0.4) 100%);
+            background: rgba(255, 255, 255, 0.08);
             padding-left: 1rem;
         }
         .sidebar-item.sidebar-active::before {
             transform: translateY(-50%) scaleY(1);
         }
         .sidebar-item.sidebar-active i {
-            color: #fbbf24 !important;
+            color: #d4a017 !important;
             transform: scale(1.15);
         }
         .sidebar-item.sidebar-active span {
             color: #ffffff !important;
             font-weight: 600;
-            letter-spacing: 0.01em;
         }
         .sidebar-item:active {
             transform: scale(0.97);
-            background: rgba(251, 191, 36, 0.2);
+            background: rgba(212, 160, 23, 0.15);
         }
+
         @keyframes slideInLeft {
             from { opacity: 0; transform: translateX(-8px); }
             to { opacity: 1; transform: translateX(0); }
@@ -84,316 +83,445 @@
         .sidebar-item:nth-child(6) { animation-delay: 0.15s; }
         .sidebar-item:nth-child(7) { animation-delay: 0.18s; }
 
-        body.page-exit {
-            opacity: 0;
-            transition: opacity 0.2s ease;
-        }
+        body.page-exit { opacity: 0; transition: opacity 0.2s ease; }
 
-        .company-gradient {
-            background: linear-gradient(135deg, #0f1a3d, #1a2a6c, #2d4373);
-        }
-        .stat-card {
-            transition: all 0.3s ease;
-        }
-        .stat-card:hover {
-            transform: translateY(-4px);
-        }
+        /* ===== SIDEBAR SOLID ===== */
+        .company-gradient { background: #1f2937; }
+
+        .stat-card { transition: all 0.3s ease; }
+        .stat-card:hover { transform: translateY(-4px); }
+
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb { background: #1a2a6c; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #2d4373; }
+        ::-webkit-scrollbar-thumb { background: #374151; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #1f2937; }
 
         .table-wrapper {
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
             scroll-behavior: smooth;
         }
-        .table-wrapper table {
-            min-width: 700px;
-            width: 100%;
-        }
+        .table-wrapper table { min-width: 700px; width: 100%; }
+
         .touch-target { min-height: 44px; min-width: 44px; }
+
         .modal-backdrop {
             -webkit-backdrop-filter: blur(4px);
             backdrop-filter: blur(4px);
         }
+
         @media (max-width: 640px) {
             .table-wrapper table { min-width: 600px; }
         }
         @supports (padding: max(0px)) {
             .safe-bottom { padding-bottom: max(1rem, env(safe-area-inset-bottom)); }
         }
+
         input, select, textarea { font-size: 16px !important; }
-        #mobile-sidebar {
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
+
+        #mobile-sidebar { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+
         button, .clickable {
             cursor: pointer;
             -webkit-tap-highlight-color: transparent;
         }
         button:active, .clickable:active { transform: scale(0.97); }
 
-        /* Filter button state */
-        .filter-btn {
-            transition: all 0.2s ease;
-        }
+        .filter-btn { transition: all 0.2s ease; }
         .filter-btn.active {
-            background-color: #1a2a6c;
+            background-color: #1f2937;
             color: white;
-            box-shadow: 0 2px 8px rgba(26, 42, 108, 0.3);
+            box-shadow: 0 2px 8px rgba(31, 41, 55, 0.3);
+        }
+
+        /* ===== BRAND (Logo + Nama Instansi) ===== */
+        .brand-wrap { display: flex; align-items: center; gap: 10px; padding: 4px 0; }
+        .brand-logo {
+            flex-shrink: 0;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 3px;
+            overflow: hidden;
+        }
+        .brand-logo img { width: 100%; height: 100%; object-fit: contain; display: block; }
+        .brand-text { min-width: 0; flex: 1; line-height: 1.2; }
+        .brand-text .brand-title {
+            margin: 0;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: .04em;
+            line-height: 1.25;
+        }
+        .brand-text .brand-title .line-1 { color: #ffffff; display: block; }
+        .brand-text .brand-title .line-2 { color: #d4a017; display: block; }
+        .brand-text .brand-sub {
+            color: rgba(255,255,255,.55);
+            font-size: 8px;
+            font-weight: 700;
+            letter-spacing: .18em;
+            text-transform: uppercase;
+            margin-top: 4px;
+            white-space: nowrap;
+        }
+        .brand-wrap-mobile .brand-text .brand-title .line-1 { color: #111827; }
+        .brand-wrap-mobile .brand-text .brand-title .line-2 { color: #d4a017; }
+        .brand-wrap-mobile .brand-text .brand-sub { color: #6b7280; }
+        .brand-wrap-mobile .brand-logo { background: #ffffff; border: 1px solid #e5e7eb; }
+
+        /* ============================================
+           NOTIF TOAST — Persistent (tidak auto-hide)
+           ============================================ */
+        .notif-toast {
+            background: #ffffff;
+            border-left: 4px solid #d4a017;
+            border-radius: 10px;
+            padding: 14px 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,.15), 0 2px 8px rgba(0,0,0,.08);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            animation: notifSlideIn .35s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            transition: transform .2s ease;
+        }
+        .notif-toast:hover { transform: translateX(-4px); }
+        .notif-toast.hide { animation: notifSlideOut .3s ease forwards; }
+
+        @keyframes notifSlideIn {
+            from { opacity: 0; transform: translateX(120%); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes notifSlideOut {
+            from { opacity: 1; transform: translateX(0); }
+            to { opacity: 0; transform: translateX(120%); }
+        }
+
+        .notif-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: #fef3c7;
+            color: #d97706;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 16px;
+        }
+        .notif-content { flex: 1; min-width: 0; }
+        .notif-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #111827;
+            margin: 0 0 2px;
+        }
+        .notif-message {
+            font-size: 11.5px;
+            color: #6b7280;
+            margin: 0;
+            line-height: 1.4;
+        }
+        .notif-time {
+            font-size: 10px;
+            color: #9ca3af;
+            margin-top: 4px;
+        }
+        .notif-close {
+            background: none;
+            border: none;
+            color: #9ca3af;
+            cursor: pointer;
+            padding: 2px;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        .notif-close:hover { color: #111827; }
+
+        /* Badge notif di sidebar */
+        .notif-badge {
+            background: #ef4444;
+            color: #ffffff;
+            font-size: 9px;
+            font-weight: 800;
+            padding: 2px 6px;
+            border-radius: 999px;
+            margin-left: auto;
+            min-width: 18px;
+            text-align: center;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
     </style>
 </head>
-<body class="bg-slate-50 font-sans text-slate-800 antialiased min-h-screen flex overflow-x-hidden">
 
-    <!-- ============================================ -->
-    <!-- SIDEBAR DESKTOP -->
-    <!-- ============================================ -->
-    <aside class="w-64 min-h-screen company-gradient text-white flex-shrink-0 hidden md:flex flex-col shadow-2xl sticky top-0 overflow-y-auto">
-        <div class="p-4 sm:p-6 border-b border-white/10">
-            <div class="flex items-center gap-3">
-                <div class="bg-amber-400 text-[#1a2a6c] p-2 rounded-lg font-bold shadow-lg flex-shrink-0">
-                    <i class="fa-solid fa-qrcode text-lg"></i>
-                </div>
-                <div class="min-w-0">
-                    <h1 class="text-base sm:text-lg font-bold tracking-tight truncate">Absensi<span class="text-amber-400">Digital</span></h1>
-                </div>
-            </div>
-            <div class="mt-3 pt-3 border-t border-white/10">
-                <p class="text-[10px] sm:text-xs text-amber-400 font-bold tracking-wider truncate">PT. ANDALAN MAJU</p>
-                <p class="text-[8px] sm:text-[10px] text-white/50 italic truncate">INNOVATE · GROW · EXCEL</p>
-            </div>
-        </div>
-        <nav class="flex-1 p-3 sm:p-4 space-y-0.5 overflow-y-auto">
-            <p class="text-[9px] sm:text-[10px] text-white/40 uppercase tracking-wider font-semibold px-3 mb-2">Menu Utama</p>
-            
-            <a href="dashboard.html" data-nav="dashboard" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-xs sm:text-sm">
-                <i class="fa-solid fa-gauge-high w-5 text-center text-sm sm:text-base"></i>
-                <span>Dashboard</span>
-            </a>
-            <a href="index.html" data-nav="pegawai" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-xs sm:text-sm">
-                <i class="fa-solid fa-users w-5 text-center text-sm sm:text-base"></i>
-                <span>Manajemen Pegawai</span>
-            </a>
-            <a href="rekap.html" data-nav="rekap" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-xs sm:text-sm">
-                <i class="fa-regular fa-calendar-check w-5 text-center text-sm sm:text-base"></i>
-                <span>Rekap Absensi</span>
-            </a>
-            <a href="pengajuan-izin.html" data-nav="izin" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-xs sm:text-sm">
-                <i class="fa-regular fa-file-lines w-5 text-center text-sm sm:text-base"></i>
-                <span>Pengajuan Izin</span>
-            </a>
-            <a href="pengaturan.html" data-nav="pengaturan" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-xs sm:text-sm">
-                <i class="fa-solid fa-gear w-5 text-center text-sm sm:text-base"></i>
-                <span>Pengaturan</span>
-            </a>
-            
-            <div class="border-t border-white/10 my-3"></div>
-            
-            <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-xs sm:text-sm">
-                <i class="fa-solid fa-arrow-right-from-bracket w-5 text-center text-sm sm:text-base"></i>
-                <span>Logout</span>
-            </a>
-        </nav>
-        <div class="p-3 sm:p-4 border-t border-white/10 text-[8px] sm:text-[10px] text-white/40 text-center">
-            © 2026 PT. ANDALAN MAJU
-        </div>
-    </aside>
+<body class="bg-slate-50 font-sans text-slate-800 antialiased overflow-hidden">
 
-    <!-- ============================================ -->
-    <!-- MAIN CONTENT -->
-    <!-- ============================================ -->
-    <div class="flex-1 min-h-screen flex flex-col w-full min-w-0">
+    <!-- WRAPPER UTAMA -->
+    <div class="flex h-screen w-full overflow-hidden">
 
-        <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
-            <div class="px-3 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between">
-                <button onclick="toggleSidebar()" class="md:hidden text-slate-600 hover:text-slate-900 text-xl touch-target p-2 -ml-2">
-                    <i class="fa-solid fa-bars"></i>
-                </button>
-                
-                <div class="flex items-center space-x-2 md:hidden min-w-0">
-                    <div class="bg-[#1a2a6c] text-white p-1.5 sm:p-2 rounded-lg font-bold shadow-md flex-shrink-0">
-                        <i class="fa-solid fa-qrcode text-xs sm:text-sm"></i>
+        <!-- ============================================ -->
+        <!-- SIDEBAR DESKTOP -->
+        <!-- ============================================ -->
+        <aside class="w-64 h-full company-gradient text-white flex-shrink-0 hidden md:flex flex-col shadow-xl z-20">
+            <div class="p-4 sm:p-5 border-b border-white/10">
+                <div class="brand-wrap">
+                    <div class="brand-logo">
+                        <img src="logo.png" alt="Logo Kominfo Kabupaten Tangerang">
                     </div>
-                    <div class="min-w-0">
-                        <h1 class="text-xs sm:text-sm font-bold text-slate-900 tracking-tight truncate">Absensi<span class="text-[#1a2a6c]">Digital</span></h1>
+                    <div class="brand-text">
+                        <h1 class="brand-title">
+                            <span class="line-1">KOMINFO</span>
+                            <span class="line-2">KAB. TANGERANG</span>
+                        </h1>
+                        <p class="brand-sub">Absensi Digital</p>
                     </div>
                 </div>
-                
-                <div class="flex items-center gap-2 sm:gap-3">
-                    <button onclick="loadLeaves()" class="px-2.5 sm:px-4 py-1.5 sm:py-2 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-lg shadow-sm transition flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm touch-target">
-                        <i class="fa-solid fa-rotate text-xs sm:text-sm"></i>
-                        <span class="hidden xs:inline">Refresh</span>
-                    </button>
-                </div>
             </div>
-        </header>
 
-        <div id="mobile-overlay" class="fixed inset-0 bg-black/50 z-40 hidden" onclick="toggleSidebar()"></div>
-        <aside id="mobile-sidebar" class="fixed top-0 left-0 h-full w-72 max-w-[80vw] company-gradient text-white z-50 -translate-x-full md:hidden shadow-2xl overflow-y-auto">
-            <div class="p-4 border-b border-white/10">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-3 min-w-0">
-                        <div class="bg-amber-400 text-[#1a2a6c] p-2 rounded-lg font-bold shadow-lg flex-shrink-0">
-                            <i class="fa-solid fa-qrcode text-lg"></i>
-                        </div>
-                        <div class="min-w-0">
-                            <h1 class="text-base font-bold tracking-tight truncate">Absensi<span class="text-amber-400">Digital</span></h1>
-                        </div>
-                    </div>
-                    <button onclick="toggleSidebar()" class="text-white/70 hover:text-white text-2xl p-1 -mr-2 touch-target">
-                        <i class="fa-solid fa-xmark"></i>
-                    </button>
-                </div>
-                <div class="mt-3 pt-3 border-t border-white/10">
-                    <p class="text-xs text-amber-400 font-bold tracking-wider truncate">PT. ANDALAN MAJU</p>
-                    <p class="text-[10px] text-white/50 italic truncate">PHP · JS · API</p>
-                </div>
-            </div>
-            <nav class="p-3 space-y-0.5 overflow-y-auto">
-                <p class="text-[10px] text-white/40 uppercase tracking-wider font-semibold px-3 mb-2">Menu Utama</p>
-                <a href="dashboard.html" data-nav="dashboard" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-sm">
-                    <i class="fa-solid fa-gauge-high w-5 text-center"></i>
+            <nav class="flex-1 p-3 sm:p-4 space-y-0.5 overflow-y-auto">
+                <p class="text-[9px] sm:text-[10px] text-white/40 uppercase tracking-wider font-semibold px-3 mb-2">Menu Utama</p>
+
+                <a href="dashboard.html" data-nav="dashboard" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-xs sm:text-sm">
+                    <i class="fa-solid fa-gauge-high w-5 text-center text-sm sm:text-base"></i>
                     <span>Dashboard</span>
                 </a>
-                <a href="index.html" data-nav="pegawai" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-sm">
-                    <i class="fa-solid fa-users w-5 text-center"></i>
+                <a href="index.html" data-nav="pegawai" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-xs sm:text-sm">
+                    <i class="fa-solid fa-users w-5 text-center text-sm sm:text-base"></i>
                     <span>Manajemen Pegawai</span>
                 </a>
-                <a href="rekap.html" data-nav="rekap" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-sm">
-                    <i class="fa-regular fa-calendar-check w-5 text-center"></i>
+                <a href="rekap.html" data-nav="rekap" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-xs sm:text-sm">
+                    <i class="fa-regular fa-calendar-check w-5 text-center text-sm sm:text-base"></i>
                     <span>Rekap Absensi</span>
                 </a>
-                <a href="pengajuan-izin.html" data-nav="izin" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-sm">
-                    <i class="fa-regular fa-file-lines w-5 text-center"></i>
+                <a href="pengajuan-izin.html" data-nav="izin" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-xs sm:text-sm">
+                    <i class="fa-regular fa-file-lines w-5 text-center text-sm sm:text-base"></i>
                     <span>Pengajuan Izin</span>
+                    <span id="notif-badge" class="notif-badge" style="display:none;">0</span>
                 </a>
-                <a href="pengaturan.html" data-nav="pengaturan" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-sm">
-                    <i class="fa-solid fa-gear w-5 text-center"></i>
+                <a href="pengaturan.html" data-nav="pengaturan" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-xs sm:text-sm">
+                    <i class="fa-solid fa-gear w-5 text-center text-sm sm:text-base"></i>
                     <span>Pengaturan</span>
                 </a>
+
                 <div class="border-t border-white/10 my-3"></div>
-                <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-sm">
-                    <i class="fa-solid fa-arrow-right-from-bracket w-5 text-center"></i>
+
+                <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-xs sm:text-sm">
+                    <i class="fa-solid fa-arrow-right-from-bracket w-5 text-center text-sm sm:text-base"></i>
                     <span>Logout</span>
                 </a>
             </nav>
-            <div class="p-4 border-t border-white/10 text-[10px] text-white/40 text-center">
-                © 2026 PT. ANDALAN MAJU
+
+            <div class="p-3 sm:p-4 border-t border-white/10 text-[8px] sm:text-[10px] text-white/40 text-center">
+                © 2026 Diskominfo Kab. Tangerang
             </div>
         </aside>
 
-        <main class="flex-1 max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 w-full space-y-6 sm:space-y-8 min-w-0">
-            
-            <!-- HEADER SECTION -->
-            <section>
-                <div class="flex flex-wrap items-start sm:items-center justify-between gap-3 mb-4 sm:mb-6">
-                    <div class="min-w-0">
-                        <h2 class="text-lg sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
-                            <i class="fa-solid fa-envelope-open-text text-amber-500 text-base sm:text-xl"></i>
-                            <span class="truncate">Persetujuan Izin</span>
-                        </h2>
-                        <p class="text-xs sm:text-sm text-slate-500 truncate">Kelola pengajuan izin, sakit, dan cuti pegawai.</p>
+        <!-- ============================================ -->
+        <!-- KONTEN UTAMA -->
+        <!-- ============================================ -->
+        <main class="flex-1 flex flex-col h-full overflow-hidden bg-slate-50 relative">
+
+            <!-- HEADER STATIS -->
+            <header class="bg-white border-b border-slate-200 shadow-sm flex-shrink-0 z-30">
+                <div class="px-3 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between">
+                    <button onclick="toggleSidebar()" class="md:hidden text-slate-600 hover:text-slate-900 text-xl touch-target p-2 -ml-2">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+
+                    <div class="flex items-center md:hidden min-w-0">
+                        <div class="brand-wrap brand-wrap-mobile">
+                            <div class="brand-logo">
+                                <img src="logo.png" alt="Logo Kominfo Kabupaten Tangerang">
+                            </div>
+                            <div class="brand-text">
+                                <h1 class="brand-title">
+                                    <span class="line-1">KOMINFO</span>
+                                    <span class="line-2">KAB. TANGERANG</span>
+                                </h1>
+                                <p class="brand-sub">Absensi Digital</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2 sm:gap-3">
+                        <button onclick="loadAdminLeaves()" class="px-2.5 sm:px-4 py-1.5 sm:py-2 bg-[#1f2937] hover:bg-[#111827] text-white font-semibold rounded-lg shadow-sm transition flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm touch-target">
+                            <i class="fa-solid fa-rotate text-xs sm:text-sm"></i>
+                            <span class="hidden xs:inline">Refresh</span>
+                        </button>
                     </div>
                 </div>
-            </section>
+            </header>
 
-            <!-- STAT CARDS -->
-            <section>
-                <div class="grid grid-cols-3 gap-2 sm:gap-4 mb-4 sm:mb-6">
-                    <div class="bg-white p-3 sm:p-4 rounded-xl border border-slate-200 shadow-sm stat-card hover:shadow-md transition">
-                        <div class="flex items-center gap-2 sm:gap-4">
-                            <div class="p-2 sm:p-3 bg-amber-100 text-amber-600 rounded-lg">
-                                <i class="fa-solid fa-hourglass-half text-base sm:text-lg"></i>
+            <div id="mobile-overlay" class="fixed inset-0 bg-black/50 z-40 hidden" onclick="toggleSidebar()"></div>
+
+            <!-- Mobile Sidebar -->
+            <aside id="mobile-sidebar" class="fixed top-0 left-0 h-full w-72 max-w-[80vw] company-gradient text-white z-50 -translate-x-full md:hidden shadow-2xl overflow-y-auto">
+                <div class="p-4 border-b border-white/10">
+                    <div class="flex items-center justify-between gap-2">
+                        <div class="brand-wrap">
+                            <div class="brand-logo">
+                                <img src="logo.png" alt="Logo Kominfo Kabupaten Tangerang">
                             </div>
-                            <div class="min-w-0">
-                                <p class="text-[8px] sm:text-xs font-semibold uppercase text-slate-400 truncate">Pending</p>
-                                <h3 id="stat-pending" class="text-base sm:text-xl font-bold text-slate-900">0</h3>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="bg-white p-3 sm:p-4 rounded-xl border border-slate-200 shadow-sm stat-card hover:shadow-md transition">
-                        <div class="flex items-center gap-2 sm:gap-4">
-                            <div class="p-2 sm:p-3 bg-emerald-100 text-emerald-600 rounded-lg">
-                                <i class="fa-solid fa-check-circle text-base sm:text-lg"></i>
-                            </div>
-                            <div class="min-w-0">
-                                <p class="text-[8px] sm:text-xs font-semibold uppercase text-slate-400 truncate">Disetujui</p>
-                                <h3 id="stat-approved" class="text-base sm:text-xl font-bold text-slate-900">0</h3>
+                            <div class="brand-text">
+                                <h1 class="brand-title">
+                                    <span class="line-1">KOMINFO</span>
+                                    <span class="line-2">KAB. TANGERANG</span>
+                                </h1>
+                                <p class="brand-sub">Absensi Digital</p>
                             </div>
                         </div>
-                    </div>
-                    <div class="bg-white p-3 sm:p-4 rounded-xl border border-slate-200 shadow-sm stat-card hover:shadow-md transition">
-                        <div class="flex items-center gap-2 sm:gap-4">
-                            <div class="p-2 sm:p-3 bg-rose-100 text-rose-600 rounded-lg">
-                                <i class="fa-solid fa-circle-xmark text-base sm:text-lg"></i>
-                            </div>
-                            <div class="min-w-0">
-                                <p class="text-[8px] sm:text-xs font-semibold uppercase text-slate-400 truncate">Ditolak</p>
-                                <h3 id="stat-rejected" class="text-base sm:text-xl font-bold text-slate-900">0</h3>
-                            </div>
-                        </div>
+                        <button onclick="toggleSidebar()" class="text-white/70 hover:text-white text-2xl p-1 -mr-2 touch-target flex-shrink-0">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
                     </div>
                 </div>
-            </section>
-
-            <!-- TABLE SECTION -->
-            <section>
-                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                    <!-- Search & Filter Bar -->
-                    <div class="p-3 sm:p-4 border-b border-slate-200 bg-slate-50/50 flex flex-wrap items-center gap-3">
-                        <div class="relative flex-1 min-w-[150px]">
-                            <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                            <input type="text" id="search-input" onkeyup="filterLeaves()" placeholder="Cari NIP atau Nama..." 
-                                class="w-full pl-8 pr-3 py-1.5 sm:py-2 border border-slate-300 rounded-lg text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#1a2a6c]">
-                        </div>
-                        <div class="flex items-center gap-1 flex-shrink-0 flex-wrap">
-                            <button onclick="setFilter('all')" data-filter="all" class="filter-btn active px-2.5 sm:px-3 py-1.5 rounded-lg text-[10px] sm:text-xs font-semibold border border-slate-200 bg-white hover:bg-slate-100">
-                                Semua
-                            </button>
-                            <button onclick="setFilter('Pending')" data-filter="Pending" class="filter-btn px-2.5 sm:px-3 py-1.5 rounded-lg text-[10px] sm:text-xs font-semibold border border-slate-200 bg-white hover:bg-slate-100">
-                                Pending
-                            </button>
-                            <button onclick="setFilter('Approved')" data-filter="Approved" class="filter-btn px-2.5 sm:px-3 py-1.5 rounded-lg text-[10px] sm:text-xs font-semibold border border-slate-200 bg-white hover:bg-slate-100">
-                                Disetujui
-                            </button>
-                            <button onclick="setFilter('Rejected')" data-filter="Rejected" class="filter-btn px-2.5 sm:px-3 py-1.5 rounded-lg text-[10px] sm:text-xs font-semibold border border-slate-200 bg-white hover:bg-slate-100">
-                                Ditolak
-                            </button>
-                        </div>
-                        <div class="text-[10px] sm:text-xs text-slate-500 flex items-center gap-2 flex-shrink-0 ml-auto">
-                            <span>Total: <span id="total-leaves" class="font-bold text-slate-700">0</span></span>
-                        </div>
-                    </div>
-
-                    <div class="table-wrapper">
-                        <table class="w-full text-left border-collapse text-xs sm:text-sm">
-                            <thead>
-                                <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold">
-                                    <th class="p-2 sm:p-4 whitespace-nowrap">NIP & Nama</th>
-                                    <th class="p-2 sm:p-4 whitespace-nowrap">Jenis</th>
-                                    <th class="p-2 sm:p-4 whitespace-nowrap hidden sm:table-cell">Tanggal</th>
-                                    <th class="p-2 sm:p-4 whitespace-nowrap hidden md:table-cell">Alasan</th>
-                                    <th class="p-2 sm:p-4 whitespace-nowrap">Status</th>
-                                    <th class="p-2 sm:p-4 text-center whitespace-nowrap">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody id="leaveTableBody" class="text-xs sm:text-sm">
-                                <tr>
-                                    <td colspan="6" class="p-4 sm:p-6 text-center text-slate-400">
-                                        <i class="fa-solid fa-spinner fa-spin mr-2"></i>
-                                        Memuat pengajuan...
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                <nav class="p-3 space-y-0.5 overflow-y-auto">
+                    <p class="text-[10px] text-white/40 uppercase tracking-wider font-semibold px-3 mb-2">Menu Utama</p>
+                    <a href="dashboard.html" data-nav="dashboard" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-sm">
+                        <i class="fa-solid fa-gauge-high w-5 text-center"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="index.html" data-nav="pegawai" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-sm">
+                        <i class="fa-solid fa-users w-5 text-center"></i>
+                        <span>Manajemen Pegawai</span>
+                    </a>
+                    <a href="rekap.html" data-nav="rekap" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-sm">
+                        <i class="fa-regular fa-calendar-check w-5 text-center"></i>
+                        <span>Rekap Absensi</span>
+                    </a>
+                    <a href="pengajuan-izin.html" data-nav="izin" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-sm">
+                        <i class="fa-regular fa-file-lines w-5 text-center"></i>
+                        <span>Pengajuan Izin</span>
+                        <span id="notif-badge-mobile" class="notif-badge" style="display:none;">0</span>
+                    </a>
+                    <a href="pengaturan.html" data-nav="pengaturan" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-sm">
+                        <i class="fa-solid fa-gear w-5 text-center"></i>
+                        <span>Pengaturan</span>
+                    </a>
+                    <div class="border-t border-white/10 my-3"></div>
+                    <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-sm">
+                        <i class="fa-solid fa-arrow-right-from-bracket w-5 text-center"></i>
+                        <span>Logout</span>
+                    </a>
+                </nav>
+                <div class="p-4 border-t border-white/10 text-[10px] text-white/40 text-center">
+                    © 2026 Diskominfo Kab. Tangerang
                 </div>
-            </section>
+            </aside>
 
-            <footer class="text-center py-3 sm:py-4 border-t border-slate-200 mt-4 sm:mt-6 safe-bottom">
-                <p class="text-[10px] sm:text-xs text-slate-400">© 2026 PT. ANDALAN MAJU. All Rights Reserved.</p>
-            </footer>
+            <!-- AREA SCROLL -->
+            <div class="flex-1 overflow-y-auto">
+                <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-6 sm:space-y-8 w-full">
+
+                    <!-- HEADER SECTION -->
+                    <section>
+                        <div class="flex flex-wrap items-start sm:items-center justify-between gap-3 mb-4 sm:mb-6">
+                            <div class="min-w-0">
+                                <h2 class="text-lg sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
+                                    <i class="fa-solid fa-envelope-open-text text-[#1f2937] text-base sm:text-xl"></i>
+                                    <span class="truncate">Persetujuan Izin</span>
+                                </h2>
+                                <p class="text-xs sm:text-sm text-slate-500 truncate">Kelola pengajuan izin, sakit, dan cuti pegawai.</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- STAT CARDS -->
+                    <section>
+                        <div class="grid grid-cols-3 gap-2 sm:gap-4 mb-4 sm:mb-6">
+                            <div class="bg-white p-3 sm:p-4 rounded-xl border border-slate-200 shadow-sm stat-card hover:shadow-md transition">
+                                <div class="flex items-center gap-2 sm:gap-4">
+                                    <div class="p-2 sm:p-3 bg-amber-100 text-amber-600 rounded-lg">
+                                        <i class="fa-solid fa-hourglass-half text-base sm:text-lg"></i>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <p class="text-[8px] sm:text-xs font-semibold uppercase text-slate-400 truncate">Pending</p>
+                                        <h3 id="stat-pending" class="text-base sm:text-xl font-bold text-slate-900">0</h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-white p-3 sm:p-4 rounded-xl border border-slate-200 shadow-sm stat-card hover:shadow-md transition">
+                                <div class="flex items-center gap-2 sm:gap-4">
+                                    <div class="p-2 sm:p-3 bg-emerald-100 text-emerald-600 rounded-lg">
+                                        <i class="fa-solid fa-check-circle text-base sm:text-lg"></i>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <p class="text-[8px] sm:text-xs font-semibold uppercase text-slate-400 truncate">Disetujui</p>
+                                        <h3 id="stat-approved" class="text-base sm:text-xl font-bold text-slate-900">0</h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-white p-3 sm:p-4 rounded-xl border border-slate-200 shadow-sm stat-card hover:shadow-md transition">
+                                <div class="flex items-center gap-2 sm:gap-4">
+                                    <div class="p-2 sm:p-3 bg-rose-100 text-rose-600 rounded-lg">
+                                        <i class="fa-solid fa-circle-xmark text-base sm:text-lg"></i>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <p class="text-[8px] sm:text-xs font-semibold uppercase text-slate-400 truncate">Ditolak</p>
+                                        <h3 id="stat-rejected" class="text-base sm:text-xl font-bold text-slate-900">0</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- TABLE SECTION -->
+                    <section>
+                        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                            <div class="p-3 sm:p-4 border-b border-slate-200 bg-slate-50/50 flex flex-wrap items-center gap-3">
+                                <div class="relative flex-1 min-w-[150px]">
+                                    <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                                    <input type="text" id="leave-search-input" onkeyup="filterLeaves()" placeholder="Cari NIP atau Nama..."
+                                        class="w-full pl-8 pr-3 py-1.5 sm:py-2 border border-slate-300 rounded-lg text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#1f2937]">
+                                </div>
+                                <div class="flex items-center gap-1 flex-shrink-0 flex-wrap">
+                                    <button onclick="setLeaveFilter('all')" data-filter="all" class="filter-btn active px-2.5 sm:px-3 py-1.5 rounded-lg text-[10px] sm:text-xs font-semibold border border-slate-200 bg-white hover:bg-slate-100">Semua</button>
+                                    <button onclick="setLeaveFilter('Pending')" data-filter="Pending" class="filter-btn px-2.5 sm:px-3 py-1.5 rounded-lg text-[10px] sm:text-xs font-semibold border border-slate-200 bg-white hover:bg-slate-100">Pending</button>
+                                    <button onclick="setLeaveFilter('Approved')" data-filter="Approved" class="filter-btn px-2.5 sm:px-3 py-1.5 rounded-lg text-[10px] sm:text-xs font-semibold border border-slate-200 bg-white hover:bg-slate-100">Disetujui</button>
+                                    <button onclick="setLeaveFilter('Rejected')" data-filter="Rejected" class="filter-btn px-2.5 sm:px-3 py-1.5 rounded-lg text-[10px] sm:text-xs font-semibold border border-slate-200 bg-white hover:bg-slate-100">Ditolak</button>
+                                </div>
+                                <div class="text-[10px] sm:text-xs text-slate-500 flex items-center gap-2 flex-shrink-0 ml-auto">
+                                    <span>Total: <span id="total-leaves" class="font-bold text-slate-700">0</span></span>
+                                </div>
+                            </div>
+
+                            <div class="table-wrapper">
+                                <table class="w-full text-left border-collapse text-xs sm:text-sm">
+                                    <thead>
+                                        <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold">
+                                            <th class="p-2 sm:p-4 whitespace-nowrap">NIP & Nama</th>
+                                            <th class="p-2 sm:p-4 whitespace-nowrap">Jenis</th>
+                                            <th class="p-2 sm:p-4 whitespace-nowrap hidden sm:table-cell">Tanggal</th>
+                                            <th class="p-2 sm:p-4 whitespace-nowrap hidden md:table-cell">Alasan</th>
+                                            <th class="p-2 sm:p-4 whitespace-nowrap">Status</th>
+                                            <th class="p-2 sm:p-4 text-center whitespace-nowrap">Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="adminLeaveTable" class="text-xs sm:text-sm">
+                                        <tr>
+                                            <td colspan="6" class="p-4 sm:p-6 text-center text-slate-400">
+                                                <i class="fa-solid fa-spinner fa-spin mr-2"></i>
+                                                Memuat pengajuan...
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </section>
+
+                    <footer class="text-center py-3 sm:py-4 border-t border-slate-200 mt-4 sm:mt-6 safe-bottom">
+                        <p class="text-[10px] sm:text-xs text-slate-400">© 2026 Dinas Komunikasi dan Informatika Kabupaten Tangerang. All Rights Reserved.</p>
+                    </footer>
+
+                </div>
+            </div>
 
         </main>
     </div>
@@ -405,27 +533,25 @@
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-md p-4 sm:p-6 relative max-h-[90vh] overflow-y-auto">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
-                    <i class="fa-regular fa-file-lines text-[#1a2a6c]"></i>
+                    <i class="fa-regular fa-file-lines text-[#1f2937]"></i>
                     <span>Detail Pengajuan</span>
                 </h3>
                 <button onclick="closeDetailModal()" class="text-slate-400 hover:text-slate-700 text-xl touch-target">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
-            <div id="detail-content" class="space-y-3 text-sm">
-                <!-- Content will be injected here -->
-            </div>
-            <button onclick="closeDetailModal()" class="w-full mt-4 py-2 bg-[#1a2a6c] hover:bg-[#2d4373] text-white font-semibold rounded-lg text-xs sm:text-sm transition touch-target">Tutup</button>
+            <div id="detail-content" class="space-y-3 text-sm"></div>
+            <button onclick="closeDetailModal()" class="w-full mt-4 py-2 bg-[#1f2937] hover:bg-[#111827] text-white font-semibold rounded-lg text-xs sm:text-sm transition touch-target">Tutup</button>
         </div>
     </div>
+
+    <!-- ✅ Container Notif Toast -->
+    <div id="notif-container" class="fixed top-20 right-4 z-[100] space-y-2 max-w-sm w-[calc(100%-2rem)] max-h-[70vh] overflow-y-auto"></div>
 
     <!-- ============================================ -->
     <!-- JAVASCRIPT -->
     <!-- ============================================ -->
     <script>
-        // ============================================================
-        // SERVICE WORKER - PWA REGISTRATION
-        // ============================================================
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/sw.js')
@@ -438,9 +564,6 @@
             });
         }
 
-        // ============================================================
-        // SIDEBAR TOGGLE (Mobile)
-        // ============================================================
         function toggleSidebar() {
             const sidebar = document.getElementById('mobile-sidebar');
             const overlay = document.getElementById('mobile-overlay');
@@ -448,23 +571,21 @@
             overlay.classList.toggle('hidden');
         }
 
-        // ============================================================
-        // AUTO-DETECT ACTIVE SIDEBAR LINK
-        // ============================================================
         function setActiveSidebar() {
-            const path = window.location.pathname.split('/').pop() || 'pengajuan-izin.html';
-            
+            const path = window.location.pathname.split('/').pop() || 'dashboard.html';
+
             const pageMap = {
                 'dashboard.html': 'dashboard',
                 'index.html': 'pegawai',
                 'rekap.html': 'rekap',
                 'riwayat.html': 'riwayat',
                 'pengajuan-izin.html': 'izin',
+                'izin.html': 'izin',
                 'pengaturan.html': 'pengaturan'
             };
-            
-            const activeNav = pageMap[path] || 'izin';
-            
+
+            const activeNav = pageMap[path] || 'dashboard';
+
             document.querySelectorAll('.sidebar-item[data-nav]').forEach(item => {
                 if (item.dataset.nav === activeNav) {
                     item.classList.add('sidebar-active');
@@ -474,9 +595,6 @@
             });
         }
 
-        // ============================================================
-        // SMOOTH PAGE TRANSITION
-        // ============================================================
         function initSmoothNav() {
             document.querySelectorAll('.sidebar-item[data-nav]').forEach(link => {
                 link.addEventListener('click', function(e) {
@@ -492,29 +610,23 @@
             });
         }
 
-        // ============================================================
-        // API ENDPOINTS & GLOBAL VARIABLES
-        // ============================================================
         const API_LEAVES = '/api/leaves';
 
         let globalLeavesData = [];
-        let currentFilter = 'all';
+        let currentLeaveFilter = 'all';
 
-        // ============================================================
-        // DOM CONTENT LOADED
-        // ============================================================
         document.addEventListener('DOMContentLoaded', () => {
             setActiveSidebar();
             initSmoothNav();
-            loadLeaves();
+
+            loadAdminLeaves();
+            startLeaveNotifPolling();
+
             console.log('🚀 Persetujuan Izin loaded successfully!');
         });
 
-        // ============================================================
-        // LOAD LEAVES (KONEKSI DATABASE)
-        // ============================================================
-        async function loadLeaves() {
-            const tbody = document.getElementById('leaveTableBody');
+        async function loadAdminLeaves() {
+            const tbody = document.getElementById('adminLeaveTable');
             tbody.innerHTML = `
                 <tr>
                     <td colspan="6" class="p-4 sm:p-6 text-center text-slate-400">
@@ -530,11 +642,11 @@
 
                 if (result.success && result.data) {
                     globalLeavesData = result.data;
-                    updateStats(globalLeavesData);
-                    applyFilterAndSearch();
+                    updateLeaveStats(globalLeavesData);
+                    applyLeaveFilterAndSearch();
                 } else {
                     globalLeavesData = [];
-                    updateStats([]);
+                    updateLeaveStats([]);
                     tbody.innerHTML = `
                         <tr>
                             <td colspan="6" class="p-6 text-center text-slate-400">
@@ -547,7 +659,7 @@
             } catch (err) {
                 console.error('Gagal memuat data izin:', err);
                 globalLeavesData = [];
-                updateStats([]);
+                updateLeaveStats([]);
                 tbody.innerHTML = `
                     <tr>
                         <td colspan="6" class="p-6 text-center text-red-500">
@@ -559,75 +671,50 @@
             }
         }
 
-        // ============================================================
-        // UPDATE STAT CARDS
-        // ============================================================
-        function updateStats(data) {
-            let pending = 0;
-            let approved = 0;
-            let rejected = 0;
-
+        function updateLeaveStats(data) {
+            let pending = 0, approved = 0, rejected = 0;
             data.forEach(item => {
                 const status = (item.status || 'Pending').toLowerCase();
                 if (status === 'pending') pending++;
                 else if (status === 'approved') approved++;
                 else if (status === 'rejected') rejected++;
             });
-
             document.getElementById('stat-pending').innerText = pending;
             document.getElementById('stat-approved').innerText = approved;
             document.getElementById('stat-rejected').innerText = rejected;
         }
 
-        // ============================================================
-        // FILTER BUTTON HANDLER
-        // ============================================================
-        function setFilter(filter) {
-            currentFilter = filter;
-            
+        function setLeaveFilter(filter) {
+            currentLeaveFilter = filter;
             document.querySelectorAll('.filter-btn').forEach(btn => {
-                if (btn.dataset.filter === filter) {
-                    btn.classList.add('active');
-                } else {
-                    btn.classList.remove('active');
-                }
+                if (btn.dataset.filter === filter) btn.classList.add('active');
+                else btn.classList.remove('active');
             });
-
-            applyFilterAndSearch();
+            applyLeaveFilterAndSearch();
         }
 
-        // ============================================================
-        // SEARCH HANDLER
-        // ============================================================
         function filterLeaves() {
-            applyFilterAndSearch();
+            applyLeaveFilterAndSearch();
         }
 
-        // ============================================================
-        // APPLY FILTER + SEARCH
-        // ============================================================
-        function applyFilterAndSearch() {
-            const query = document.getElementById('search-input').value.toLowerCase().trim();
-            
+        function applyLeaveFilterAndSearch() {
+            const query = document.getElementById('leave-search-input').value.toLowerCase().trim();
             let filtered = [...globalLeavesData];
 
-            // Filter by status
-            if (currentFilter !== 'all') {
+            if (currentLeaveFilter !== 'all') {
                 filtered = filtered.filter(item => {
                     const status = (item.status || 'Pending');
-                    return status.toLowerCase() === currentFilter.toLowerCase();
+                    return status.toLowerCase() === currentLeaveFilter.toLowerCase();
                 });
             }
 
-            // Filter by search query
             if (query) {
-                filtered = filtered.filter(item => 
+                filtered = filtered.filter(item =>
                     (item.nip && item.nip.toLowerCase().includes(query)) ||
                     (item.full_name && item.full_name.toLowerCase().includes(query))
                 );
             }
 
-            // Sort: Pending first, then by date
             filtered.sort((a, b) => {
                 const statusA = (a.status || 'Pending').toLowerCase();
                 const statusB = (b.status || 'Pending').toLowerCase();
@@ -636,14 +723,11 @@
                 return new Date(b.created_at || b.id) - new Date(a.created_at || a.id);
             });
 
-            renderTable(filtered);
+            renderLeaveTable(filtered);
         }
 
-        // ============================================================
-        // RENDER TABLE
-        // ============================================================
-        function renderTable(data) {
-            const tbody = document.getElementById('leaveTableBody');
+        function renderLeaveTable(data) {
+            const tbody = document.getElementById('adminLeaveTable');
             document.getElementById('total-leaves').innerText = data.length;
 
             if (data.length === 0) {
@@ -661,7 +745,7 @@
             tbody.innerHTML = data.map(item => {
                 const status = (item.status || 'Pending');
                 const statusLower = status.toLowerCase();
-                
+
                 let statusBadge = '';
                 if (statusLower === 'pending') {
                     statusBadge = `<span class="inline-flex items-center gap-1.5 px-2 py-0.5 sm:px-3 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium bg-amber-100 text-amber-700">
@@ -681,14 +765,13 @@
                     </span>`;
                 }
 
-                const startDate = item.start_date 
-                    ? new Date(item.start_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
+                const startDate = item.start_date
+                    ? new Date(item.start_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })
                     : '-';
-                const endDate = item.end_date 
-                    ? new Date(item.end_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
+                const endDate = item.end_date
+                    ? new Date(item.end_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })
                     : '-';
 
-                // Action buttons (only for pending)
                 let actionButtons = '';
                 if (statusLower === 'pending') {
                     actionButtons = `
@@ -701,14 +784,14 @@
                     `;
                 } else {
                     actionButtons = `
-                        <button onclick="event.stopPropagation(); showDetail(${item.id})" class="px-2 sm:px-3 py-1 sm:py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-[10px] sm:text-xs font-semibold border border-slate-200 transition touch-target">
+                        <button onclick="event.stopPropagation(); showLeaveDetail(${item.id})" class="px-2 sm:px-3 py-1 sm:py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-[10px] sm:text-xs font-semibold border border-slate-200 transition touch-target">
                             <i class="fa-regular fa-eye"></i> Detail
                         </button>
                     `;
                 }
 
                 return `
-                    <tr class="hover:bg-slate-50 transition border-b border-slate-100 cursor-pointer" onclick="showDetail(${item.id})">
+                    <tr class="hover:bg-slate-50 transition border-b border-slate-100 cursor-pointer" onclick="showLeaveDetail(${item.id})">
                         <td class="p-2 sm:p-4">
                             <div class="font-medium text-slate-900 text-[10px] sm:text-xs">${item.full_name || 'Pegawai'}</div>
                             <div class="text-[10px] sm:text-xs text-slate-500 font-mono">${item.nip || '-'}</div>
@@ -731,9 +814,6 @@
             }).join('');
         }
 
-        // ============================================================
-        // APPROVE / REJECT LEAVE
-        // ============================================================
         async function approveLeave(id) {
             if (!confirm('Apakah Anda yakin ingin MENYETUJUI pengajuan ini?')) return;
             await updateLeaveStatus(id, 'Approved');
@@ -754,7 +834,11 @@
                 const result = await res.json();
                 if (result.success) {
                     alert(`✅ Pengajuan berhasil di-${status === 'Approved' ? 'setujui' : 'tolak'}`);
-                    loadLeaves();
+
+                    // ✅ Hapus notif yang terkait dengan izin ini
+                    removeNotifByLeaveId(id);
+
+                    loadAdminLeaves();
                 } else {
                     alert('❌ Gagal: ' + (result.message || 'Terjadi kesalahan'));
                 }
@@ -764,16 +848,13 @@
             }
         }
 
-        // ============================================================
-        // SHOW DETAIL MODAL
-        // ============================================================
-        function showDetail(id) {
+        function showLeaveDetail(id) {
             const item = globalLeavesData.find(l => l.id === id);
             if (!item) return;
 
             const status = (item.status || 'Pending');
             const statusLower = status.toLowerCase();
-            
+
             let statusBadge = '';
             if (statusLower === 'pending') {
                 statusBadge = `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-700"><i class="fa-solid fa-hourglass-half"></i> Pending</span>`;
@@ -783,17 +864,17 @@
                 statusBadge = `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-rose-100 text-rose-700"><i class="fa-solid fa-circle-xmark"></i> Ditolak</span>`;
             }
 
-            const startDate = item.start_date 
+            const startDate = item.start_date
                 ? new Date(item.start_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
                 : '-';
-            const endDate = item.end_date 
+            const endDate = item.end_date
                 ? new Date(item.end_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
                 : '-';
 
-            const attachmentHtml = item.attachment 
+            const attachmentHtml = item.attachment
                 ? `<a href="${item.attachment}" target="_blank" class="inline-flex items-center gap-1.5 text-blue-600 hover:text-blue-800 font-semibold text-xs mt-1">
                        <i class="fa-solid fa-paperclip"></i> Lihat Bukti Lampiran
-                   </a>` 
+                   </a>`
                 : '<span class="text-xs text-slate-400 italic">Tanpa lampiran</span>';
 
             let actionButtons = '';
@@ -818,42 +899,42 @@
                     </div>
                     <div class="border-t border-slate-100 pt-3 space-y-2">
                         <div class="flex items-start gap-3">
-                            <i class="fa-solid fa-user text-[#1a2a6c] mt-1 w-4 text-center"></i>
+                            <i class="fa-solid fa-user text-[#1f2937] mt-1 w-4 text-center"></i>
                             <div>
                                 <p class="text-xs font-semibold text-slate-500 uppercase">Nama</p>
                                 <p class="text-sm font-medium text-slate-900">${item.full_name || 'Pegawai'}</p>
                             </div>
                         </div>
                         <div class="flex items-start gap-3">
-                            <i class="fa-solid fa-id-card text-[#1a2a6c] mt-1 w-4 text-center"></i>
+                            <i class="fa-solid fa-id-card text-[#1f2937] mt-1 w-4 text-center"></i>
                             <div>
                                 <p class="text-xs font-semibold text-slate-500 uppercase">NIP</p>
                                 <p class="text-sm font-mono font-medium text-slate-900">${item.nip || '-'}</p>
                             </div>
                         </div>
                         <div class="flex items-start gap-3">
-                            <i class="fa-regular fa-file-lines text-[#1a2a6c] mt-1 w-4 text-center"></i>
+                            <i class="fa-regular fa-file-lines text-[#1f2937] mt-1 w-4 text-center"></i>
                             <div>
                                 <p class="text-xs font-semibold text-slate-500 uppercase">Jenis Izin</p>
                                 <p class="text-sm font-medium text-slate-900">${item.type || 'Izin'}</p>
                             </div>
                         </div>
                         <div class="flex items-start gap-3">
-                            <i class="fa-regular fa-calendar text-[#1a2a6c] mt-1 w-4 text-center"></i>
+                            <i class="fa-regular fa-calendar text-[#1f2937] mt-1 w-4 text-center"></i>
                             <div>
                                 <p class="text-xs font-semibold text-slate-500 uppercase">Tanggal</p>
                                 <p class="text-sm font-medium text-slate-900">${startDate} <span class="text-slate-400">s/d</span> ${endDate}</p>
                             </div>
                         </div>
                         <div class="flex items-start gap-3">
-                            <i class="fa-regular fa-comment-dots text-[#1a2a6c] mt-1 w-4 text-center"></i>
+                            <i class="fa-regular fa-comment-dots text-[#1f2937] mt-1 w-4 text-center"></i>
                             <div>
                                 <p class="text-xs font-semibold text-slate-500 uppercase">Alasan</p>
                                 <p class="text-sm text-slate-700">${item.reason || '-'}</p>
                             </div>
                         </div>
                         <div class="flex items-start gap-3">
-                            <i class="fa-solid fa-paperclip text-[#1a2a6c] mt-1 w-4 text-center"></i>
+                            <i class="fa-solid fa-paperclip text-[#1f2937] mt-1 w-4 text-center"></i>
                             <div>
                                 <p class="text-xs font-semibold text-slate-500 uppercase">Bukti</p>
                                 ${attachmentHtml}
@@ -871,14 +952,175 @@
             document.getElementById('modal-detail').classList.add('hidden');
         }
 
-        // ============================================================
-        // KEYBOARD SHORTCUTS
-        // ============================================================
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 closeDetailModal();
             }
         });
+
+        // ============================================================
+        // ✅ NOTIFIKASI IZIN BARU — Persistent
+        // Notif TIDAK hilang otomatis. Baru hilang kalau:
+        //  1. Izin di-approve/reject (otomatis hilang)
+        //  2. Klik tombol X manual
+        // ============================================================
+        const SEEN_LEAVES_KEY = 'seen_leave_ids';
+        const activeNotifs = new Map();
+
+        function getSeenLeaveIds() {
+            try {
+                return JSON.parse(localStorage.getItem(SEEN_LEAVES_KEY) || '[]');
+            } catch {
+                return [];
+            }
+        }
+
+        function saveSeenLeaveIds(ids) {
+            const trimmed = ids.slice(-100);
+            localStorage.setItem(SEEN_LEAVES_KEY, JSON.stringify(trimmed));
+        }
+
+        async function checkNewLeaves() {
+            try {
+                const res = await fetch('/api/leaves');
+                const result = await res.json();
+
+                if (!result.success || !result.data) return;
+
+                const seenIds = getSeenLeaveIds();
+
+                const pendingLeaves = result.data.filter(l =>
+                    (l.status || 'Pending').toLowerCase() === 'pending'
+                );
+
+                updateNotifBadge(pendingLeaves.length);
+
+                const pendingIds = pendingLeaves.map(l => l.id);
+
+                // Hapus notif yang izinnya sudah tidak pending
+                for (const [leaveId] of activeNotifs.entries()) {
+                    if (!pendingIds.includes(leaveId)) {
+                        hideAndRemoveNotif(leaveId);
+                    }
+                }
+
+                // Tampilkan notif untuk izin pending yang belum ada notifnya
+                pendingLeaves.forEach(leave => {
+                    if (!activeNotifs.has(leave.id) && !seenIds.includes(leave.id)) {
+                        showLeaveNotif(leave);
+                    }
+                });
+            } catch (err) {
+                console.warn('Gagal cek izin baru:', err);
+            }
+        }
+
+        function updateNotifBadge(count) {
+            const badges = [
+                document.getElementById('notif-badge'),
+                document.getElementById('notif-badge-mobile')
+            ];
+
+            badges.forEach(badge => {
+                if (!badge) return;
+                if (count > 0) {
+                    badge.textContent = count > 99 ? '99+' : count;
+                    badge.style.display = 'inline-flex';
+                } else {
+                    badge.style.display = 'none';
+                }
+            });
+        }
+
+        function showLeaveNotif(leave) {
+            const container = document.getElementById('notif-container');
+            if (!container) return;
+
+            if (activeNotifs.has(leave.id)) return;
+
+            const fullName = leave.full_name || 'Pegawai';
+            const type = leave.type || 'Izin';
+            const reason = (leave.reason || '-').substring(0, 60);
+
+            const notif = document.createElement('div');
+            notif.className = 'notif-toast';
+            notif.dataset.leaveId = leave.id;
+            notif.innerHTML = `
+                <div class="notif-icon">
+                    <i class="fa-regular fa-file-lines"></i>
+                </div>
+                <div class="notif-content">
+                    <p class="notif-title">📩 Pengajuan ${type} Baru</p>
+                    <p class="notif-message"><strong>${fullName}</strong> mengajukan ${type.toLowerCase()}: "${reason}${reason.length >= 60 ? '...' : ''}"</p>
+                    <p class="notif-time">${new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} WIB — Menunggu tindakan</p>
+                </div>
+                <button class="notif-close" title="Tutup notifikasi" onclick="event.stopPropagation(); closeNotifManually(${leave.id});">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            `;
+
+            // Klik body notif → scroll ke tabel / buka detail
+            notif.addEventListener('click', (e) => {
+                if (e.target.closest('.notif-close')) return;
+                // Karena dashboard ini sudah halaman Persetujuan Izin, langsung buka detail izin
+                showLeaveDetail(leave.id);
+            });
+
+            container.appendChild(notif);
+            activeNotifs.set(leave.id, notif);
+
+            // Notif browser (opsional)
+            if ('Notification' in window && Notification.permission === 'granted') {
+                try {
+                    new Notification(`Pengajuan ${type} Baru`, {
+                        body: `${fullName} mengajukan ${type}`,
+                        icon: '/logo.png'
+                    });
+                } catch (e) {}
+            }
+        }
+
+        function closeNotifManually(leaveId) {
+            hideAndRemoveNotif(leaveId);
+
+            const seenIds = getSeenLeaveIds();
+            if (!seenIds.includes(leaveId)) {
+                seenIds.push(leaveId);
+                saveSeenLeaveIds(seenIds);
+            }
+        }
+
+        function hideAndRemoveNotif(leaveId) {
+            const notif = activeNotifs.get(leaveId);
+            if (!notif) return;
+
+            notif.classList.add('hide');
+            setTimeout(() => {
+                if (notif.parentElement) notif.remove();
+                activeNotifs.delete(leaveId);
+            }, 300);
+        }
+
+        function removeNotifByLeaveId(leaveId) {
+            if (activeNotifs.has(leaveId)) {
+                hideAndRemoveNotif(leaveId);
+            }
+
+            const seenIds = getSeenLeaveIds();
+            if (!seenIds.includes(leaveId)) {
+                seenIds.push(leaveId);
+                saveSeenLeaveIds(seenIds);
+            }
+        }
+
+        function startLeaveNotifPolling() {
+            if ('Notification' in window && Notification.permission === 'default') {
+                Notification.requestPermission();
+            }
+
+            setTimeout(checkNewLeaves, 2000);
+            setInterval(checkNewLeaves, 10000);
+        }
 
         console.log('✅ Persetujuan Izin App initialized successfully!');
     </script>

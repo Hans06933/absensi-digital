@@ -12,19 +12,24 @@ app.use(express.json());
 app.use(express.static('public'));
 app.use('/uploads', express.static('public/uploads'));
 
-// Konfigurasi Multer
+// ==========================================
+// Konfigurasi Multer (untuk upload file)
+// ==========================================
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, 'public/uploads/');
     },
     filename: (req, file, cb) => {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, uniqueSuffix + '-' + file.originalname);
+        // Bersihkan nama file dari spasi & karakter aneh
+        const cleanName = file.originalname.replace(/[^a-zA-Z0-9.\-_]/g, '_');
+        cb(null, uniqueSuffix + '-' + cleanName);
     }
 });
-const upload = multer({ 
+
+const upload = multer({
     storage: storage,
-    limits: { fileSize: 5 * 1024 * 1024 },
+    limits: { fileSize: 5 * 1024 * 1024 }, // maks 5 MB
     fileFilter: (req, file, cb) => {
         const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf'];
         if (allowedTypes.includes(file.mimetype)) {
@@ -35,7 +40,9 @@ const upload = multer({
     }
 });
 
+// ==========================================
 // Konfigurasi Database MySQL
+// ==========================================
 const db = mysql.createPool({
     host: process.env.DB_HOST || 'localhost',
     user: process.env.DB_USER || 'root',
@@ -59,8 +66,9 @@ db.getConnection((err, conn) => {
 // ENDPOINT PEGAWAI (USERS)
 // ==========================================
 
+// GET semua pegawai (include photo)
 app.get('/api/users', (req, res) => {
-    const query = 'SELECT id, nip, full_name, email, phone FROM users ORDER BY full_name ASC';
+    const query = 'SELECT id, nip, full_name, email, phone, photo FROM users ORDER BY full_name ASC';
     db.query(query, (err, results) => {
         if (err) {
             console.error('Error GET /api/users:', err);
@@ -70,9 +78,10 @@ app.get('/api/users', (req, res) => {
     });
 });
 
+// GET pegawai by ID
 app.get('/api/users/:id', (req, res) => {
     const { id } = req.params;
-    const query = 'SELECT id, nip, full_name, email, phone FROM users WHERE id = ?';
+    const query = 'SELECT id, nip, full_name, email, phone, photo FROM users WHERE id = ?';
     db.query(query, [id], (err, results) => {
         if (err) {
             console.error('Error GET /api/users/:id:', err);
@@ -85,6 +94,7 @@ app.get('/api/users/:id', (req, res) => {
     });
 });
 
+// POST tambah pegawai (dari halaman admin — masih pakai JSON, tanpa foto)
 app.post('/api/users', async (req, res) => {
     const { nip, full_name, email, phone, password } = req.body;
     if (!nip || !full_name || !email || !password) {
@@ -111,7 +121,7 @@ app.post('/api/users', async (req, res) => {
 });
 
 // ==========================================
-// PUT: Update data pegawai (SIMPLE VERSION - NO DUPLICATE CHECK)
+// PUT: Update data pegawai
 // ==========================================
 app.put('/api/users/:id', async (req, res) => {
     const { id } = req.params;
@@ -120,24 +130,19 @@ app.put('/api/users/:id', async (req, res) => {
     console.log('📝 Update User ID:', id);
     console.log('📝 Data received:', { nip, full_name, email, phone, password: password ? '***' : '(empty)' });
 
-    // Validasi dasar
     if (!nip || !full_name || !email) {
         return res.status(400).json({ success: false, message: 'NIP, Nama, dan Email wajib diisi' });
     }
 
     try {
-        // UPDATE tanpa pengecekan duplikat dulu (untuk testing)
         if (password && password.trim() !== '') {
             const hashedPassword = await bcrypt.hash(password, 10);
             const query = 'UPDATE users SET nip = ?, full_name = ?, email = ?, phone = ?, password = ? WHERE id = ?';
             db.query(query, [nip, full_name, email, phone || null, hashedPassword, id], (err, result) => {
                 if (err) {
                     console.error('❌ Error UPDATE with password:', err);
-                    console.error('❌ SQL:', query);
-                    console.error('❌ Params:', [nip, full_name, email, phone || null, 'HIDDEN', id]);
                     return res.status(500).json({ success: false, message: 'Gagal memperbarui data: ' + err.message });
                 }
-                console.log('✅ Update success with password, affected rows:', result.affectedRows);
                 if (result.affectedRows === 0) {
                     return res.status(404).json({ success: false, message: 'Pegawai tidak ditemukan' });
                 }
@@ -148,11 +153,8 @@ app.put('/api/users/:id', async (req, res) => {
             db.query(query, [nip, full_name, email, phone || null, id], (err, result) => {
                 if (err) {
                     console.error('❌ Error UPDATE without password:', err);
-                    console.error('❌ SQL:', query);
-                    console.error('❌ Params:', [nip, full_name, email, phone || null, id]);
                     return res.status(500).json({ success: false, message: 'Gagal memperbarui data: ' + err.message });
                 }
-                console.log('✅ Update success without password, affected rows:', result.affectedRows);
                 if (result.affectedRows === 0) {
                     return res.status(404).json({ success: false, message: 'Pegawai tidak ditemukan' });
                 }
@@ -165,6 +167,7 @@ app.put('/api/users/:id', async (req, res) => {
     }
 });
 
+// DELETE pegawai
 app.delete('/api/users/:id', (req, res) => {
     const { id } = req.params;
     db.query('DELETE FROM users WHERE id = ?', [id], (err) => {
@@ -203,7 +206,7 @@ app.post('/api/attendance/scan', (req, res) => {
                 console.error('Error POST /api/attendance/scan:', err);
                 return res.status(500).json({ success: false, message: 'Gagal menyimpan absensi' });
             }
-            
+
             res.json({
                 success: true,
                 message: `Absensi Berhasil! [${user.full_name}] Status: ${status}`
@@ -243,14 +246,14 @@ app.get('/api/attendance', (req, res) => {
 
 app.post('/api/leaves', upload.single('attachment'), (req, res) => {
     const { nip, type, start_date, end_date, reason } = req.body;
-    
+
     if (!nip || !type || !start_date || !end_date || !reason) {
         return res.status(400).json({ success: false, message: 'Data pengajuan izin belum lengkap' });
     }
 
     const attachment = req.file ? `/uploads/${req.file.filename}` : null;
     const query = 'INSERT INTO leaves (nip, type, start_date, end_date, reason, attachment, status) VALUES (?, ?, ?, ?, ?, ?, "Pending")';
-    
+
     db.query(query, [nip, type, start_date, end_date, reason, attachment], (err, result) => {
         if (err) {
             console.error('Error POST /api/leaves:', err);
@@ -306,10 +309,11 @@ app.put('/api/leaves/:id/status', (req, res) => {
     });
 });
 
+// GET dashboard user by NIP (include photo)
 app.get('/api/users/dashboard/:nip', (req, res) => {
     const { nip } = req.params;
 
-    db.query('SELECT id, nip, full_name, email, phone FROM users WHERE nip = ?', [nip], (err, users) => {
+    db.query('SELECT id, nip, full_name, email, phone, photo FROM users WHERE nip = ?', [nip], (err, users) => {
         if (err || users.length === 0) {
             return res.status(404).json({ success: false, message: 'Pegawai tidak ditemukan' });
         }
@@ -339,7 +343,10 @@ app.get('/api/users/dashboard/:nip', (req, res) => {
     });
 });
 
-app.post('/api/users/register', async (req, res) => {
+// ==========================================
+// POST /api/users/register — DENGAN UPLOAD FOTO
+// ==========================================
+app.post('/api/users/register', upload.single('photo'), async (req, res) => {
     const { nip, full_name, email, phone, password } = req.body;
 
     if (!nip || !full_name || !email || !password) {
@@ -352,14 +359,18 @@ app.post('/api/users/register', async (req, res) => {
                 console.error('Error POST /api/users/register check:', err);
                 return res.status(500).json({ success: false, message: 'Gagal mengecek data' });
             }
-            
+
             if (existing.length > 0) {
                 return res.status(400).json({ success: false, message: 'NIP atau Email sudah terdaftar' });
             }
 
             const hashedPassword = await bcrypt.hash(password, 10);
-            const query = 'INSERT INTO users (nip, full_name, email, phone, password) VALUES (?, ?, ?, ?, ?)';
-            db.query(query, [nip, full_name, email, phone || null, hashedPassword], (err, result) => {
+
+            // Ambil path foto kalau ada
+            const photoPath = req.file ? `/uploads/${req.file.filename}` : null;
+
+            const query = 'INSERT INTO users (nip, full_name, email, phone, photo, password) VALUES (?, ?, ?, ?, ?, ?)';
+            db.query(query, [nip, full_name, email, phone || null, photoPath, hashedPassword], (err, result) => {
                 if (err) {
                     console.error('Error POST /api/users/register insert:', err);
                     return res.status(500).json({ success: false, message: 'Gagal registrasi' });
@@ -367,7 +378,8 @@ app.post('/api/users/register', async (req, res) => {
                 res.status(201).json({
                     success: true,
                     message: 'Registrasi berhasil',
-                    nip: nip
+                    nip: nip,
+                    photo: photoPath
                 });
             });
         });
@@ -406,6 +418,38 @@ db.query(createLeavesTable, (err) => {
 });
 
 // ==========================================
+// CREATE COLUMN PHOTO (kalau belum ada)
+// ==========================================
+// Ini opsional — kalau Anda sudah jalankan ALTER TABLE manual di phpMyAdmin,
+// query ini akan skip otomatis karena sudah ada.
+const checkPhotoColumn = `
+    SELECT COUNT(*) AS col_exists 
+    FROM information_schema.COLUMNS 
+    WHERE TABLE_SCHEMA = DATABASE() 
+      AND TABLE_NAME = 'users' 
+      AND COLUMN_NAME = 'photo'
+`;
+
+db.query(checkPhotoColumn, (err, results) => {
+    if (err) {
+        console.error('⚠️  Gagal cek kolom photo:', err.message);
+        return;
+    }
+
+    if (results[0].col_exists === 0) {
+        db.query('ALTER TABLE users ADD COLUMN photo VARCHAR(255) NULL AFTER phone', (err) => {
+            if (err) {
+                console.error('❌ Gagal menambah kolom photo:', err.message);
+            } else {
+                console.log('✅ Kolom "photo" berhasil ditambahkan ke tabel users');
+            }
+        });
+    } else {
+        console.log('✅ Kolom "photo" sudah ada di tabel users');
+    }
+});
+
+// ==========================================
 // JALANKAN SERVER
 // ==========================================
 
@@ -424,5 +468,5 @@ app.listen(PORT, () => {
     console.log(`   - GET  /api/leaves`);
     console.log(`   - PUT  /api/leaves/:id/status`);
     console.log(`   - GET  /api/users/dashboard/:nip`);
-    console.log(`   - POST /api/users/register`);
+    console.log(`   - POST /api/users/register  (upload foto profil)`);
 });

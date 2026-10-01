@@ -2,30 +2,28 @@
 <html lang="id">
 <head>
     <!-- Meta PWA & Mobile Optimization -->
-    <meta name="theme-color" content="#1a2a6c">
+    <meta name="theme-color" content="#1f2937">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Absensi">
+    <meta name="apple-mobile-web-app-title" content="Absensi Kominfo">
     <link rel="manifest" href="/manifest-admin.json">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3135/3135715.png">
+    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="apple-touch-icon" href="logo.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Pengaturan - Absensi Digital</title>
-    
+    <title>Pengaturan - Kominfo Kabupaten Tangerang</title>
+
     <!-- CSS Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://unpkg.com/html5-qrcode"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    
-    <style>
-        /* Custom styles for company theme */
-        * {
-            -webkit-tap-highlight-color: transparent;
-        }
 
-        /* ===== SIDEBAR ITEM BASE ===== */
+    <style>
+        * { -webkit-tap-highlight-color: transparent; }
+
+        /* ===== SIDEBAR ITEM ===== */
         .sidebar-item {
             position: relative;
             overflow: hidden;
@@ -41,7 +39,7 @@
             transform: translateY(-50%) scaleY(0);
             width: 4px;
             height: 70%;
-            background: #fbbf24;
+            background: #d4a017;
             border-radius: 0 4px 4px 0;
             transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             transform-origin: center;
@@ -53,21 +51,21 @@
         }
         .sidebar-item:hover i {
             transform: scale(1.1);
-            color: #fbbf24;
+            color: #d4a017;
         }
         .sidebar-item i {
             transition: transform 0.25s ease, color 0.25s ease;
         }
 
         .sidebar-item.sidebar-active {
-            background: linear-gradient(90deg, rgba(251, 191, 36, 0.15) 0%, rgba(45, 67, 115, 0.4) 100%);
+            background: rgba(255, 255, 255, 0.08);
             padding-left: 1rem;
         }
         .sidebar-item.sidebar-active::before {
             transform: translateY(-50%) scaleY(1);
         }
         .sidebar-item.sidebar-active i {
-            color: #fbbf24 !important;
+            color: #d4a017 !important;
             transform: scale(1.15);
         }
         .sidebar-item.sidebar-active span {
@@ -78,57 +76,136 @@
 
         .sidebar-item:active {
             transform: scale(0.97);
-            background: rgba(251, 191, 36, 0.2);
+            background: rgba(212, 160, 23, 0.15);
         }
 
         @keyframes slideInLeft {
             from { opacity: 0; transform: translateX(-8px); }
             to { opacity: 1; transform: translateX(0); }
         }
-        
+
+        /* ===== SIDEBAR SOLID ===== */
         .company-gradient {
-            background: linear-gradient(135deg, #0f1a3d, #1a2a6c, #2d4373);
+            background: #1f2937;
         }
-        
+
         /* Scrollbar styling */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-        
-        /* Hilangkan margin default pada body */
+
         body { margin: 0; padding: 0; }
+
+        /* ===== BRAND (Logo + Nama Instansi) ===== */
+        .brand-wrap {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 4px 0;
+        }
+
+        .brand-logo {
+            flex-shrink: 0;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 3px;
+            overflow: hidden;
+        }
+
+        .brand-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+        .brand-text {
+            min-width: 0;
+            flex: 1;
+            line-height: 1.2;
+        }
+
+        /* ===== BRAND TITLE — 2 BARIS ===== */
+        .brand-text .brand-title {
+            margin: 0;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: .04em;
+            line-height: 1.25;
+        }
+
+        .brand-text .brand-title .line-1 {
+            color: #ffffff;
+            display: block;
+        }
+
+        .brand-text .brand-title .line-2 {
+            color: #d4a017;
+            display: block;
+        }
+
+        .brand-text .brand-sub {
+            color: rgba(255,255,255,.55);
+            font-size: 8px;
+            font-weight: 700;
+            letter-spacing: .18em;
+            text-transform: uppercase;
+            margin-top: 4px;
+            white-space: nowrap;
+        }
+
+        /* Brand untuk header mobile (background putih) */
+        .brand-wrap-mobile .brand-text .brand-title .line-1 { color: #111827; }
+        .brand-wrap-mobile .brand-text .brand-title .line-2 { color: #d4a017; }
+        .brand-wrap-mobile .brand-text .brand-sub { color: #6b7280; }
+        .brand-wrap-mobile .brand-logo {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+        }
+
+        /* Input focus */
+        input:focus, select:focus, textarea:focus {
+            outline: none !important;
+            border-color: #1f2937 !important;
+            box-shadow: 0 0 0 3px rgba(31, 41, 55, 0.08) !important;
+        }
     </style>
 </head>
 <body class="bg-slate-50 font-sans text-slate-800 antialiased overflow-hidden">
 
-    <!-- WRAPPER UTAMA (Flexbox) - Membuat Sidebar & Main Content Rapat -->
+    <!-- WRAPPER UTAMA (Flexbox) -->
     <div class="flex h-screen w-full overflow-hidden">
 
         <!-- ============================================ -->
         <!-- SIDEBAR DESKTOP -->
         <!-- ============================================ -->
         <aside class="w-64 h-full company-gradient text-white flex-shrink-0 hidden md:flex flex-col shadow-xl z-20">
-            <!-- Logo Section -->
-            <div class="p-5 border-b border-white/10">
-                <div class="flex items-center gap-3">
-                    <div class="bg-amber-400 text-[#1a2a6c] p-2 rounded-lg font-bold shadow-lg flex-shrink-0">
-                        <i class="fa-solid fa-qrcode text-lg"></i>
+            <!-- Brand Section -->
+            <div class="p-4 border-b border-white/10">
+                <div class="brand-wrap">
+                    <div class="brand-logo">
+                        <img src="logo.png" alt="Logo Kominfo Kabupaten Tangerang">
                     </div>
-                    <div class="min-w-0">
-                        <h1 class="text-lg font-bold tracking-tight truncate">Absensi<span class="text-amber-400">Digital</span></h1>
+                    <div class="brand-text">
+                        <h1 class="brand-title">
+                            <span class="line-1">KOMINFO</span>
+                            <span class="line-2">KAB. TANGERANG</span>
+                        </h1>
+                        <p class="brand-sub">Absensi Digital</p>
                     </div>
-                </div>
-                <div class="mt-3 pt-3 border-t border-white/10">
-                    <p class="text-xs text-amber-400 font-bold tracking-wider truncate">PT. ANDALAN MAJU</p>
-                    <p class="text-[10px] text-white/50 italic truncate mt-0.5">INNOVATE · GROW · EXCEL</p>
                 </div>
             </div>
 
             <!-- Menu Navigasi -->
             <nav class="flex-1 p-3 space-y-1 overflow-y-auto">
                 <p class="text-[10px] text-white/40 uppercase tracking-wider font-semibold px-3 mb-2 mt-2">Menu Utama</p>
-                
+
                 <a href="dashboard.html" data-nav="dashboard" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-sm">
                     <i class="fa-solid fa-gauge-high w-5 text-center"></i>
                     <span>Dashboard</span>
@@ -145,14 +222,13 @@
                     <i class="fa-regular fa-file-lines w-5 text-center"></i>
                     <span>Pengajuan Izin</span>
                 </a>
-                <!-- Menu Pengaturan diberi class sidebar-active karena ini halaman pengaturan -->
                 <a href="pengaturan.html" data-nav="pengaturan" class="sidebar-item sidebar-active flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-sm">
                     <i class="fa-solid fa-gear w-5 text-center"></i>
                     <span>Pengaturan</span>
                 </a>
-                
+
                 <div class="border-t border-white/10 my-3"></div>
-                
+
                 <a href="#" onclick="logout()" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-sm">
                     <i class="fa-solid fa-arrow-right-from-bracket w-5 text-center"></i>
                     <span>Logout</span>
@@ -161,7 +237,7 @@
 
             <!-- Footer Sidebar -->
             <div class="p-4 border-t border-white/10 text-[10px] text-white/40 text-center">
-                © 2026 PT. ANDALAN MAJU
+                © 2026 Diskominfo Kab. Tangerang
             </div>
         </aside>
 
@@ -169,100 +245,180 @@
         <!-- KONTEN UTAMA -->
         <!-- ============================================ -->
         <main class="flex-1 flex flex-col h-full overflow-hidden bg-gray-100 relative">
-            
+
             <!-- Header Topbar -->
-            <header class="bg-white shadow-sm px-6 py-4 flex justify-between items-center flex-shrink-0 z-10">
-                <div class="flex items-center gap-3">
-                    <!-- Tombol Menu Mobile (Muncul di layar kecil) -->
-                    <button class="md:hidden text-gray-600 focus:outline-none">
+            <header class="bg-white shadow-sm px-4 sm:px-6 py-4 flex justify-between items-center flex-shrink-0 z-10 border-b border-slate-200">
+                <div class="flex items-center gap-3 min-w-0">
+                    <!-- Tombol Menu Mobile -->
+                    <button onclick="toggleMobileSidebar()" class="md:hidden text-slate-600 focus:outline-none touch-target p-1 -ml-1">
                         <i class="fa-solid fa-bars text-xl"></i>
                     </button>
-                    <h1 class="text-xl font-bold text-gray-800">Pengaturan Sistem & Admin</h1>
+
+                    <!-- Mobile Brand -->
+                    <div class="md:hidden flex items-center min-w-0">
+                        <div class="brand-wrap brand-wrap-mobile">
+                            <div class="brand-logo">
+                                <img src="logo.png" alt="Logo Kominfo Kabupaten Tangerang">
+                            </div>
+                            <div class="brand-text">
+                                <h1 class="brand-title">
+                                    <span class="line-1">KOMINFO</span>
+                                    <span class="line-2">KAB. TANGERANG</span>
+                                </h1>
+                                <p class="brand-sub">Absensi Digital</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h1 class="text-lg sm:text-xl font-bold text-gray-800 hidden md:block">Pengaturan Sistem & Admin</h1>
                 </div>
-                <div class="flex items-center gap-3">
+                <div class="flex items-center gap-3 flex-shrink-0">
                     <span class="text-sm font-medium text-gray-600 hidden sm:block">Halo, <b>Administrator</b></span>
-                    <div class="w-10 h-10 bg-yellow-500 text-white rounded-full flex items-center justify-center font-bold shadow-sm">A</div>
+                    <div class="w-10 h-10 bg-[#1f2937] text-white rounded-full flex items-center justify-center font-bold shadow-sm">A</div>
                 </div>
             </header>
 
+            <!-- Mobile Sidebar Overlay -->
+            <div id="mobile-overlay" class="fixed inset-0 bg-black/50 z-40 hidden" onclick="toggleMobileSidebar()"></div>
+
+            <!-- Mobile Sidebar -->
+            <aside id="mobile-sidebar" class="fixed top-0 left-0 h-full w-72 max-w-[80vw] company-gradient text-white z-50 -translate-x-full md:hidden shadow-2xl overflow-y-auto" style="transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);">
+                <div class="p-4 border-b border-white/10">
+                    <div class="flex items-center justify-between gap-2">
+                        <div class="brand-wrap">
+                            <div class="brand-logo">
+                                <img src="logo.png" alt="Logo Kominfo Kabupaten Tangerang">
+                            </div>
+                            <div class="brand-text">
+                                <h1 class="brand-title">
+                                    <span class="line-1">KOMINFO</span>
+                                    <span class="line-2">KAB. TANGERANG</span>
+                                </h1>
+                                <p class="brand-sub">Absensi Digital</p>
+                            </div>
+                        </div>
+                        <button onclick="toggleMobileSidebar()" class="text-white/70 hover:text-white text-2xl p-1 -mr-2 touch-target flex-shrink-0">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                </div>
+                <nav class="p-3 space-y-0.5 overflow-y-auto">
+                    <p class="text-[10px] text-white/40 uppercase tracking-wider font-semibold px-3 mb-2">Menu Utama</p>
+                    <a href="dashboard.html" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-sm">
+                        <i class="fa-solid fa-gauge-high w-5 text-center"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="index.html" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-sm">
+                        <i class="fa-solid fa-users w-5 text-center"></i>
+                        <span>Manajemen Pegawai</span>
+                    </a>
+                    <a href="rekap.html" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-sm">
+                        <i class="fa-regular fa-calendar-check w-5 text-center"></i>
+                        <span>Rekap Absensi</span>
+                    </a>
+                    <a href="pengajuan-izin.html" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-sm">
+                        <i class="fa-regular fa-file-lines w-5 text-center"></i>
+                        <span>Pengajuan Izin</span>
+                    </a>
+                    <a href="pengaturan.html" class="sidebar-item sidebar-active flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-sm">
+                        <i class="fa-solid fa-gear w-5 text-center"></i>
+                        <span>Pengaturan</span>
+                    </a>
+                    <div class="border-t border-white/10 my-3"></div>
+                    <a href="#" onclick="logout()" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-sm">
+                        <i class="fa-solid fa-arrow-right-from-bracket w-5 text-center"></i>
+                        <span>Logout</span>
+                    </a>
+                </nav>
+                <div class="p-4 border-t border-white/10 text-[10px] text-white/40 text-center">
+                    © 2026 Diskominfo Kab. Tangerang
+                </div>
+            </aside>
+
             <!-- Container Isi Pengaturan (Scrollable) -->
-            <div class="flex-1 overflow-y-auto p-6">
+            <div class="flex-1 overflow-y-auto p-4 sm:p-6">
                 <div class="max-w-5xl mx-auto w-full space-y-6">
 
-                    <!-- Alert Notifikasi Berhasil/Gagal -->
+                    <!-- Alert Notifikasi -->
                     <div id="alert-box" class="hidden p-4 rounded-xl text-sm font-medium transition-all duration-300"></div>
 
-                    <!-- Bagian 1: Pengaturan Profil Admin / Kredensial -->
+                    <!-- Bagian 1: Profil Admin -->
                     <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
                         <div class="flex items-center gap-3 mb-4 pb-3 border-b border-gray-100">
-                            <i class="fa-solid fa-user-shield text-yellow-500 text-xl"></i>
+                            <i class="fa-solid fa-user-shield text-[#1f2937] text-xl"></i>
                             <h2 class="text-lg font-bold text-gray-800">Keamanan & Profil Administrator</h2>
                         </div>
-                        
+
                         <form id="form-admin-setting" class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Nama Administrator</label>
-                                <input type="text" id="admin-name" value="Administrator Utama" class="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-yellow-500 outline-none">
+                                <input type="text" id="admin-name" value="Administrator Utama"
+                                    class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#1f2937] outline-none">
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Email Admin</label>
-                                <input type="email" id="admin-email" value="admin@absensi.com" class="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-yellow-500 outline-none">
+                                <input type="email" id="admin-email" value="admin@absensi.com"
+                                    class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#1f2937] outline-none">
                             </div>
                             <div class="md:col-span-2">
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Password Baru <span class="text-xs text-gray-400">(Kosongkan jika tidak ingin mengubah password)</span></label>
-                                <input type="password" id="admin-password" placeholder="••••••••" class="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-yellow-500 outline-none">
+                                <input type="password" id="admin-password" placeholder="••••••••"
+                                    class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#1f2937] outline-none">
                             </div>
                             <div class="md:col-span-2 flex justify-end">
-                                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-medium transition shadow-sm">
+                                <button type="submit" class="bg-[#1f2937] hover:bg-[#111827] text-white px-5 py-2.5 rounded-xl font-medium transition shadow-sm">
                                     <i class="fa-solid fa-floppy-disk mr-2"></i> Simpan Perubahan Admin
                                 </button>
                             </div>
                         </form>
                     </div>
 
-                    <!-- Bagian 2: Pengaturan Jam Absensi & Toleransi Keterlambatan -->
+                    <!-- Bagian 2: Jam Absensi -->
                     <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
                         <div class="flex items-center gap-3 mb-4 pb-3 border-b border-gray-100">
-                            <i class="fa-solid fa-clock text-yellow-500 text-xl"></i>
+                            <i class="fa-solid fa-clock text-[#1f2937] text-xl"></i>
                             <h2 class="text-lg font-bold text-gray-800">Konfigurasi Jam Kerja & Absensi</h2>
                         </div>
-                        
+
                         <form id="form-system-setting" class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Jam Masuk Kantor</label>
-                                <input type="time" id="work-start-time" value="08:00" class="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-yellow-500 outline-none">
+                                <input type="time" id="work-start-time" value="08:00"
+                                    class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#1f2937] outline-none">
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Batas Toleransi Terlambat (Jam)</label>
-                                <input type="time" id="late-limit-time" value="10:00" class="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-yellow-500 outline-none">
+                                <input type="time" id="late-limit-time" value="10:00"
+                                    class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#1f2937] outline-none">
                                 <p class="text-xs text-gray-500 mt-1">Absen setelah jam ini akan otomatis tercatat sebagai "Terlambat".</p>
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Jam Pulang Kantor</label>
-                                <input type="time" id="work-end-time" value="17:00" class="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-yellow-500 outline-none">
+                                <input type="time" id="work-end-time" value="17:00"
+                                    class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#1f2937] outline-none">
                             </div>
                             <div class="flex items-center">
                                 <label class="flex items-center cursor-pointer mt-6">
                                     <input type="checkbox" id="auto-status-toggle" checked class="sr-only peer">
-                                    <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                    <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#1f2937]"></div>
                                     <span class="ml-3 text-sm font-medium text-gray-700">Aktifkan Validasi Scan QR Otomatis</span>
                                 </label>
                             </div>
                             <div class="md:col-span-2 flex justify-end">
-                                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-medium transition shadow-sm">
+                                <button type="submit" class="bg-[#1f2937] hover:bg-[#111827] text-white px-5 py-2.5 rounded-xl font-medium transition shadow-sm">
                                     <i class="fa-solid fa-floppy-disk mr-2"></i> Simpan Konfigurasi Jam
                                 </button>
                             </div>
                         </form>
                     </div>
 
-                    <!-- Bagian 3: Manajemen Sistem & Database -->
+                    <!-- Bagian 3: Manajemen Sistem -->
                     <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
                         <div class="flex items-center gap-3 mb-4 pb-3 border-b border-gray-100">
-                            <i class="fa-solid fa-database text-yellow-500 text-xl"></i>
+                            <i class="fa-solid fa-database text-[#1f2937] text-xl"></i>
                             <h2 class="text-lg font-bold text-gray-800">Pengelolaan Sistem & Penyimpanan</h2>
                         </div>
-                        
+
                         <div class="flex flex-col md:flex-row justify-between items-center gap-4 py-2">
                             <div>
                                 <h4 class="font-semibold text-gray-800">Bersihkan Cache & Log Aktivitas</h4>
@@ -274,12 +430,26 @@
                         </div>
                     </div>
 
+                    <footer class="text-center py-3 sm:py-4 border-t border-slate-200 mt-4 sm:mt-6">
+                        <p class="text-[10px] sm:text-xs text-slate-400">© 2026 Dinas Komunikasi dan Informatika Kabupaten Tangerang. All Rights Reserved.</p>
+                    </footer>
+
                 </div>
             </div>
         </main>
     </div>
 
     <script>
+        // ============================================================
+        // MOBILE SIDEBAR TOGGLE
+        // ============================================================
+        function toggleMobileSidebar() {
+            const sidebar = document.getElementById('mobile-sidebar');
+            const overlay = document.getElementById('mobile-overlay');
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        }
+
         // Script untuk form submit
         document.getElementById('form-admin-setting').addEventListener('submit', function(e) {
             e.preventDefault();

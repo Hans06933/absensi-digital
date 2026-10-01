@@ -2,30 +2,28 @@
 <html lang="id">
 <head>
     <!-- Meta PWA & Mobile Optimization -->
-    <meta name="theme-color" content="#1a2a6c">
+    <meta name="theme-color" content="#1f2937">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Absensi">
+    <meta name="apple-mobile-web-app-title" content="Absensi Kominfo">
     <link rel="manifest" href="/manifest-admin.json">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3135/3135715.png">
+    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="apple-touch-icon" href="logo.png">
     <meta charset="UTF-8">
-    <!-- IMPORTANT: Prevent zoom out on mobile -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Sistem Absensi & Management Pegawai</title>
-    
+    <title>Sistem Absensi & Management Pegawai - Kominfo Kabupaten Tangerang</title>
+
     <!-- CSS Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://unpkg.com/html5-qrcode"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
-        /* Custom styles for company theme */
-        * {
-            -webkit-tap-highlight-color: transparent;
-        }
 
-        /* ===== SIDEBAR ITEM BASE ===== */
+    <style>
+        * { -webkit-tap-highlight-color: transparent; }
+
+        /* ===== SIDEBAR ITEM ===== */
         .sidebar-item {
             position: relative;
             overflow: hidden;
@@ -33,7 +31,6 @@
             animation: slideInLeft 0.35s ease backwards;
         }
 
-        /* Animated left indicator bar (garis kuning) */
         .sidebar-item::before {
             content: '';
             position: absolute;
@@ -42,59 +39,48 @@
             transform: translateY(-50%) scaleY(0);
             width: 4px;
             height: 70%;
-            background: #fbbf24;
+            background: #d4a017;
             border-radius: 0 4px 4px 0;
             transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             transform-origin: center;
         }
 
-        /* Hover state */
         .sidebar-item:hover {
             background: rgba(255, 255, 255, 0.06);
             padding-left: 1rem;
         }
         .sidebar-item:hover i {
             transform: scale(1.1);
-            color: #fbbf24;
+            color: #d4a017;
         }
         .sidebar-item i {
             transition: transform 0.25s ease, color 0.25s ease;
         }
 
-        /* Active state - indicator muncul */
         .sidebar-item.sidebar-active {
-            background: linear-gradient(90deg, rgba(251, 191, 36, 0.15) 0%, rgba(45, 67, 115, 0.4) 100%);
+            background: rgba(255, 255, 255, 0.08);
             padding-left: 1rem;
         }
         .sidebar-item.sidebar-active::before {
             transform: translateY(-50%) scaleY(1);
         }
         .sidebar-item.sidebar-active i {
-            color: #fbbf24 !important;
+            color: #d4a017 !important;
             transform: scale(1.15);
         }
         .sidebar-item.sidebar-active span {
             color: #ffffff !important;
             font-weight: 600;
-            letter-spacing: 0.01em;
         }
 
-        /* Click ripple effect */
         .sidebar-item:active {
             transform: scale(0.97);
-            background: rgba(251, 191, 36, 0.2);
+            background: rgba(212, 160, 23, 0.15);
         }
 
-        /* Staggered fade-in animation */
         @keyframes slideInLeft {
-            from {
-                opacity: 0;
-                transform: translateX(-8px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
+            from { opacity: 0; transform: translateX(-8px); }
+            to { opacity: 1; transform: translateX(0); }
         }
         .sidebar-item:nth-child(2) { animation-delay: 0.03s; }
         .sidebar-item:nth-child(3) { animation-delay: 0.06s; }
@@ -103,512 +89,573 @@
         .sidebar-item:nth-child(6) { animation-delay: 0.15s; }
         .sidebar-item:nth-child(7) { animation-delay: 0.18s; }
 
-        /* Fade-out page transition */
         body.page-exit {
             opacity: 0;
             transition: opacity 0.2s ease;
         }
 
+        /* ===== SIDEBAR SOLID ===== */
         .company-gradient {
-            background: linear-gradient(135deg, #0f1a3d, #1a2a6c, #2d4373);
+            background: #1f2937;
         }
-        .stat-card {
-            transition: all 0.3s ease;
-        }
-        .stat-card:hover {
-            transform: translateY(-4px);
-        }
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #1a2a6c;
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #2d4373;
-        }
-        /* Responsive table - horizontal scroll on mobile */
+
+        .stat-card { transition: all 0.3s ease; }
+        .stat-card:hover { transform: translateY(-4px); }
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #374151; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #1f2937; }
+
         .table-wrapper {
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
             scroll-behavior: smooth;
         }
-        .table-wrapper table {
-            min-width: 600px;
-            width: 100%;
-        }
-        /* Mobile friendly touch targets */
-        .touch-target {
-            min-height: 44px;
-            min-width: 44px;
-        }
-        /* Prevent text selection on mobile */
-        .no-select {
-            -webkit-user-select: none;
-            user-select: none;
-        }
-        /* Card hover effect */
-        .card-hover {
-            transition: all 0.2s ease;
-        }
-        .card-hover:active {
-            transform: scale(0.98);
-        }
-        /* Modal backdrop fix */
+        .table-wrapper table { min-width: 600px; width: 100%; }
+
+        .touch-target { min-height: 44px; min-width: 44px; }
+        .no-select { -webkit-user-select: none; user-select: none; }
+
+        .card-hover { transition: all 0.2s ease; }
+        .card-hover:active { transform: scale(0.98); }
+
         .modal-backdrop {
             -webkit-backdrop-filter: blur(4px);
             backdrop-filter: blur(4px);
         }
-        /* Responsive font sizes */
+
         @media (max-width: 640px) {
-            .text-responsive {
-                font-size: 0.875rem;
-            }
-            .table-wrapper table {
-                min-width: 500px;
-            }
+            .text-responsive { font-size: 0.875rem; }
+            .table-wrapper table { min-width: 500px; }
         }
-        /* Safe area for notch phones */
+
         @supports (padding: max(0px)) {
-            .safe-bottom {
-                padding-bottom: max(1rem, env(safe-area-inset-bottom));
-            }
+            .safe-bottom { padding-bottom: max(1rem, env(safe-area-inset-bottom)); }
         }
-        /* Disable zoom on input focus for iOS */
-        input, select, textarea {
-            font-size: 16px !important;
-        }
-        /* Smooth sidebar transition */
+
+        input, select, textarea { font-size: 16px !important; }
+
         #mobile-sidebar {
             transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        /* Better touch for buttons */
+
         button, .clickable {
             cursor: pointer;
             -webkit-tap-highlight-color: transparent;
         }
-        button:active, .clickable:active {
-            transform: scale(0.97);
+        button:active, .clickable:active { transform: scale(0.97); }
+
+        /* ===== FILTER BUTTON ===== */
+        .filter-btn { transition: all 0.2s ease; }
+        .filter-btn.active {
+            background-color: #1f2937;
+            color: white;
+            box-shadow: 0 2px 8px rgba(31, 41, 55, 0.3);
         }
 
-        /* ===== FILTER BUTTON (untuk Persetujuan Izin) ===== */
-        .filter-btn {
-            transition: all 0.2s ease;
+        /* ===== BRAND (Logo + Nama Instansi) ===== */
+        .brand-wrap {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 4px 0;
         }
-        .filter-btn.active {
-            background-color: #1a2a6c;
-            color: white;
-            box-shadow: 0 2px 8px rgba(26, 42, 108, 0.3);
+
+        .brand-logo {
+            flex-shrink: 0;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 3px;
+            overflow: hidden;
+        }
+
+        .brand-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+        .brand-text {
+            min-width: 0;
+            flex: 1;
+            line-height: 1.2;
+        }
+
+        .brand-text .brand-title {
+            margin: 0;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: .04em;
+            line-height: 1.25;
+        }
+
+        .brand-text .brand-title .line-1 {
+            color: #ffffff;
+            display: block;
+        }
+
+        .brand-text .brand-title .line-2 {
+            color: #d4a017;
+            display: block;
+        }
+
+        .brand-text .brand-sub {
+            color: rgba(255,255,255,.55);
+            font-size: 8px;
+            font-weight: 700;
+            letter-spacing: .18em;
+            text-transform: uppercase;
+            margin-top: 4px;
+            white-space: nowrap;
+        }
+
+        .brand-wrap-mobile .brand-text .brand-title .line-1 { color: #111827; }
+        .brand-wrap-mobile .brand-text .brand-title .line-2 { color: #d4a017; }
+        .brand-wrap-mobile .brand-text .brand-sub { color: #6b7280; }
+        .brand-wrap-mobile .brand-logo {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+        }
+
+        /* ===== AVATAR FOTO PROFIL ===== */
+        .user-avatar-img {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #e5e7eb;
+            flex-shrink: 0;
+            background: #f3f4f6;
+            display: block;
+        }
+
+        .user-avatar-initials {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: #1f2937;
+            color: #d4a017;
+            font-weight: 700;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            border: 2px solid #d4a017;
+            text-transform: uppercase;
         }
     </style>
 </head>
-<body class="bg-slate-50 font-sans text-slate-800 antialiased min-h-screen flex overflow-x-hidden">
 
-    <!-- ============================================ -->
-    <!-- SIDEBAR DESKTOP -->
-    <!-- ============================================ -->
-    <aside class="w-64 min-h-screen company-gradient text-white flex-shrink-0 hidden md:flex flex-col shadow-2xl sticky top-0 overflow-y-auto">
-        <div class="p-4 sm:p-6 border-b border-white/10">
-            <div class="flex items-center gap-3">
-                <div class="bg-amber-400 text-[#1a2a6c] p-2 rounded-lg font-bold shadow-lg flex-shrink-0">
-                    <i class="fa-solid fa-qrcode text-lg"></i>
-                </div>
-                <div class="min-w-0">
-                    <h1 class="text-base sm:text-lg font-bold tracking-tight truncate">Absensi<span class="text-amber-400">Digital</span></h1>
-                </div>
-            </div>
-            <div class="mt-3 pt-3 border-t border-white/10">
-                <p class="text-[10px] sm:text-xs text-amber-400 font-bold tracking-wider truncate">PT. ANDALAN MAJU</p>
-                <p class="text-[8px] sm:text-[10px] text-white/50 italic truncate">INNOVATE · GROW · EXCEL</p>
-            </div>
-        </div>
-        <nav class="flex-1 p-3 sm:p-4 space-y-0.5 overflow-y-auto">
-            <p class="text-[9px] sm:text-[10px] text-white/40 uppercase tracking-wider font-semibold px-3 mb-2">Menu Utama</p>
-            
-            <a href="dashboard.html" data-nav="dashboard" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-xs sm:text-sm">
-                <i class="fa-solid fa-gauge-high w-5 text-center text-sm sm:text-base"></i>
-                <span>Dashboard</span>
-            </a>
-            <a href="index.html" data-nav="pegawai" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-xs sm:text-sm">
-                <i class="fa-solid fa-users w-5 text-center text-sm sm:text-base"></i>
-                <span>Manajemen Pegawai</span>
-            </a>
-            <a href="rekap.html" data-nav="rekap" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-xs sm:text-sm">
-                <i class="fa-regular fa-calendar-check w-5 text-center text-sm sm:text-base"></i>
-                <span>Rekap Absensi</span>
-            </a>
-            <a href="pengajuan-izin.html" data-nav="izin" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-xs sm:text-sm">
-                <i class="fa-regular fa-file-lines w-5 text-center text-sm sm:text-base"></i>
-                <span>Pengajuan Izin</span>
-            </a>
-            <a href="pengaturan.html" data-nav="pengaturan" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-xs sm:text-sm">
-                <i class="fa-solid fa-gear w-5 text-center text-sm sm:text-base"></i>
-                <span>Pengaturan</span>
-            </a>
-            
-            <div class="border-t border-white/10 my-3"></div>
-            
-            <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-xs sm:text-sm">
-                <i class="fa-solid fa-arrow-right-from-bracket w-5 text-center text-sm sm:text-base"></i>
-                <span>Logout</span>
-            </a>
-        </nav>
-        <div class="p-3 sm:p-4 border-t border-white/10 text-[8px] sm:text-[10px] text-white/40 text-center">
-            © 2026 PT. ANDALAN MAJU
-        </div>
-    </aside>
+<body class="bg-slate-50 font-sans text-slate-800 antialiased overflow-hidden">
 
-    <!-- ============================================ -->
-    <!-- MAIN CONTENT -->
-    <!-- ============================================ -->
-    <div class="flex-1 min-h-screen flex flex-col w-full min-w-0">
+    <!-- WRAPPER UTAMA -->
+    <div class="flex h-screen w-full overflow-hidden">
 
-        <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
-            <div class="px-3 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between">
-                <button onclick="toggleSidebar()" class="md:hidden text-slate-600 hover:text-slate-900 text-xl touch-target p-2 -ml-2">
-                    <i class="fa-solid fa-bars"></i>
-                </button>
-                
-                <div class="flex items-center space-x-2 md:hidden min-w-0">
-                    <div class="bg-[#1a2a6c] text-white p-1.5 sm:p-2 rounded-lg font-bold shadow-md flex-shrink-0">
-                        <i class="fa-solid fa-qrcode text-xs sm:text-sm"></i>
+        <!-- SIDEBAR DESKTOP -->
+        <aside class="w-64 h-full company-gradient text-white flex-shrink-0 hidden md:flex flex-col shadow-xl z-20">
+            <div class="p-4 sm:p-5 border-b border-white/10">
+                <div class="brand-wrap">
+                    <div class="brand-logo">
+                        <img src="logo.png" alt="Logo Kominfo Kabupaten Tangerang">
                     </div>
-                    <div class="min-w-0">
-                        <h1 class="text-xs sm:text-sm font-bold text-slate-900 tracking-tight truncate">Absensi<span class="text-[#1a2a6c]">Digital</span></h1>
+                    <div class="brand-text">
+                        <h1 class="brand-title">
+                            <span class="line-1">KOMINFO</span>
+                            <span class="line-2">KAB. TANGERANG</span>
+                        </h1>
+                        <p class="brand-sub">Absensi Digital</p>
                     </div>
                 </div>
-                
-                <div class="flex items-center gap-2 sm:gap-3">
-                    <button onclick="openScannerModal()" class="px-2.5 sm:px-4 py-1.5 sm:py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg shadow-sm transition flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm touch-target">
-                        <i class="fa-solid fa-camera text-xs sm:text-sm"></i>
-                        <span class="hidden xs:inline">Scan</span>
-                        <span class="hidden sm:inline">Absensi</span>
-                    </button>
-                </div>
             </div>
-        </header>
 
-        <div id="mobile-overlay" class="fixed inset-0 bg-black/50 z-40 hidden" onclick="toggleSidebar()"></div>
-        <aside id="mobile-sidebar" class="fixed top-0 left-0 h-full w-72 max-w-[80vw] company-gradient text-white z-50 -translate-x-full md:hidden shadow-2xl overflow-y-auto">
-            <div class="p-4 border-b border-white/10">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-3 min-w-0">
-                        <div class="bg-amber-400 text-[#1a2a6c] p-2 rounded-lg font-bold shadow-lg flex-shrink-0">
-                            <i class="fa-solid fa-qrcode text-lg"></i>
-                        </div>
-                        <div class="min-w-0">
-                            <h1 class="text-base font-bold tracking-tight truncate">Absensi<span class="text-amber-400">Digital</span></h1>
-                        </div>
-                    </div>
-                    <button onclick="toggleSidebar()" class="text-white/70 hover:text-white text-2xl p-1 -mr-2 touch-target">
-                        <i class="fa-solid fa-xmark"></i>
-                    </button>
-                </div>
-                <div class="mt-3 pt-3 border-t border-white/10">
-                    <p class="text-xs text-amber-400 font-bold tracking-wider truncate">PT. ANDALAN MAJU</p>
-                    <p class="text-[10px] text-white/50 italic truncate">PHP · JS · API</p>
-                </div>
-            </div>
-            <nav class="p-3 space-y-0.5 overflow-y-auto">
-                <p class="text-[10px] text-white/40 uppercase tracking-wider font-semibold px-3 mb-2">Menu Utama</p>
-                <a href="dashboard.html" data-nav="dashboard" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-sm">
-                    <i class="fa-solid fa-gauge-high w-5 text-center"></i>
+            <nav class="flex-1 p-3 sm:p-4 space-y-0.5 overflow-y-auto">
+                <p class="text-[9px] sm:text-[10px] text-white/40 uppercase tracking-wider font-semibold px-3 mb-2">Menu Utama</p>
+
+                <a href="dashboard.html" data-nav="dashboard" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-xs sm:text-sm">
+                    <i class="fa-solid fa-gauge-high w-5 text-center text-sm sm:text-base"></i>
                     <span>Dashboard</span>
                 </a>
-                <a href="index.html" data-nav="pegawai" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-sm">
-                    <i class="fa-solid fa-users w-5 text-center"></i>
+                <a href="index.html" data-nav="pegawai" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-xs sm:text-sm">
+                    <i class="fa-solid fa-users w-5 text-center text-sm sm:text-base"></i>
                     <span>Manajemen Pegawai</span>
                 </a>
-                <a href="rekap.html" data-nav="rekap" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-sm">
-                    <i class="fa-regular fa-calendar-check w-5 text-center"></i>
+                <a href="rekap.html" data-nav="rekap" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-xs sm:text-sm">
+                    <i class="fa-regular fa-calendar-check w-5 text-center text-sm sm:text-base"></i>
                     <span>Rekap Absensi</span>
                 </a>
-                <a href="pengajuan-izin.html" data-nav="izin" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-sm">
-                    <i class="fa-regular fa-file-lines w-5 text-center"></i>
+                <a href="pengajuan-izin.html" data-nav="izin" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-xs sm:text-sm">
+                    <i class="fa-regular fa-file-lines w-5 text-center text-sm sm:text-base"></i>
                     <span>Pengajuan Izin</span>
                 </a>
-                <a href="pengaturan.html" data-nav="pengaturan" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-sm">
-                    <i class="fa-solid fa-gear w-5 text-center"></i>
+                <a href="pengaturan.html" data-nav="pengaturan" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-xs sm:text-sm">
+                    <i class="fa-solid fa-gear w-5 text-center text-sm sm:text-base"></i>
                     <span>Pengaturan</span>
                 </a>
+
                 <div class="border-t border-white/10 my-3"></div>
-                <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-sm">
-                    <i class="fa-solid fa-arrow-right-from-bracket w-5 text-center"></i>
+
+                <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-xs sm:text-sm">
+                    <i class="fa-solid fa-arrow-right-from-bracket w-5 text-center text-sm sm:text-base"></i>
                     <span>Logout</span>
                 </a>
             </nav>
-            <div class="p-4 border-t border-white/10 text-[10px] text-white/40 text-center">
-                © 2026 PT. ANDALAN MAJU
+
+            <div class="p-4 border-t border-white/10 text-[8px] sm:text-[10px] text-white/40 text-center">
+                © 2026 Diskominfo Kab. Tangerang
             </div>
         </aside>
 
-        <main class="flex-1 max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 w-full space-y-6 sm:space-y-8 min-w-0">
-            
-            <!-- SECTION 1: MANAJEMEN PEGAWAI (TIDAK DIUBAH) -->
-            <section>
-                <div class="flex flex-wrap items-start sm:items-center justify-between gap-3 mb-4 sm:mb-6">
-                    <div class="min-w-0">
-                        <h2 class="text-lg sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
-                            <i class="fa-solid fa-users text-[#1a2a6c] text-base sm:text-xl"></i>
-                            <span class="truncate">Manajemen Pegawai</span>
-                        </h2>
-                        <p class="text-xs sm:text-sm text-slate-500 truncate">Kelola data pegawai dan cetak QR Code.</p>
-                    </div>
-                    <button onclick="openModal()" class="px-3 sm:px-4 py-1.5 sm:py-2 bg-[#1a2a6c] hover:bg-[#2d4373] text-white font-semibold rounded-lg shadow-sm transition text-xs sm:text-sm flex items-center gap-1.5 touch-target flex-shrink-0">
-                        <i class="fa-solid fa-plus text-xs"></i>
-                        <span class="hidden xs:inline">Tambah</span>
-                        <span class="hidden sm:inline">Pegawai</span>
+        <!-- KONTEN UTAMA -->
+        <main class="flex-1 flex flex-col h-full overflow-hidden bg-slate-50 relative">
+
+            <!-- HEADER STATIS -->
+            <header class="bg-white border-b border-slate-200 shadow-sm flex-shrink-0 z-30">
+                <div class="px-3 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between">
+                    <button onclick="toggleSidebar()" class="md:hidden text-slate-600 hover:text-slate-900 text-xl touch-target p-2 -ml-2">
+                        <i class="fa-solid fa-bars"></i>
                     </button>
-                </div>
 
-                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                    <div class="p-3 sm:p-4 border-b border-slate-200 bg-slate-50/50 flex flex-wrap items-center gap-3">
-                        <div class="relative flex-1 min-w-[150px]">
-                            <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                            <input type="text" id="search-input" onkeyup="filterUsers()" placeholder="Cari NIP atau Nama..." 
-                                class="w-full pl-8 pr-3 py-1.5 sm:py-2 border border-slate-300 rounded-lg text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#1a2a6c]">
+                    <div class="flex items-center md:hidden min-w-0">
+                        <div class="brand-wrap brand-wrap-mobile">
+                            <div class="brand-logo">
+                                <img src="logo.png" alt="Logo Kominfo Kabupaten Tangerang">
+                            </div>
+                            <div class="brand-text">
+                                <h1 class="brand-title">
+                                    <span class="line-1">KOMINFO</span>
+                                    <span class="line-2">KAB. TANGERANG</span>
+                                </h1>
+                                <p class="brand-sub">Absensi Digital</p>
+                            </div>
                         </div>
-                        <div class="text-[10px] sm:text-xs text-slate-500 flex items-center gap-2 flex-shrink-0">
-                            <span>Total: <span id="total-users" class="font-bold text-slate-700">0</span></span>
-                            <span class="text-slate-300 hidden xs:inline">|</span>
-                        </div>
                     </div>
 
-                    <div class="table-wrapper">
-                        <table class="w-full text-left border-collapse text-xs sm:text-sm">
-                            <thead>
-                                <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold">
-                                    <th class="p-2 sm:p-4 whitespace-nowrap">NIP</th>
-                                    <th class="p-2 sm:p-4 whitespace-nowrap">
-                                        <div class="flex items-center gap-1 text-[#1a2a6c]">
-                                            Nama <i class="fa-solid fa-arrow-down-a-z text-[8px] sm:text-[10px]"></i>
-                                        </div>
-                                    </th>
-                                    <th class="p-2 sm:p-4 whitespace-nowrap hidden sm:table-cell">Email</th>
-                                    <th class="p-2 sm:p-4 whitespace-nowrap hidden md:table-cell">No. Telepon</th>
-                                    <th class="p-2 sm:p-4 text-center whitespace-nowrap">QR Code</th>
-                                    <th class="p-2 sm:p-4 text-center whitespace-nowrap">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody id="user-table-body">
-                                <tr>
-                                    <td colspan="6" class="p-4 sm:p-6 text-center text-slate-400 text-xs sm:text-sm">
-                                        <i class="fa-solid fa-spinner fa-spin mr-2"></i>
-                                        Memuat data...
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
-
-            <!-- SECTION 2: REKAP ABSENSI (TIDAK DIUBAH) -->
-            <section>
-                <div class="flex flex-wrap items-start sm:items-center justify-between gap-3 mb-4 sm:mb-6">
-                    <div class="min-w-0">
-                        <h2 class="text-lg sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
-                            <i class="fa-regular fa-calendar-check text-[#1a2a6c] text-base sm:text-xl"></i>
-                            <span class="truncate">Rekap Absensi</span>
-                        </h2>
-                        <p class="text-xs sm:text-sm text-slate-500 truncate">Batas hadir tepat waktu <strong class="text-[#1a2a6c]">10:00 AM</strong>.</p>
-                    </div>
-                    <div class="flex items-center gap-2 flex-shrink-0">
-                        <input type="date" id="attendance-date" onchange="loadAttendanceRecap()" 
-                            class="px-2 sm:px-3 py-1.5 sm:py-2 border border-slate-300 rounded-lg text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#1a2a6c] bg-white w-[120px] sm:w-auto">
-                        <button onclick="loadAttendanceRecap()" class="px-2.5 sm:px-3 py-1.5 sm:py-2 bg-[#1a2a6c] hover:bg-[#2d4373] text-white font-semibold rounded-lg text-xs sm:text-sm flex items-center gap-1 shadow-sm transition touch-target">
-                            <i class="fa-solid fa-rotate text-xs"></i>
-                            <span class="hidden xs:inline">Refresh</span>
+                    <div class="flex items-center gap-2 sm:gap-3">
+                        <button onclick="openScannerModal()" class="px-2.5 sm:px-4 py-1.5 sm:py-2 bg-[#1f2937] hover:bg-[#111827] text-white font-semibold rounded-lg shadow-sm transition flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm touch-target">
+                            <i class="fa-solid fa-camera text-xs sm:text-sm"></i>
+                            <span class="hidden xs:inline">Scan</span>
+                            <span class="hidden sm:inline">Absensi</span>
                         </button>
                     </div>
                 </div>
+            </header>
 
-                <div class="grid grid-cols-3 gap-2 sm:gap-4 mb-4 sm:mb-6">
-                    <div class="bg-white p-3 sm:p-4 rounded-xl border border-slate-200 shadow-sm stat-card hover:shadow-md transition">
-                        <div class="flex items-center gap-2 sm:gap-4">
-                            <div class="p-2 sm:p-3 bg-[#1a2a6c]/10 text-[#1a2a6c] rounded-lg">
-                                <i class="fa-solid fa-list-check text-base sm:text-lg"></i>
+            <div id="mobile-overlay" class="fixed inset-0 bg-black/50 z-40 hidden" onclick="toggleSidebar()"></div>
+
+            <aside id="mobile-sidebar" class="fixed top-0 left-0 h-full w-72 max-w-[80vw] company-gradient text-white z-50 -translate-x-full md:hidden shadow-2xl overflow-y-auto">
+                <div class="p-4 border-b border-white/10">
+                    <div class="flex items-center justify-between gap-2">
+                        <div class="brand-wrap">
+                            <div class="brand-logo">
+                                <img src="logo.png" alt="Logo Kominfo Kabupaten Tangerang">
                             </div>
-                            <div class="min-w-0">
-                                <p class="text-[8px] sm:text-xs font-semibold uppercase text-slate-400 truncate">Total Log</p>
-                                <h3 id="stat-total" class="text-base sm:text-xl font-bold text-slate-900">0</h3>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="bg-white p-3 sm:p-4 rounded-xl border border-slate-200 shadow-sm stat-card hover:shadow-md transition">
-                        <div class="flex items-center gap-2 sm:gap-4">
-                            <div class="p-2 sm:p-3 bg-emerald-100 text-emerald-600 rounded-lg">
-                                <i class="fa-solid fa-check-circle text-base sm:text-lg"></i>
-                            </div>
-                            <div class="min-w-0">
-                                <p class="text-[8px] sm:text-xs font-semibold uppercase text-slate-400 truncate">Hadir</p>
-                                <h3 id="stat-hadir" class="text-base sm:text-xl font-bold text-slate-900">0</h3>
+                            <div class="brand-text">
+                                <h1 class="brand-title">
+                                    <span class="line-1">KOMINFO</span>
+                                    <span class="line-2">KAB. TANGERANG</span>
+                                </h1>
+                                <p class="brand-sub">Absensi Digital</p>
                             </div>
                         </div>
-                    </div>
-                    <div class="bg-white p-3 sm:p-4 rounded-xl border border-slate-200 shadow-sm stat-card hover:shadow-md transition">
-                        <div class="flex items-center gap-2 sm:gap-4">
-                            <div class="p-2 sm:p-3 bg-amber-100 text-amber-600 rounded-lg">
-                                <i class="fa-solid fa-clock text-base sm:text-lg"></i>
-                            </div>
-                            <div class="min-w-0">
-                                <p class="text-[8px] sm:text-xs font-semibold uppercase text-slate-400 truncate">Terlambat</p>
-                                <h3 id="stat-terlambat" class="text-base sm:text-xl font-bold text-slate-900">0</h3>
-                            </div>
-                        </div>
+                        <button onclick="toggleSidebar()" class="text-white/70 hover:text-white text-2xl p-1 -mr-2 touch-target flex-shrink-0">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
                     </div>
                 </div>
-
-                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                    <div class="table-wrapper">
-                        <table class="w-full text-left border-collapse text-xs sm:text-sm">
-                            <thead>
-                                <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold">
-                                    <th class="p-2 sm:p-4 whitespace-nowrap">
-                                        <div class="flex items-center gap-1 text-[#1a2a6c]">
-                                            Waktu <i class="fa-solid fa-arrow-down-wide-short text-[8px] sm:text-[10px]"></i>
-                                        </div>
-                                    </th>
-                                    <th class="p-2 sm:p-4 whitespace-nowrap">NIP</th>
-                                    <th class="p-2 sm:p-4 whitespace-nowrap">
-                                        <div class="flex items-center gap-1 text-[#1a2a6c]">
-                                            Nama <i class="fa-solid fa-arrow-down-a-z text-[8px] sm:text-[10px]"></i>
-                                        </div>
-                                    </th>
-                                    <th class="p-2 sm:p-4 whitespace-nowrap">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody id="recapTableBody">
-                                <tr>
-                                    <td colspan="4" class="p-4 sm:p-6 text-center text-slate-400 text-xs sm:text-sm">
-                                        <i class="fa-solid fa-spinner fa-spin mr-2"></i>
-                                        Memuat rekap...
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                <nav class="p-3 space-y-0.5 overflow-y-auto">
+                    <p class="text-[10px] text-white/40 uppercase tracking-wider font-semibold px-3 mb-2">Menu Utama</p>
+                    <a href="dashboard.html" data-nav="dashboard" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-sm">
+                        <i class="fa-solid fa-gauge-high w-5 text-center"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="index.html" data-nav="pegawai" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-sm">
+                        <i class="fa-solid fa-users w-5 text-center"></i>
+                        <span>Manajemen Pegawai</span>
+                    </a>
+                    <a href="rekap.html" data-nav="rekap" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-sm">
+                        <i class="fa-regular fa-calendar-check w-5 text-center"></i>
+                        <span>Rekap Absensi</span>
+                    </a>
+                    <a href="pengajuan-izin.html" data-nav="izin" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-sm">
+                        <i class="fa-regular fa-file-lines w-5 text-center"></i>
+                        <span>Pengajuan Izin</span>
+                    </a>
+                    <a href="pengaturan.html" data-nav="pengaturan" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-sm">
+                        <i class="fa-solid fa-gear w-5 text-center"></i>
+                        <span>Pengaturan</span>
+                    </a>
+                    <div class="border-t border-white/10 my-3"></div>
+                    <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/70 hover:text-white text-sm">
+                        <i class="fa-solid fa-arrow-right-from-bracket w-5 text-center"></i>
+                        <span>Logout</span>
+                    </a>
+                </nav>
+                <div class="p-4 border-t border-white/10 text-[10px] text-white/40 text-center">
+                    © 2026 Diskominfo Kab. Tangerang
                 </div>
-            </section>
+            </aside>
 
-            <!-- ============================================ -->
-            <!-- SECTION 3: PERSETUJUAN IZIN (DIPERBAIKI) -->
-            <!-- ============================================ -->
-            <section>
-                <!-- Header -->
-                <div class="flex flex-wrap items-start sm:items-center justify-between gap-3 mb-4 sm:mb-6">
-                    <div class="min-w-0">
-                        <h2 class="text-lg sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
-                            <i class="fa-solid fa-envelope-open-text text-amber-500 text-base sm:text-xl"></i>
-                            <span class="truncate">Persetujuan Izin</span>
-                        </h2>
-                        <p class="text-xs sm:text-sm text-slate-500 truncate">Kelola pengajuan izin, sakit, dan cuti pegawai.</p>
-                    </div>
-                    <button onclick="loadAdminLeaves()" class="px-2.5 sm:px-4 py-1.5 sm:py-2 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-lg shadow-sm transition text-xs sm:text-sm flex items-center gap-1 touch-target flex-shrink-0">
-                        <i class="fa-solid fa-rotate text-xs"></i>
-                        <span class="hidden xs:inline">Refresh</span>
-                    </button>
-                </div>
+            <!-- AREA SCROLL -->
+            <div class="flex-1 overflow-y-auto">
+                <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-6 sm:space-y-8 w-full">
 
-                <!-- Stat Cards: Pending / Approved / Rejected -->
-                <div class="grid grid-cols-3 gap-2 sm:gap-4 mb-4 sm:mb-6">
-                    <div class="bg-white p-3 sm:p-4 rounded-xl border border-slate-200 shadow-sm stat-card hover:shadow-md transition">
-                        <div class="flex items-center gap-2 sm:gap-4">
-                            <div class="p-2 sm:p-3 bg-amber-100 text-amber-600 rounded-lg">
-                                <i class="fa-solid fa-hourglass-half text-base sm:text-lg"></i>
-                            </div>
+                    <!-- SECTION 1: MANAJEMEN PEGAWAI -->
+                    <section>
+                        <div class="flex flex-wrap items-start sm:items-center justify-between gap-3 mb-4 sm:mb-6">
                             <div class="min-w-0">
-                                <p class="text-[8px] sm:text-xs font-semibold uppercase text-slate-400 truncate">Pending</p>
-                                <h3 id="stat-pending" class="text-base sm:text-xl font-bold text-slate-900">0</h3>
+                                <h2 class="text-lg sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
+                                    <i class="fa-solid fa-users text-[#1f2937] text-base sm:text-xl"></i>
+                                    <span class="truncate">Manajemen Pegawai</span>
+                                </h2>
+                                <p class="text-xs sm:text-sm text-slate-500 truncate">Kelola data pegawai dan cetak QR Code.</p>
                             </div>
-                        </div>
-                    </div>
-                    <div class="bg-white p-3 sm:p-4 rounded-xl border border-slate-200 shadow-sm stat-card hover:shadow-md transition">
-                        <div class="flex items-center gap-2 sm:gap-4">
-                            <div class="p-2 sm:p-3 bg-emerald-100 text-emerald-600 rounded-lg">
-                                <i class="fa-solid fa-check-circle text-base sm:text-lg"></i>
-                            </div>
-                            <div class="min-w-0">
-                                <p class="text-[8px] sm:text-xs font-semibold uppercase text-slate-400 truncate">Disetujui</p>
-                                <h3 id="stat-approved" class="text-base sm:text-xl font-bold text-slate-900">0</h3>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="bg-white p-3 sm:p-4 rounded-xl border border-slate-200 shadow-sm stat-card hover:shadow-md transition">
-                        <div class="flex items-center gap-2 sm:gap-4">
-                            <div class="p-2 sm:p-3 bg-rose-100 text-rose-600 rounded-lg">
-                                <i class="fa-solid fa-circle-xmark text-base sm:text-lg"></i>
-                            </div>
-                            <div class="min-w-0">
-                                <p class="text-[8px] sm:text-xs font-semibold uppercase text-slate-400 truncate">Ditolak</p>
-                                <h3 id="stat-rejected" class="text-base sm:text-xl font-bold text-slate-900">0</h3>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Table with Search & Filter -->
-                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                    <!-- Search & Filter Bar -->
-                    <div class="p-3 sm:p-4 border-b border-slate-200 bg-slate-50/50 flex flex-wrap items-center gap-3">
-                        <div class="relative flex-1 min-w-[150px]">
-                            <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                            <input type="text" id="leave-search-input" onkeyup="filterLeaves()" placeholder="Cari NIP atau Nama..." 
-                                class="w-full pl-8 pr-3 py-1.5 sm:py-2 border border-slate-300 rounded-lg text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#1a2a6c]">
-                        </div>
-                        <div class="flex items-center gap-1 flex-shrink-0 flex-wrap">
-                            <button onclick="setLeaveFilter('all')" data-filter="all" class="filter-btn active px-2.5 sm:px-3 py-1.5 rounded-lg text-[10px] sm:text-xs font-semibold border border-slate-200 bg-white hover:bg-slate-100">
-                                Semua
-                            </button>
-                            <button onclick="setLeaveFilter('Pending')" data-filter="Pending" class="filter-btn px-2.5 sm:px-3 py-1.5 rounded-lg text-[10px] sm:text-xs font-semibold border border-slate-200 bg-white hover:bg-slate-100">
-                                Pending
-                            </button>
-                            <button onclick="setLeaveFilter('Approved')" data-filter="Approved" class="filter-btn px-2.5 sm:px-3 py-1.5 rounded-lg text-[10px] sm:text-xs font-semibold border border-slate-200 bg-white hover:bg-slate-100">
-                                Disetujui
-                            </button>
-                            <button onclick="setLeaveFilter('Rejected')" data-filter="Rejected" class="filter-btn px-2.5 sm:px-3 py-1.5 rounded-lg text-[10px] sm:text-xs font-semibold border border-slate-200 bg-white hover:bg-slate-100">
-                                Ditolak
+                            <button onclick="openModal()" class="px-3 sm:px-4 py-1.5 sm:py-2 bg-[#1f2937] hover:bg-[#111827] text-white font-semibold rounded-lg shadow-sm transition text-xs sm:text-sm flex items-center gap-1.5 touch-target flex-shrink-0">
+                                <i class="fa-solid fa-plus text-xs"></i>
+                                <span class="hidden xs:inline">Tambah</span>
+                                <span class="hidden sm:inline">Pegawai</span>
                             </button>
                         </div>
-                        <div class="text-[10px] sm:text-xs text-slate-500 flex items-center gap-2 flex-shrink-0 ml-auto">
-                            <span>Total: <span id="total-leaves" class="font-bold text-slate-700">0</span></span>
+
+                        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                            <div class="p-3 sm:p-4 border-b border-slate-200 bg-slate-50/50 flex flex-wrap items-center gap-3">
+                                <div class="relative flex-1 min-w-[150px]">
+                                    <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                                    <input type="text" id="search-input" onkeyup="filterUsers()" placeholder="Cari NIP atau Nama..."
+                                        class="w-full pl-8 pr-3 py-1.5 sm:py-2 border border-slate-300 rounded-lg text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#1f2937]">
+                                </div>
+                                <div class="text-[10px] sm:text-xs text-slate-500 flex items-center gap-2 flex-shrink-0">
+                                    <span>Total: <span id="total-users" class="font-bold text-slate-700">0</span></span>
+                                    <span class="text-slate-300 hidden xs:inline">|</span>
+                                </div>
+                            </div>
+
+                            <div class="table-wrapper">
+                                <table class="w-full text-left border-collapse text-xs sm:text-sm">
+                                    <thead>
+                                        <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold">
+                                            <th class="p-2 sm:p-4 whitespace-nowrap">Foto</th>
+                                            <th class="p-2 sm:p-4 whitespace-nowrap">NIP</th>
+                                            <th class="p-2 sm:p-4 whitespace-nowrap">
+                                                <div class="flex items-center gap-1 text-[#1f2937]">
+                                                    Nama <i class="fa-solid fa-arrow-down-a-z text-[8px] sm:text-[10px]"></i>
+                                                </div>
+                                            </th>
+                                            <th class="p-2 sm:p-4 whitespace-nowrap hidden sm:table-cell">Email</th>
+                                            <th class="p-2 sm:p-4 whitespace-nowrap hidden md:table-cell">No. Telepon</th>
+                                            <th class="p-2 sm:p-4 text-center whitespace-nowrap">QR Code</th>
+                                            <th class="p-2 sm:p-4 text-center whitespace-nowrap">Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="user-table-body">
+                                        <tr>
+                                            <td colspan="7" class="p-4 sm:p-6 text-center text-slate-400 text-xs sm:text-sm">
+                                                <i class="fa-solid fa-spinner fa-spin mr-2"></i>
+                                                Memuat data...
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
-                    </div>
+                    </section>
 
-                    <div class="table-wrapper">
-                        <table class="w-full text-left border-collapse text-xs sm:text-sm">
-                            <thead>
-                                <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold">
-                                    <th class="p-2 sm:p-4 whitespace-nowrap">NIP & Nama</th>
-                                    <th class="p-2 sm:p-4 whitespace-nowrap">Jenis</th>
-                                    <th class="p-2 sm:p-4 whitespace-nowrap hidden sm:table-cell">Tanggal</th>
-                                    <th class="p-2 sm:p-4 whitespace-nowrap hidden md:table-cell">Alasan</th>
-                                    <th class="p-2 sm:p-4 whitespace-nowrap">Status</th>
-                                    <th class="p-2 sm:p-4 text-center whitespace-nowrap">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody id="adminLeaveTable" class="text-xs sm:text-sm">
-                                <tr>
-                                    <td colspan="6" class="p-4 sm:p-6 text-center text-slate-400">
-                                        <i class="fa-solid fa-spinner fa-spin mr-2"></i>
-                                        Memuat pengajuan...
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                    <!-- SECTION 2: REKAP ABSENSI -->
+                    <section>
+                        <div class="flex flex-wrap items-start sm:items-center justify-between gap-3 mb-4 sm:mb-6">
+                            <div class="min-w-0">
+                                <h2 class="text-lg sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
+                                    <i class="fa-regular fa-calendar-check text-[#1f2937] text-base sm:text-xl"></i>
+                                    <span class="truncate">Rekap Absensi</span>
+                                </h2>
+                                <p class="text-xs sm:text-sm text-slate-500 truncate">Batas hadir tepat waktu <strong class="text-[#1f2937]">10:00 AM</strong>.</p>
+                            </div>
+                            <div class="flex items-center gap-2 flex-shrink-0">
+                                <input type="date" id="attendance-date" onchange="loadAttendanceRecap()"
+                                    class="px-2 sm:px-3 py-1.5 sm:py-2 border border-slate-300 rounded-lg text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#1f2937] bg-white w-[120px] sm:w-auto">
+                                <button onclick="loadAttendanceRecap()" class="px-2.5 sm:px-3 py-1.5 sm:py-2 bg-[#1f2937] hover:bg-[#111827] text-white font-semibold rounded-lg text-xs sm:text-sm flex items-center gap-1 shadow-sm transition touch-target">
+                                    <i class="fa-solid fa-rotate text-xs"></i>
+                                    <span class="hidden xs:inline">Refresh</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-2 sm:gap-4 mb-4 sm:mb-6">
+                            <div class="bg-white p-3 sm:p-4 rounded-xl border border-slate-200 shadow-sm stat-card hover:shadow-md transition">
+                                <div class="flex items-center gap-2 sm:gap-4">
+                                    <div class="p-2 sm:p-3 bg-[#1f2937]/10 text-[#1f2937] rounded-lg">
+                                        <i class="fa-solid fa-list-check text-base sm:text-lg"></i>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <p class="text-[8px] sm:text-xs font-semibold uppercase text-slate-400 truncate">Total Log</p>
+                                        <h3 id="stat-total" class="text-base sm:text-xl font-bold text-slate-900">0</h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-white p-3 sm:p-4 rounded-xl border border-slate-200 shadow-sm stat-card hover:shadow-md transition">
+                                <div class="flex items-center gap-2 sm:gap-4">
+                                    <div class="p-2 sm:p-3 bg-emerald-100 text-emerald-600 rounded-lg">
+                                        <i class="fa-solid fa-check-circle text-base sm:text-lg"></i>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <p class="text-[8px] sm:text-xs font-semibold uppercase text-slate-400 truncate">Hadir</p>
+                                        <h3 id="stat-hadir" class="text-base sm:text-xl font-bold text-slate-900">0</h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-white p-3 sm:p-4 rounded-xl border border-slate-200 shadow-sm stat-card hover:shadow-md transition">
+                                <div class="flex items-center gap-2 sm:gap-4">
+                                    <div class="p-2 sm:p-3 bg-amber-100 text-amber-600 rounded-lg">
+                                        <i class="fa-solid fa-clock text-base sm:text-lg"></i>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <p class="text-[8px] sm:text-xs font-semibold uppercase text-slate-400 truncate">Terlambat</p>
+                                        <h3 id="stat-terlambat" class="text-base sm:text-xl font-bold text-slate-900">0</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                            <div class="table-wrapper">
+                                <table class="w-full text-left border-collapse text-xs sm:text-sm">
+                                    <thead>
+                                        <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold">
+                                            <th class="p-2 sm:p-4 whitespace-nowrap">
+                                                <div class="flex items-center gap-1 text-[#1f2937]">
+                                                    Waktu <i class="fa-solid fa-arrow-down-wide-short text-[8px] sm:text-[10px]"></i>
+                                                </div>
+                                            </th>
+                                            <th class="p-2 sm:p-4 whitespace-nowrap">NIP</th>
+                                            <th class="p-2 sm:p-4 whitespace-nowrap">
+                                                <div class="flex items-center gap-1 text-[#1f2937]">
+                                                    Nama <i class="fa-solid fa-arrow-down-a-z text-[8px] sm:text-[10px]"></i>
+                                                </div>
+                                            </th>
+                                            <th class="p-2 sm:p-4 whitespace-nowrap">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="recapTableBody">
+                                        <tr>
+                                            <td colspan="4" class="p-4 sm:p-6 text-center text-slate-400 text-xs sm:text-sm">
+                                                <i class="fa-solid fa-spinner fa-spin mr-2"></i>
+                                                Memuat rekap...
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- SECTION 3: PERSETUJUAN IZIN -->
+                    <section>
+                        <div class="flex flex-wrap items-start sm:items-center justify-between gap-3 mb-4 sm:mb-6">
+                            <div class="min-w-0">
+                                <h2 class="text-lg sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
+                                    <i class="fa-solid fa-envelope-open-text text-[#1f2937] text-base sm:text-xl"></i>
+                                    <span class="truncate">Persetujuan Izin</span>
+                                </h2>
+                                <p class="text-xs sm:text-sm text-slate-500 truncate">Kelola pengajuan izin, sakit, dan cuti pegawai.</p>
+                            </div>
+                            <button onclick="loadAdminLeaves()" class="px-2.5 sm:px-4 py-1.5 sm:py-2 bg-[#1f2937] hover:bg-[#111827] text-white font-semibold rounded-lg shadow-sm transition text-xs sm:text-sm flex items-center gap-1 touch-target flex-shrink-0">
+                                <i class="fa-solid fa-rotate text-xs"></i>
+                                <span class="hidden xs:inline">Refresh</span>
+                            </button>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-2 sm:gap-4 mb-4 sm:mb-6">
+                            <div class="bg-white p-3 sm:p-4 rounded-xl border border-slate-200 shadow-sm stat-card hover:shadow-md transition">
+                                <div class="flex items-center gap-2 sm:gap-4">
+                                    <div class="p-2 sm:p-3 bg-amber-100 text-amber-600 rounded-lg">
+                                        <i class="fa-solid fa-hourglass-half text-base sm:text-lg"></i>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <p class="text-[8px] sm:text-xs font-semibold uppercase text-slate-400 truncate">Pending</p>
+                                        <h3 id="stat-pending" class="text-base sm:text-xl font-bold text-slate-900">0</h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-white p-3 sm:p-4 rounded-xl border border-slate-200 shadow-sm stat-card hover:shadow-md transition">
+                                <div class="flex items-center gap-2 sm:gap-4">
+                                    <div class="p-2 sm:p-3 bg-emerald-100 text-emerald-600 rounded-lg">
+                                        <i class="fa-solid fa-check-circle text-base sm:text-lg"></i>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <p class="text-[8px] sm:text-xs font-semibold uppercase text-slate-400 truncate">Disetujui</p>
+                                        <h3 id="stat-approved" class="text-base sm:text-xl font-bold text-slate-900">0</h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-white p-3 sm:p-4 rounded-xl border border-slate-200 shadow-sm stat-card hover:shadow-md transition">
+                                <div class="flex items-center gap-2 sm:gap-4">
+                                    <div class="p-2 sm:p-3 bg-rose-100 text-rose-600 rounded-lg">
+                                        <i class="fa-solid fa-circle-xmark text-base sm:text-lg"></i>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <p class="text-[8px] sm:text-xs font-semibold uppercase text-slate-400 truncate">Ditolak</p>
+                                        <h3 id="stat-rejected" class="text-base sm:text-xl font-bold text-slate-900">0</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                            <div class="p-3 sm:p-4 border-b border-slate-200 bg-slate-50/50 flex flex-wrap items-center gap-3">
+                                <div class="relative flex-1 min-w-[150px]">
+                                    <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                                    <input type="text" id="leave-search-input" onkeyup="filterLeaves()" placeholder="Cari NIP atau Nama..."
+                                        class="w-full pl-8 pr-3 py-1.5 sm:py-2 border border-slate-300 rounded-lg text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#1f2937]">
+                                </div>
+                                <div class="flex items-center gap-1 flex-shrink-0 flex-wrap">
+                                    <button onclick="setLeaveFilter('all')" data-filter="all" class="filter-btn active px-2.5 sm:px-3 py-1.5 rounded-lg text-[10px] sm:text-xs font-semibold border border-slate-200 bg-white hover:bg-slate-100">Semua</button>
+                                    <button onclick="setLeaveFilter('Pending')" data-filter="Pending" class="filter-btn px-2.5 sm:px-3 py-1.5 rounded-lg text-[10px] sm:text-xs font-semibold border border-slate-200 bg-white hover:bg-slate-100">Pending</button>
+                                    <button onclick="setLeaveFilter('Approved')" data-filter="Approved" class="filter-btn px-2.5 sm:px-3 py-1.5 rounded-lg text-[10px] sm:text-xs font-semibold border border-slate-200 bg-white hover:bg-slate-100">Disetujui</button>
+                                    <button onclick="setLeaveFilter('Rejected')" data-filter="Rejected" class="filter-btn px-2.5 sm:px-3 py-1.5 rounded-lg text-[10px] sm:text-xs font-semibold border border-slate-200 bg-white hover:bg-slate-100">Ditolak</button>
+                                </div>
+                                <div class="text-[10px] sm:text-xs text-slate-500 flex items-center gap-2 flex-shrink-0 ml-auto">
+                                    <span>Total: <span id="total-leaves" class="font-bold text-slate-700">0</span></span>
+                                </div>
+                            </div>
+
+                            <div class="table-wrapper">
+                                <table class="w-full text-left border-collapse text-xs sm:text-sm">
+                                    <thead>
+                                        <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold">
+                                            <th class="p-2 sm:p-4 whitespace-nowrap">NIP & Nama</th>
+                                            <th class="p-2 sm:p-4 whitespace-nowrap">Jenis</th>
+                                            <th class="p-2 sm:p-4 whitespace-nowrap hidden sm:table-cell">Tanggal</th>
+                                            <th class="p-2 sm:p-4 whitespace-nowrap hidden md:table-cell">Alasan</th>
+                                            <th class="p-2 sm:p-4 whitespace-nowrap">Status</th>
+                                            <th class="p-2 sm:p-4 text-center whitespace-nowrap">Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="adminLeaveTable" class="text-xs sm:text-sm">
+                                        <tr>
+                                            <td colspan="6" class="p-4 sm:p-6 text-center text-slate-400">
+                                                <i class="fa-solid fa-spinner fa-spin mr-2"></i>
+                                                Memuat pengajuan...
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </section>
+
+                    <footer class="text-center py-3 sm:py-4 border-t border-slate-200 mt-4 sm:mt-6 safe-bottom">
+                        <p class="text-[10px] sm:text-xs text-slate-400">© 2026 Dinas Komunikasi dan Informatika Kabupaten Tangerang. All Rights Reserved.</p>
+                    </footer>
+
                 </div>
-            </section>
-
-            <footer class="text-center py-3 sm:py-4 border-t border-slate-200 mt-4 sm:mt-6 safe-bottom">
-                <p class="text-[10px] sm:text-xs text-slate-400">© 2026 PT. ANDALAN MAJU. All Rights Reserved.</p>
-            </footer>
+            </div>
 
         </main>
     </div>
@@ -617,43 +664,37 @@
     <!-- MODALS -->
     <!-- ============================================ -->
 
-    <!-- Modal Form Tambah / Edit -->
     <div id="modal-user" class="fixed inset-0 bg-slate-900/50 modal-backdrop z-50 flex items-center justify-center hidden p-4">
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-md p-4 sm:p-6 relative max-h-[90vh] overflow-y-auto">
             <h3 id="modal-title" class="text-base sm:text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
-                <i class="fa-solid fa-user-plus text-[#1a2a6c]"></i>
+                <i class="fa-solid fa-user-plus text-[#1f2937]"></i>
                 <span>Tambah Pegawai Baru</span>
             </h3>
             <form id="form-user" onsubmit="handleFormSubmit(event)" class="space-y-3 sm:space-y-4">
                 <input type="hidden" id="user-id">
                 <div>
                     <label class="block text-[10px] sm:text-xs font-semibold text-slate-600 uppercase mb-1">NIP</label>
-                    <input type="text" id="nip" required 
-                        class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1a2a6c]">
+                    <input type="text" id="nip" required class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1f2937]">
                 </div>
                 <div>
                     <label class="block text-[10px] sm:text-xs font-semibold text-slate-600 uppercase mb-1">Nama Lengkap</label>
-                    <input type="text" id="full_name" required 
-                        class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1a2a6c]">
+                    <input type="text" id="full_name" required class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1f2937]">
                 </div>
                 <div>
                     <label class="block text-[10px] sm:text-xs font-semibold text-slate-600 uppercase mb-1">Email</label>
-                    <input type="email" id="email" required 
-                        class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1a2a6c]">
+                    <input type="email" id="email" required class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1f2937]">
                 </div>
                 <div>
                     <label class="block text-[10px] sm:text-xs font-semibold text-slate-600 uppercase mb-1">No. Telepon</label>
-                    <input type="text" id="phone" 
-                        class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1a2a6c]">
+                    <input type="text" id="phone" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1f2937]">
                 </div>
                 <div>
                     <label class="block text-[10px] sm:text-xs font-semibold text-slate-600 uppercase mb-1">Password</label>
-                    <input type="password" id="password" 
-                        class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1a2a6c]">
+                    <input type="password" id="password" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1f2937]">
                 </div>
                 <div class="flex justify-end space-x-2 pt-3 sm:pt-4 border-t border-slate-100">
                     <button type="button" onclick="closeModal()" class="px-3 sm:px-4 py-1.5 sm:py-2 text-slate-600 hover:bg-slate-100 rounded-lg text-xs sm:text-sm font-semibold touch-target">Batal</button>
-                    <button type="submit" class="px-3 sm:px-4 py-1.5 sm:py-2 bg-[#1a2a6c] hover:bg-[#2d4373] text-white rounded-lg text-xs sm:text-sm font-semibold flex items-center gap-1 touch-target">
+                    <button type="submit" class="px-3 sm:px-4 py-1.5 sm:py-2 bg-[#1f2937] hover:bg-[#111827] text-white rounded-lg text-xs sm:text-sm font-semibold flex items-center gap-1 touch-target">
                         <i class="fa-solid fa-save text-xs"></i> Simpan
                     </button>
                 </div>
@@ -661,45 +702,40 @@
         </div>
     </div>
 
-    <!-- Modal QR Code -->
     <div id="modal-qr" class="fixed inset-0 bg-slate-900/50 modal-backdrop z-50 flex items-center justify-center hidden p-4">
         <div class="bg-white rounded-xl shadow-2xl p-4 sm:p-6 text-center max-w-sm w-full">
             <h3 id="qr-user-name" class="text-base sm:text-lg font-bold text-slate-900"></h3>
             <p id="qr-user-nip" class="text-xs sm:text-sm text-slate-500 mb-4"></p>
             <div id="qrcode" class="flex justify-center p-3 sm:p-4 bg-slate-50 rounded-lg mb-4 border border-slate-200"></div>
-            <button onclick="closeQrModal()" class="w-full py-2 bg-[#1a2a6c] hover:bg-[#2d4373] text-white font-semibold rounded-lg text-xs sm:text-sm transition touch-target">Tutup</button>
+            <button onclick="closeQrModal()" class="w-full py-2 bg-[#1f2937] hover:bg-[#111827] text-white font-semibold rounded-lg text-xs sm:text-sm transition touch-target">Tutup</button>
         </div>
     </div>
 
-    <!-- Modal Scanner QR -->
     <div id="modal-scanner" class="fixed inset-0 bg-slate-900/50 modal-backdrop z-50 flex items-center justify-center hidden p-4">
         <div class="bg-white rounded-xl shadow-2xl p-4 sm:p-6 max-w-md w-full">
             <h3 class="text-base sm:text-lg font-bold text-slate-900 mb-2 flex items-center gap-2">
-                <i class="fa-solid fa-qrcode text-[#1a2a6c]"></i>
+                <i class="fa-solid fa-qrcode text-[#1f2937]"></i>
                 <span>Scan QR Code</span>
             </h3>
             <div id="reader" class="w-full rounded-lg overflow-hidden border border-slate-200"></div>
             <div id="scan-result" class="mt-4 p-3 rounded-lg text-xs sm:text-sm font-semibold text-center hidden"></div>
-            <button onclick="closeScannerModal()" class="w-full mt-4 py-2 bg-[#1a2a6c] hover:bg-[#2d4373] text-white font-semibold rounded-lg text-xs sm:text-sm transition touch-target">Batal / Tutup</button>
+            <button onclick="closeScannerModal()" class="w-full mt-4 py-2 bg-[#1f2937] hover:bg-[#111827] text-white font-semibold rounded-lg text-xs sm:text-sm transition touch-target">Batal / Tutup</button>
         </div>
     </div>
 
-    <!-- Modal Detail Izin (BARU) -->
     <div id="modal-detail" class="fixed inset-0 bg-slate-900/50 modal-backdrop z-50 flex items-center justify-center hidden p-4">
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-md p-4 sm:p-6 relative max-h-[90vh] overflow-y-auto">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
-                    <i class="fa-regular fa-file-lines text-[#1a2a6c]"></i>
+                    <i class="fa-regular fa-file-lines text-[#1f2937]"></i>
                     <span>Detail Pengajuan</span>
                 </h3>
                 <button onclick="closeDetailModal()" class="text-slate-400 hover:text-slate-700 text-xl touch-target">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
-            <div id="detail-content" class="space-y-3 text-sm">
-                <!-- Content will be injected here -->
-            </div>
-            <button onclick="closeDetailModal()" class="w-full mt-4 py-2 bg-[#1a2a6c] hover:bg-[#2d4373] text-white font-semibold rounded-lg text-xs sm:text-sm transition touch-target">Tutup</button>
+            <div id="detail-content" class="space-y-3 text-sm"></div>
+            <button onclick="closeDetailModal()" class="w-full mt-4 py-2 bg-[#1f2937] hover:bg-[#111827] text-white font-semibold rounded-lg text-xs sm:text-sm transition touch-target">Tutup</button>
         </div>
     </div>
 
@@ -707,25 +743,18 @@
     <!-- JAVASCRIPT -->
     <!-- ============================================ -->
     <script>
-        // ============================================================
-        // SERVICE WORKER - PWA REGISTRATION
-        // ============================================================
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/sw.js')
                     .then(registration => {
                         console.log('✅ Service Worker PWA registered successfully!');
-                        console.log('Scope:', registration.scope);
                     })
                     .catch(error => {
-                        console.error('❌ Service Worker PWA registration failed:', error);
+                        console.error('❌ SW registration failed:', error);
                     });
             });
         }
 
-        // ============================================================
-        // SIDEBAR TOGGLE (Mobile)
-        // ============================================================
         function toggleSidebar() {
             const sidebar = document.getElementById('mobile-sidebar');
             const overlay = document.getElementById('mobile-overlay');
@@ -733,12 +762,9 @@
             overlay.classList.toggle('hidden');
         }
 
-        // ============================================================
-        // AUTO-DETECT ACTIVE SIDEBAR LINK (berdasarkan URL halaman)
-        // ============================================================
         function setActiveSidebar() {
             const path = window.location.pathname.split('/').pop() || 'dashboard.html';
-            
+
             const pageMap = {
                 'dashboard.html': 'dashboard',
                 'index.html': 'pegawai',
@@ -748,9 +774,9 @@
                 'izin.html': 'izin',
                 'pengaturan.html': 'pengaturan'
             };
-            
+
             const activeNav = pageMap[path] || 'dashboard';
-            
+
             document.querySelectorAll('.sidebar-item[data-nav]').forEach(item => {
                 if (item.dataset.nav === activeNav) {
                     item.classList.add('sidebar-active');
@@ -760,9 +786,6 @@
             });
         }
 
-        // ============================================================
-        // SMOOTH PAGE TRANSITION (fade out sebelum pindah halaman)
-        // ============================================================
         function initSmoothNav() {
             document.querySelectorAll('.sidebar-item[data-nav]').forEach(link => {
                 link.addEventListener('click', function(e) {
@@ -778,9 +801,6 @@
             });
         }
 
-        // ============================================================
-        // API ENDPOINTS & GLOBAL VARIABLES
-        // ============================================================
         const API_USERS = '/api/users';
         const API_SCAN = '/api/attendance/scan';
         const API_ATTENDANCE = '/api/attendance';
@@ -791,27 +811,18 @@
         let currentLeaveFilter = 'all';
         let html5QrcodeScanner = null;
 
-        // ============================================================
-        // DOM CONTENT LOADED
-        // ============================================================
         document.addEventListener('DOMContentLoaded', () => {
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('attendance-date').value = today;
 
-            // NEW: Sidebar auto-active + smooth transition
             setActiveSidebar();
             initSmoothNav();
 
-            // Database / API (TIDAK DIUBAH)
             fetchUsers();
             loadAttendanceRecap();
             loadAdminLeaves();
             console.log('🚀 Dashboard Absensi loaded successfully!');
         });
-
-        // ============================================================
-        // USER MANAGEMENT FUNCTIONS (TIDAK DIUBAH)
-        // ============================================================
 
         async function fetchUsers() {
             const tbody = document.getElementById('user-table-body');
@@ -822,11 +833,11 @@
                     globalUsersData = result.data || [];
                     sortUsersByName(globalUsersData);
                 } else {
-                    tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-red-500">${result.message}</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-red-500">${result.message}</td></tr>`;
                 }
             } catch (err) {
                 console.error('Error fetching users:', err);
-                tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-red-500">Gagal terhubung ke API backend!</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-red-500">Gagal terhubung ke API backend!</td></tr>`;
             }
         }
 
@@ -841,6 +852,25 @@
             renderTable(sorted);
         }
 
+        // ✅ HELPER: Inisial nama (max 2 huruf)
+        function getInitials(name) {
+            if (!name) return '?';
+            const parts = name.trim().split(/\s+/);
+            if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
+            return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+        }
+
+        // ✅ HELPER: Escape HTML
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
         function renderTable(users) {
             const tbody = document.getElementById('user-table-body');
             document.getElementById('total-users').innerText = users.length;
@@ -848,7 +878,7 @@
             if (users.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="6" class="p-6 text-center text-slate-400">
+                        <td colspan="7" class="p-6 text-center text-slate-400">
                             <i class="fa-regular fa-user fa-2x block mb-2 text-slate-300"></i>
                             Belum ada data pegawai di database.
                         </td>
@@ -857,34 +887,52 @@
                 return;
             }
 
-            tbody.innerHTML = users.map(u => `
-                <tr class="hover:bg-slate-50 transition border-b border-slate-100">
-                    <td class="p-4 font-mono font-semibold text-[#1a2a6c]">${u.nip}</td>
-                    <td class="p-4 text-slate-900 font-medium">${u.full_name}</td>
-                    <td class="p-4 text-slate-600 hidden sm:table-cell">${u.email}</td>
-                    <td class="p-4 text-slate-600 hidden md:table-cell">${u.phone || '-'}</td>
-                    <td class="p-4 text-center">
-                        <button onclick="showQrModal('${u.nip}', '${u.full_name}')" 
-                            class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded text-xs font-semibold border border-slate-200 transition">
-                            <i class="fa-solid fa-qrcode"></i> Lihat QR
-                        </button>
-                    </td>
-                    <td class="p-4 text-center">
-                        <button onclick="openModal(${u.id})" class="text-[#1a2a6c] hover:text-[#2d4373] font-medium text-xs mr-2">
-                            <i class="fa-regular fa-pen-to-square"></i> Edit
-                        </button>
-                        <button onclick="deleteUser(${u.id})" class="text-red-600 hover:text-red-800 font-medium text-xs">
-                            <i class="fa-regular fa-trash-can"></i> Hapus
-                        </button>
-                    </td>
-                </tr>
-            `).join('');
+            tbody.innerHTML = users.map(u => {
+                const initials = getInitials(u.full_name);
+                const safeName = escapeHtml(u.full_name);
+                const photoSrc = (u.photo && u.photo.trim() !== '') ? u.photo : '';
+
+                const avatarHtml = photoSrc
+                    ? `<img
+                            src="${photoSrc}"
+                            alt="${safeName}"
+                            class="user-avatar-img"
+                            onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                       <div class="user-avatar-initials" style="display:none;">${initials}</div>`
+                    : `<div class="user-avatar-initials">${initials}</div>`;
+
+                return `
+                    <tr class="hover:bg-slate-50 transition border-b border-slate-100">
+                        <td class="p-2 sm:p-4">
+                            ${avatarHtml}
+                        </td>
+                        <td class="p-2 sm:p-4 font-mono font-semibold text-[#1f2937]">${u.nip}</td>
+                        <td class="p-2 sm:p-4 text-slate-900 font-medium">${safeName}</td>
+                        <td class="p-2 sm:p-4 text-slate-600 hidden sm:table-cell">${u.email || '-'}</td>
+                        <td class="p-2 sm:p-4 text-slate-600 hidden md:table-cell">${u.phone || '-'}</td>
+                        <td class="p-2 sm:p-4 text-center">
+                            <button onclick="showQrModal('${u.nip}', '${safeName}')"
+                                class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded text-xs font-semibold border border-slate-200 transition">
+                                <i class="fa-solid fa-qrcode"></i> Lihat QR
+                            </button>
+                        </td>
+                        <td class="p-2 sm:p-4 text-center">
+                            <button onclick="openModal(${u.id})" class="text-[#1f2937] hover:text-[#111827] font-medium text-xs mr-2">
+                                <i class="fa-regular fa-pen-to-square"></i> Edit
+                            </button>
+                            <button onclick="deleteUser(${u.id})" class="text-red-600 hover:text-red-800 font-medium text-xs">
+                                <i class="fa-regular fa-trash-can"></i> Hapus
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
         }
 
         function filterUsers() {
             const query = document.getElementById('search-input').value.toLowerCase();
-            const filtered = globalUsersData.filter(u => 
-                (u.full_name && u.full_name.toLowerCase().includes(query)) || 
+            const filtered = globalUsersData.filter(u =>
+                (u.full_name && u.full_name.toLowerCase().includes(query)) ||
                 (u.nip && u.nip.toLowerCase().includes(query))
             );
             sortUsersByName(filtered);
@@ -898,7 +946,7 @@
                 const user = globalUsersData.find(u => u.id === userId);
                 if (user) {
                     document.getElementById('modal-title').innerHTML = `
-                        <i class="fa-regular fa-pen-to-square text-[#1a2a6c]"></i>
+                        <i class="fa-regular fa-pen-to-square text-[#1f2937]"></i>
                         Edit Data Pegawai
                     `;
                     document.getElementById('user-id').value = user.id;
@@ -911,7 +959,7 @@
                 }
             } else {
                 document.getElementById('modal-title').innerHTML = `
-                    <i class="fa-solid fa-user-plus text-[#1a2a6c]"></i>
+                    <i class="fa-solid fa-user-plus text-[#1f2937]"></i>
                     Tambah Pegawai Baru
                 `;
                 document.getElementById('password').required = true;
@@ -924,13 +972,10 @@
             document.getElementById('modal-user').classList.add('hidden');
         }
 
-        // ============================================================
-        // HANDLE FORM SUBMIT (TIDAK DIUBAH)
-        // ============================================================
         async function handleFormSubmit(e) {
             e.preventDefault();
             const id = document.getElementById('user-id').value;
-            
+
             const nip = document.getElementById('nip').value.trim();
             const full_name = document.getElementById('full_name').value.trim();
             const email = document.getElementById('email').value.trim();
@@ -1001,20 +1046,16 @@
             }
         }
 
-        // ============================================================
-        // QR CODE FUNCTIONS (TIDAK DIUBAH)
-        // ============================================================
-
         function showQrModal(nip, name) {
             document.getElementById('qr-user-name').innerText = name;
             document.getElementById('qr-user-nip').innerText = `NIP: ${nip}`;
             const container = document.getElementById('qrcode');
             container.innerHTML = '';
-            new QRCode(container, { 
-                text: nip, 
-                width: 180, 
+            new QRCode(container, {
+                text: nip,
+                width: 180,
                 height: 180,
-                colorDark: "#1a2a6c",
+                colorDark: "#1f2937",
                 colorLight: "#ffffff",
                 correctLevel: QRCode.CorrectLevel.H
             });
@@ -1025,17 +1066,13 @@
             document.getElementById('modal-qr').classList.add('hidden');
         }
 
-        // ============================================================
-        // HELPER FUNCTION: GET STATUS BADGE (TIDAK DIUBAH)
-        // ============================================================
-
         function getStatusBadge(status, scanTime) {
             if (scanTime) {
                 const date = new Date(scanTime);
                 const hours = date.getHours();
                 const minutes = date.getMinutes();
                 const isLate = hours > 10 || (hours === 10 && minutes > 0);
-                
+
                 if (isLate) {
                     return `<span class="inline-flex items-center gap-1.5 px-2 py-0.5 sm:px-3 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium bg-amber-100 text-amber-700">
                                 <i class="fa-solid fa-clock"></i> Terlambat
@@ -1046,9 +1083,9 @@
                             </span>`;
                 }
             }
-            
+
             const normalizedStatus = (status || '').toLowerCase().trim();
-            
+
             switch (normalizedStatus) {
                 case 'masuk':
                     return `<span class="inline-flex items-center gap-1.5 px-2 py-0.5 sm:px-3 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium bg-emerald-100 text-emerald-700">
@@ -1077,10 +1114,6 @@
             }
         }
 
-        // ============================================================
-        // ATTENDANCE RECAP FUNCTIONS (TIDAK DIUBAH)
-        // ============================================================
-
         async function loadAttendanceRecap() {
             const filterDate = document.getElementById('attendance-date').value;
             const tbody = document.getElementById('recapTableBody');
@@ -1090,7 +1123,7 @@
                     fetch(`${API_ATTENDANCE}${filterDate ? '?date=' + filterDate : ''}`),
                     fetch(API_LEAVES)
                 ]);
-                
+
                 const dataAtt = await resAtt.json();
                 const dataLeave = await resLeave.json();
 
@@ -1104,10 +1137,10 @@
                         const hours = scanDate.getHours();
                         const minutes = scanDate.getMinutes();
                         const isLate = hours > 10 || (hours === 10 && minutes > 0);
-                        
+
                         if (isLate) terlambatCount++;
                         else hadirCount++;
-                        
+
                         combinedRecords.push({
                             nip: item.nip,
                             full_name: item.full_name,
@@ -1121,17 +1154,17 @@
 
                 if (dataLeave.success && dataLeave.data) {
                     const approvedLeaves = dataLeave.data.filter(l => l.status === 'Approved');
-                    
+
                     approvedLeaves.forEach(leave => {
                         const startDate = new Date(leave.start_date);
                         const endDate = new Date(leave.end_date);
-                        
+
                         if (filterDate) {
                             const targetDate = new Date(filterDate);
                             targetDate.setHours(0, 0, 0, 0);
                             startDate.setHours(0, 0, 0, 0);
                             endDate.setHours(0, 0, 0, 0);
-                            
+
                             if (targetDate >= startDate && targetDate <= endDate) {
                                 combinedRecords.push({
                                     nip: leave.nip,
@@ -1147,7 +1180,7 @@
                             today.setHours(0, 0, 0, 0);
                             startDate.setHours(0, 0, 0, 0);
                             endDate.setHours(0, 0, 0, 0);
-                            
+
                             if (today >= startDate && today <= endDate) {
                                 combinedRecords.push({
                                     nip: leave.nip,
@@ -1205,7 +1238,7 @@
                     rows += `
                         <tr class="hover:bg-slate-50 transition border-b border-slate-100">
                             <td class="p-2 sm:p-4 font-mono text-slate-600 text-[10px] sm:text-xs">${formattedTime}</td>
-                            <td class="p-2 sm:p-4 font-mono font-semibold text-[#1a2a6c] text-[10px] sm:text-xs">${rec.nip || '-'}</td>
+                            <td class="p-2 sm:p-4 font-mono font-semibold text-[#1f2937] text-[10px] sm:text-xs">${rec.nip || '-'}</td>
                             <td class="p-2 sm:p-4 font-medium text-slate-900 text-[10px] sm:text-xs">
                                 ${rec.full_name || 'Tidak Diketahui'}
                                 ${rec.type === 'Pengajuan' ? '<span class="ml-1 text-[8px] sm:text-[10px] text-blue-500 font-normal">(Izin)</span>' : ''}
@@ -1229,10 +1262,6 @@
                 `;
             }
         }
-
-        // ============================================================
-        // LEAVE MANAGEMENT FUNCTIONS (DIPERBAIKI)
-        // ============================================================
 
         async function loadAdminLeaves() {
             const tbody = document.getElementById('adminLeaveTable');
@@ -1299,7 +1328,7 @@
 
         function setLeaveFilter(filter) {
             currentLeaveFilter = filter;
-            
+
             document.querySelectorAll('.filter-btn').forEach(btn => {
                 if (btn.dataset.filter === filter) {
                     btn.classList.add('active');
@@ -1317,10 +1346,9 @@
 
         function applyLeaveFilterAndSearch() {
             const query = document.getElementById('leave-search-input').value.toLowerCase().trim();
-            
+
             let filtered = [...globalLeavesData];
 
-            // Filter by status
             if (currentLeaveFilter !== 'all') {
                 filtered = filtered.filter(item => {
                     const status = (item.status || 'Pending');
@@ -1328,15 +1356,13 @@
                 });
             }
 
-            // Filter by search query
             if (query) {
-                filtered = filtered.filter(item => 
+                filtered = filtered.filter(item =>
                     (item.nip && item.nip.toLowerCase().includes(query)) ||
                     (item.full_name && item.full_name.toLowerCase().includes(query))
                 );
             }
 
-            // Sort: Pending first, then by date
             filtered.sort((a, b) => {
                 const statusA = (a.status || 'Pending').toLowerCase();
                 const statusB = (b.status || 'Pending').toLowerCase();
@@ -1367,7 +1393,7 @@
             tbody.innerHTML = data.map(item => {
                 const status = (item.status || 'Pending');
                 const statusLower = status.toLowerCase();
-                
+
                 let statusBadge = '';
                 if (statusLower === 'pending') {
                     statusBadge = `<span class="inline-flex items-center gap-1.5 px-2 py-0.5 sm:px-3 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium bg-amber-100 text-amber-700">
@@ -1387,10 +1413,10 @@
                     </span>`;
                 }
 
-                const startDate = item.start_date 
+                const startDate = item.start_date
                     ? new Date(item.start_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })
                     : '-';
-                const endDate = item.end_date 
+                const endDate = item.end_date
                     ? new Date(item.end_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })
                     : '-';
 
@@ -1473,7 +1499,7 @@
 
             const status = (item.status || 'Pending');
             const statusLower = status.toLowerCase();
-            
+
             let statusBadge = '';
             if (statusLower === 'pending') {
                 statusBadge = `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-700"><i class="fa-solid fa-hourglass-half"></i> Pending</span>`;
@@ -1483,17 +1509,17 @@
                 statusBadge = `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-rose-100 text-rose-700"><i class="fa-solid fa-circle-xmark"></i> Ditolak</span>`;
             }
 
-            const startDate = item.start_date 
+            const startDate = item.start_date
                 ? new Date(item.start_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
                 : '-';
-            const endDate = item.end_date 
+            const endDate = item.end_date
                 ? new Date(item.end_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
                 : '-';
 
-            const attachmentHtml = item.attachment 
+            const attachmentHtml = item.attachment
                 ? `<a href="${item.attachment}" target="_blank" class="inline-flex items-center gap-1.5 text-blue-600 hover:text-blue-800 font-semibold text-xs mt-1">
                        <i class="fa-solid fa-paperclip"></i> Lihat Bukti Lampiran
-                   </a>` 
+                   </a>`
                 : '<span class="text-xs text-slate-400 italic">Tanpa lampiran</span>';
 
             let actionButtons = '';
@@ -1518,42 +1544,42 @@
                     </div>
                     <div class="border-t border-slate-100 pt-3 space-y-2">
                         <div class="flex items-start gap-3">
-                            <i class="fa-solid fa-user text-[#1a2a6c] mt-1 w-4 text-center"></i>
+                            <i class="fa-solid fa-user text-[#1f2937] mt-1 w-4 text-center"></i>
                             <div>
                                 <p class="text-xs font-semibold text-slate-500 uppercase">Nama</p>
                                 <p class="text-sm font-medium text-slate-900">${item.full_name || 'Pegawai'}</p>
                             </div>
                         </div>
                         <div class="flex items-start gap-3">
-                            <i class="fa-solid fa-id-card text-[#1a2a6c] mt-1 w-4 text-center"></i>
+                            <i class="fa-solid fa-id-card text-[#1f2937] mt-1 w-4 text-center"></i>
                             <div>
                                 <p class="text-xs font-semibold text-slate-500 uppercase">NIP</p>
                                 <p class="text-sm font-mono font-medium text-slate-900">${item.nip || '-'}</p>
                             </div>
                         </div>
                         <div class="flex items-start gap-3">
-                            <i class="fa-regular fa-file-lines text-[#1a2a6c] mt-1 w-4 text-center"></i>
+                            <i class="fa-regular fa-file-lines text-[#1f2937] mt-1 w-4 text-center"></i>
                             <div>
                                 <p class="text-xs font-semibold text-slate-500 uppercase">Jenis Izin</p>
                                 <p class="text-sm font-medium text-slate-900">${item.type || 'Izin'}</p>
                             </div>
                         </div>
                         <div class="flex items-start gap-3">
-                            <i class="fa-regular fa-calendar text-[#1a2a6c] mt-1 w-4 text-center"></i>
+                            <i class="fa-regular fa-calendar text-[#1f2937] mt-1 w-4 text-center"></i>
                             <div>
                                 <p class="text-xs font-semibold text-slate-500 uppercase">Tanggal</p>
                                 <p class="text-sm font-medium text-slate-900">${startDate} <span class="text-slate-400">s/d</span> ${endDate}</p>
                             </div>
                         </div>
                         <div class="flex items-start gap-3">
-                            <i class="fa-regular fa-comment-dots text-[#1a2a6c] mt-1 w-4 text-center"></i>
+                            <i class="fa-regular fa-comment-dots text-[#1f2937] mt-1 w-4 text-center"></i>
                             <div>
                                 <p class="text-xs font-semibold text-slate-500 uppercase">Alasan</p>
                                 <p class="text-sm text-slate-700">${item.reason || '-'}</p>
                             </div>
                         </div>
                         <div class="flex items-start gap-3">
-                            <i class="fa-solid fa-paperclip text-[#1a2a6c] mt-1 w-4 text-center"></i>
+                            <i class="fa-solid fa-paperclip text-[#1f2937] mt-1 w-4 text-center"></i>
                             <div>
                                 <p class="text-xs font-semibold text-slate-500 uppercase">Bukti</p>
                                 ${attachmentHtml}
@@ -1571,18 +1597,14 @@
             document.getElementById('modal-detail').classList.add('hidden');
         }
 
-        // ============================================================
-        // SCANNER FUNCTIONS (TIDAK DIUBAH)
-        // ============================================================
-
         function openScannerModal() {
             document.getElementById('modal-scanner').classList.remove('hidden');
             const resultDiv = document.getElementById('scan-result');
             resultDiv.classList.add('hidden');
             resultDiv.className = 'mt-4 p-3 rounded-lg text-sm font-semibold text-center hidden';
 
-            html5QrcodeScanner = new Html5QrcodeScanner("reader", { 
-                fps: 10, 
+            html5QrcodeScanner = new Html5QrcodeScanner("reader", {
+                fps: 10,
                 qrbox: 250,
                 aspectRatio: 1.0
             });
@@ -1593,7 +1615,7 @@
             if (html5QrcodeScanner) {
                 html5QrcodeScanner.clear().catch(() => {});
             }
-            
+
             const resultDiv = document.getElementById('scan-result');
             resultDiv.classList.remove('hidden', 'bg-red-100', 'text-red-700', 'bg-emerald-100', 'text-emerald-700');
             resultDiv.innerText = '⏳ Memproses...';
@@ -1631,10 +1653,6 @@
             }
             document.getElementById('modal-scanner').classList.add('hidden');
         }
-
-        // ============================================================
-        // KEYBOARD SHORTCUTS
-        // ============================================================
 
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
