@@ -251,6 +251,30 @@
             border: 2px solid #d4a017;
             text-transform: uppercase;
         }
+
+        /* ============================================
+           ✅ SAFE AREA — Supaya tidak ketutup status bar HP
+           ============================================ */
+        body {
+            padding-top: env(safe-area-inset-top, 0px);
+            padding-left: env(safe-area-inset-left, 0px);
+            padding-right: env(safe-area-inset-right, 0px);
+        }
+
+        /* Header dapat padding top tambahan di mobile
+           supaya tidak nempel dengan jam & battery HP */
+        @media (max-width: 640px) {
+            body {
+                padding-top: max(env(safe-area-inset-top), 24px);
+            }
+
+            /* Header mobile dikasih padding horizontal
+               biar tombol tidak kena curve layar */
+            header .header-inner {
+                padding-left: max(12px, env(safe-area-inset-left, 12px));
+                padding-right: max(12px, env(safe-area-inset-right, 12px));
+            }
+        }
     </style>
 </head>
 
@@ -316,9 +340,9 @@
         <!-- KONTEN UTAMA -->
         <main class="flex-1 flex flex-col h-full overflow-hidden bg-slate-50 relative">
 
-            <!-- HEADER STATIS -->
+            <!-- ✅ HEADER STATIS — dengan padding safe area -->
             <header class="bg-white border-b border-slate-200 shadow-sm flex-shrink-0 z-30">
-                <div class="px-3 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between">
+                <div class="header-inner px-3 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between">
                     <button onclick="toggleSidebar()" class="md:hidden text-slate-600 hover:text-slate-900 text-xl touch-target p-2 -ml-2">
                         <i class="fa-solid fa-bars"></i>
                     </button>
@@ -350,7 +374,9 @@
 
             <div id="mobile-overlay" class="fixed inset-0 bg-black/50 z-40 hidden" onclick="toggleSidebar()"></div>
 
-            <aside id="mobile-sidebar" class="fixed top-0 left-0 h-full w-72 max-w-[80vw] company-gradient text-white z-50 -translate-x-full md:hidden shadow-2xl overflow-y-auto">
+            <!-- Mobile Sidebar -->
+            <aside id="mobile-sidebar" class="fixed top-0 left-0 h-full w-72 max-w-[80vw] company-gradient text-white z-50 -translate-x-full md:hidden shadow-2xl overflow-y-auto"
+                   style="padding-top: env(safe-area-inset-top, 0px);">
                 <div class="p-4 border-b border-white/10">
                     <div class="flex items-center justify-between gap-2">
                         <div class="brand-wrap">
@@ -852,7 +878,6 @@
             renderTable(sorted);
         }
 
-        // ✅ HELPER: Inisial nama (max 2 huruf)
         function getInitials(name) {
             if (!name) return '?';
             const parts = name.trim().split(/\s+/);
@@ -860,7 +885,6 @@
             return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
         }
 
-        // ✅ HELPER: Escape HTML
         function escapeHtml(str) {
             if (!str) return '';
             return String(str)

@@ -326,7 +326,7 @@
         <!-- ============================================ -->
         <main class="flex-1 flex flex-col h-full overflow-hidden bg-slate-50 relative">
 
-            <!-- ✅ HEADER STATIS -->
+            <!-- HEADER STATIS -->
             <header class="bg-white border-b border-slate-200 shadow-sm flex-shrink-0 z-30">
                 <div class="px-3 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between">
                     <button onclick="toggleSidebar()" class="md:hidden text-slate-600 hover:text-slate-900 text-xl touch-target p-2 -ml-2">
@@ -563,8 +563,30 @@
                 <i class="fa-solid fa-qrcode text-[#1f2937]"></i>
                 <span>Scan QR Code</span>
             </h3>
+
+            <!-- Info hint -->
+            <p class="text-[11px] text-slate-500 mb-3 flex items-center gap-1.5">
+                <i class="fa-solid fa-circle-info text-[#1f2937]"></i>
+                Scanner tetap aktif — bisa scan pegawai berikutnya tanpa menutup.
+            </p>
+
             <div id="reader" class="w-full rounded-lg overflow-hidden border border-slate-200"></div>
+
+            <!-- Area hasil scan -->
             <div id="scan-result" class="mt-4 p-3 rounded-lg text-xs sm:text-sm font-semibold text-center hidden"></div>
+
+            <!-- Counter scan -->
+            <div class="mt-3 flex items-center justify-between text-[11px] text-slate-500 px-1">
+                <span class="flex items-center gap-1.5">
+                    <i class="fa-solid fa-check-circle text-emerald-500"></i>
+                    <span>Scan berhasil: <b id="scan-count" class="text-slate-700">0</b></span>
+                </span>
+                <span class="flex items-center gap-1.5">
+                    <i class="fa-solid fa-clock text-[#1f2937]"></i>
+                    <span id="scan-status">Siap scan</span>
+                </span>
+            </div>
+
             <button onclick="closeScannerModal()" class="w-full mt-4 py-2 bg-[#1f2937] hover:bg-[#111827] text-white font-semibold rounded-lg text-xs sm:text-sm transition touch-target">Batal / Tutup</button>
         </div>
     </div>
@@ -639,6 +661,12 @@
         let globalUsersData = [];
         let html5QrcodeScanner = null;
 
+        // ✅ Variable untuk scan berkali-kali
+        let isProcessingScan = false;
+        let lastScannedCode = '';
+        let lastScanTime = 0;
+        let scanSuccessCount = 0;
+
         document.addEventListener('DOMContentLoaded', () => {
             const today = new Date().toISOString().split('T')[0];
             const dateInput = document.getElementById('attendance-date');
@@ -679,7 +707,7 @@
             renderTable(sorted);
         }
 
-        // ✅ HELPER: Dapatkan inisial nama (max 2 huruf)
+        // HELPER: Inisial nama
         function getInitials(name) {
             if (!name) return '?';
             const parts = name.trim().split(/\s+/);
@@ -689,7 +717,7 @@
             return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
         }
 
-        // ✅ HELPER: Escape HTML biar aman dari karakter khusus
+        // HELPER: Escape HTML
         function escapeHtml(str) {
             if (!str) return '';
             return String(str)
@@ -720,12 +748,10 @@
                 const initials = getInitials(u.full_name);
                 const safeName = escapeHtml(u.full_name);
 
-                // Cek foto profil
                 const photoSrc = u.photo && u.photo.trim() !== ''
                     ? u.photo
                     : '';
 
-                // Avatar: pakai img kalau ada foto, else pakai inisial
                 const avatarHtml = photoSrc
                     ? `<img
                             src="${photoSrc}"
@@ -900,11 +926,26 @@
             document.getElementById('modal-qr').classList.add('hidden');
         }
 
+        // ============================================================
+        // ✅ SCANNER — Bisa scan berkali-kali tanpa tutup modal
+        // ============================================================
         function openScannerModal() {
             document.getElementById('modal-scanner').classList.remove('hidden');
+
+            // Reset semua state
             const resultDiv = document.getElementById('scan-result');
             resultDiv.classList.add('hidden');
-            resultDiv.className = 'mt-4 p-3 rounded-lg text-sm font-semibold text-center hidden';
+            resultDiv.className = 'mt-4 p-3 rounded-lg text-xs sm:text-sm font-semibold text-center hidden';
+            resultDiv.innerText = '';
+
+            isProcessingScan = false;
+            lastScannedCode = '';
+            lastScanTime = 0;
+            scanSuccessCount = 0;
+
+            document.getElementById('scan-count').innerText = '0';
+            document.getElementById('scan-status').innerText = 'Siap scan';
+            document.getElementById('scan-status').className = '';
 
             html5QrcodeScanner = new Html5QrcodeScanner("reader", {
                 fps: 10,
@@ -915,14 +956,27 @@
         }
 
         async function onScanSuccess(decodedText) {
-            if (html5QrcodeScanner) {
-                html5QrcodeScanner.clear().catch(() => {});
-            }
+            const now = Date.now();
+
+            // Proteksi 1: kalau masih processing, skip
+            if (isProcessingScan) return;
+
+            // Proteksi 2: kalau kode sama & < 3 detik, skip (biar tidak dobel)
+            if (decodedText === lastScannedCode && (now - lastScanTime) < 3000) return;
+
+            isProcessingScan = true;
+            lastScannedCode = decodedText;
+            lastScanTime = now;
 
             const resultDiv = document.getElementById('scan-result');
+            const statusEl = document.getElementById('scan-status');
+
             resultDiv.classList.remove('hidden', 'bg-red-100', 'text-red-700', 'bg-emerald-100', 'text-emerald-700');
             resultDiv.innerText = '⏳ Memproses...';
-            resultDiv.className = 'mt-4 p-3 rounded-lg text-sm font-semibold text-center bg-blue-100 text-blue-700';
+            resultDiv.className = 'mt-4 p-3 rounded-lg text-xs sm:text-sm font-semibold text-center bg-blue-100 text-blue-700';
+
+            statusEl.innerText = 'Memproses...';
+            statusEl.className = 'text-blue-500';
 
             try {
                 const res = await fetch(API_SCAN, {
@@ -933,26 +987,65 @@
                 const result = await res.json();
 
                 if (result.success) {
-                    resultDiv.className = 'mt-4 p-3 rounded-lg text-sm font-semibold text-center bg-emerald-100 text-emerald-700';
+                    // ✅ BERHASIL
+                    scanSuccessCount++;
+                    document.getElementById('scan-count').innerText = scanSuccessCount;
+
+                    resultDiv.className = 'mt-4 p-3 rounded-lg text-xs sm:text-sm font-semibold text-center bg-emerald-100 text-emerald-700';
                     resultDiv.innerText = '✅ ' + result.message;
+
+                    statusEl.innerText = 'Berhasil! Menunggu...';
+                    statusEl.className = 'text-emerald-600';
                 } else {
-                    resultDiv.className = 'mt-4 p-3 rounded-lg text-sm font-semibold text-center bg-red-100 text-red-700';
+                    // ❌ GAGAL
+                    resultDiv.className = 'mt-4 p-3 rounded-lg text-xs sm:text-sm font-semibold text-center bg-red-100 text-red-700';
                     resultDiv.innerText = '❌ ' + result.message;
+
+                    statusEl.innerText = 'Gagal';
+                    statusEl.className = 'text-red-500';
                 }
             } catch (err) {
                 console.error('Error scanning:', err);
-                resultDiv.className = 'mt-4 p-3 rounded-lg text-sm font-semibold text-center bg-red-100 text-red-700';
+                resultDiv.className = 'mt-4 p-3 rounded-lg text-xs sm:text-sm font-semibold text-center bg-red-100 text-red-700';
                 resultDiv.innerText = '❌ Gagal terhubung ke server API!';
+
+                statusEl.innerText = 'Error';
+                statusEl.className = 'text-red-500';
+            } finally {
+                // ✅ Setelah 2 detik: reset hasil + siap scan lagi
+                setTimeout(() => {
+                    resultDiv.innerText = '🎯 Siap scan pegawai berikutnya...';
+                    resultDiv.className = 'mt-4 p-3 rounded-lg text-xs font-medium text-center bg-slate-100 text-slate-500 border border-slate-200';
+
+                    statusEl.innerText = 'Siap scan';
+                    statusEl.className = '';
+
+                    setTimeout(() => {
+                        resultDiv.classList.add('hidden');
+                    }, 1000);
+
+                    // ✅ Reset flag setelah 2 detik — biar bisa scan berikutnya
+                    isProcessingScan = false;
+                }, 2000);
             }
         }
 
-        function onScanError(error) {}
+        function onScanError(error) {
+            // Silent error
+        }
 
         function closeScannerModal() {
             if (html5QrcodeScanner) {
                 html5QrcodeScanner.clear().catch(() => {});
                 html5QrcodeScanner = null;
             }
+
+            // Reset state
+            isProcessingScan = false;
+            lastScannedCode = '';
+            lastScanTime = 0;
+            scanSuccessCount = 0;
+
             document.getElementById('modal-scanner').classList.add('hidden');
         }
 

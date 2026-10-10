@@ -42,7 +42,6 @@
             background-attachment: fixed;
         }
 
-        /* Overlay gelap tipis supaya konten terbaca */
         body::before {
             content: "";
             position: fixed;
@@ -160,14 +159,6 @@
         }
 
         .portal-heading h1 span { color: #374151; }
-
-        .heading-line {
-            width: 60px;
-            height: 3px;
-            margin: 18px auto 18px;
-            border-radius: 2px;
-            background: #374151;
-        }
 
         .welcome-title {
             margin: 0;
@@ -322,9 +313,7 @@
             background: #e5e7eb !important;
         }
 
-        /* ============================================
-           BAGIAN KHUSUS: Form Pengajuan Izin (Accordion)
-           ============================================ */
+        /* ===== Form Pengajuan Izin (Accordion) ===== */
         .leave-block {
             background: #f9fafb;
             border: 2px dashed #d1d5db;
@@ -582,10 +571,17 @@
         .log-badge.ok { background: #d1fae5; color: #059669; }
         .log-badge.late { background: #fef3c7; color: #d97706; }
 
-        /* ===== User Avatar (dengan foto profil) ===== */
-        .user-avatar {
+        /* ===== User Avatar ===== */
+        .user-avatar-wrapper {
+            position: relative;
             width: 88px;
             height: 88px;
+            margin: 0 auto;
+        }
+
+        .user-avatar {
+            width: 100%;
+            height: 100%;
             background: #1f2937;
             color: #d4a017;
             border-radius: 50%;
@@ -593,7 +589,6 @@
             align-items: center;
             justify-content: center;
             font-size: 32px;
-            margin: 0 auto;
             border: 3px solid #d4a017;
             overflow: hidden;
             position: relative;
@@ -621,6 +616,32 @@
 
         .user-avatar:not(.has-photo) img {
             display: none;
+        }
+
+        /* ✅ Tombol edit foto (pojok kanan bawah avatar) */
+        .edit-avatar-btn {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #1f2937;
+            color: #d4a017;
+            border: 3px solid #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,.2);
+            transition: transform .2s ease, background .15s ease;
+            z-index: 3;
+        }
+
+        .edit-avatar-btn:hover {
+            background: #111827;
+            transform: scale(1.1);
         }
 
         .user-nip-badge {
@@ -725,10 +746,19 @@
                 background-attachment: scroll;
             }
 
-            .user-avatar {
+            .user-avatar-wrapper {
                 width: 76px;
                 height: 76px;
+            }
+
+            .user-avatar {
                 font-size: 28px;
+            }
+
+            .edit-avatar-btn {
+                width: 26px;
+                height: 26px;
+                font-size: 10px;
             }
         }
     </style>
@@ -803,12 +833,27 @@
                         </div>
                     </div>
 
-                    <!-- ✅ Avatar dengan foto profil dari user.photo -->
-                    <div class="user-avatar" id="user-avatar">
-                        <img id="user-avatar-img" src="" alt="Foto Profil">
-                        <div class="avatar-fallback">
-                            <i class="fa-solid fa-user"></i>
+                    <!-- ✅ Avatar + Tombol Edit Foto -->
+                    <div class="user-avatar-wrapper">
+                        <div class="user-avatar" id="user-avatar">
+                            <img id="user-avatar-img" src="" alt="Foto Profil">
+                            <div class="avatar-fallback">
+                                <i class="fa-solid fa-user"></i>
+                            </div>
                         </div>
+                        <button
+                            type="button"
+                            class="edit-avatar-btn"
+                            title="Ganti Foto Profil"
+                            onclick="document.getElementById('avatar-upload').click();">
+                            <i class="fa-solid fa-camera"></i>
+                        </button>
+                        <input
+                            type="file"
+                            id="avatar-upload"
+                            accept="image/png, image/jpeg, image/jpg"
+                            style="display: none;"
+                            onchange="handleAvatarUpload(event)">
                     </div>
 
                     <h2 id="user-name" class="text-lg font-bold mt-3">-</h2>
@@ -916,7 +961,6 @@
         const API_LEAVES = '/api/leaves';
         let activeUser = null;
 
-        // Fallback avatar kalau user tidak punya foto
         const DEFAULT_AVATAR = 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png';
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -988,7 +1032,7 @@
         }
 
         // ============================================================
-        // SHOW DASHBOARD — dengan foto profil user
+        // SHOW DASHBOARD
         // ============================================================
         function showDashboard(user) {
             document.getElementById('auth-section').classList.add('hidden');
@@ -997,7 +1041,6 @@
             document.getElementById('user-name').innerText = user.full_name || user.name || 'Pegawai';
             document.getElementById('user-nip-display').innerText = `NIP: ${user.nip}`;
 
-            // ✅ Set foto profil
             setUserAvatar(user.photo);
 
             const qrContainer = document.getElementById('qrcode');
@@ -1023,17 +1066,15 @@
         }
 
         // ============================================================
-        // SET FOTO PROFIL USER (dengan fallback)
+        // SET FOTO PROFIL USER
         // ============================================================
         function setUserAvatar(photoPath) {
             const avatarEl = document.getElementById('user-avatar');
             const imgEl = document.getElementById('user-avatar-img');
 
             if (photoPath && photoPath.trim() !== '') {
-                // Set src ke foto user
                 imgEl.src = photoPath;
 
-                // Kalau gambar gagal load → fallback ke default
                 imgEl.onerror = () => {
                     imgEl.src = DEFAULT_AVATAR;
                 };
@@ -1042,15 +1083,151 @@
                     avatarEl.classList.add('has-photo');
                 };
 
-                // Cadangan: kalau onload tidak terpanggil dalam 1 detik,
-                // tetap tampilkan foto (biar tetap muncul)
                 setTimeout(() => {
                     avatarEl.classList.add('has-photo');
                 }, 500);
             } else {
-                // Tidak ada foto → tampilkan icon user (fallback di HTML)
                 avatarEl.classList.remove('has-photo');
                 imgEl.src = '';
+            }
+        }
+
+        // ============================================================
+        // ✅ HANDLE UPLOAD FOTO PROFIL BARU
+        // ============================================================
+        async function handleAvatarUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            if (!activeUser) {
+                alert('❌ Silakan login terlebih dahulu!');
+                return;
+            }
+
+            // Validasi tipe file
+            const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+            if (!allowedTypes.includes(file.type)) {
+                alert('❌ Hanya file JPG atau PNG yang diizinkan!');
+                event.target.value = '';
+                return;
+            }
+
+            // Validasi ukuran (max 5 MB)
+            if (file.size > 5 * 1024 * 1024) {
+                alert('❌ Ukuran file terlalu besar! Maksimal 5 MB.');
+                event.target.value = '';
+                return;
+            }
+
+            // Konfirmasi
+            if (!confirm('Ganti foto profil dengan gambar ini?')) {
+                event.target.value = '';
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('photo', file);
+
+            try {
+                // Tampilkan loading di avatar
+                const avatarEl = document.getElementById('user-avatar');
+                const imgEl = document.getElementById('user-avatar-img');
+                const originalSrc = imgEl.src;
+
+                imgEl.style.opacity = '0.5';
+
+                const res = await fetch(`/api/users/${activeUser.id}/photo`, {
+                    method: 'PUT',
+                    body: formData
+                    // ⚠️ JANGAN set Content-Type manual
+                });
+
+                // Handle kalau endpoint belum ada → pakai alternatif
+                if (res.status === 404) {
+                    // Fallback: pakai endpoint update user biasa dengan FormData
+                    // Tapi endpoint PUT /api/users/:id pakai JSON, jadi kita perlu kirim sebagai FormData
+                    // Solusi: buat endpoint khusus, atau gunakan endpoint PUT /api/users/:id/photo
+
+                    alert('⚠️ Endpoint update foto belum tersedia di server.\n\n' +
+                          'Silakan tambahkan endpoint berikut di server.js:\n\n' +
+                          'app.put("/api/users/:id/photo", upload.single("photo"), (req, res) => {\n' +
+                          '    if (!req.file) return res.status(400).json({success:false, message:"Tidak ada file"});\n' +
+                          '    const photoPath = "/uploads/" + req.file.filename;\n' +
+                          '    db.query("UPDATE users SET photo = ? WHERE id = ?", [photoPath, req.params.id], (err) => {\n' +
+                          '        if (err) return res.status(500).json({success:false, message:"Gagal update"});\n' +
+                          '        res.json({success:true, photo: photoPath});\n' +
+                          '    });\n' +
+                          '});');
+
+                    imgEl.style.opacity = '1';
+                    event.target.value = '';
+                    return;
+                }
+
+                const result = await res.json();
+
+                if (result.success) {
+                    // Update local user
+                    activeUser.photo = result.photo;
+                    setUserAvatar(result.photo);
+                    alert('✅ Foto profil berhasil diperbarui!');
+                } else {
+                    alert('❌ Gagal: ' + (result.message || 'Terjadi kesalahan'));
+                    imgEl.style.opacity = '1';
+                }
+            } catch (err) {
+                console.error('Error uploading avatar:', err);
+                alert('❌ Terjadi kesalahan jaringan. Silakan coba lagi.');
+                document.getElementById('user-avatar-img').style.opacity = '1';
+            } finally {
+                event.target.value = '';
+            }
+        }
+
+        // ============================================================
+        // ✅ HELPER: Status badge dengan logika sama seperti admin
+        // ============================================================
+        function getLogStatusBadge(log) {
+            const rawStatus = (log.status || '').toString().trim().toLowerCase();
+
+            let isLate = false;
+
+            // 1. Cek dari field status
+            if (rawStatus === 'terlambat' || rawStatus === 'late') {
+                isLate = true;
+            } else if (rawStatus === 'masuk' || rawStatus === 'hadir' || rawStatus === 'present' || rawStatus === '') {
+                // 2. Kalau status "Masuk"/"Hadir"/kosong → hitung dari jam scan
+                const timeStamp = log.scan_time || log.created_at;
+                if (timeStamp) {
+                    const scanDate = new Date(timeStamp);
+                    const hours = scanDate.getHours();
+                    const minutes = scanDate.getMinutes();
+                    isLate = hours > 10 || (hours === 10 && minutes > 0);
+                }
+            }
+            // 3. Status lain (pulang, sakit, izin, cuti) → tetap hitung dari jam
+            else {
+                const timeStamp = log.scan_time || log.created_at;
+                if (timeStamp) {
+                    const scanDate = new Date(timeStamp);
+                    const hours = scanDate.getHours();
+                    const minutes = scanDate.getMinutes();
+                    isLate = hours > 10 || (hours === 10 && minutes > 0);
+                }
+            }
+
+            if (isLate) {
+                return {
+                    class: 'late',
+                    icon: 'fa-clock',
+                    label: 'Terlambat'
+                };
+            } else {
+                return {
+                    class: 'ok',
+                    icon: 'fa-check-circle',
+                    label: 'Hadir'
+                };
             }
         }
 
@@ -1090,22 +1267,22 @@
                         const formattedDate = dateObj.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
                         const formattedTime = dateObj.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
 
-                        const status = log.status || 'Masuk';
-                        const isLate = status === 'Terlambat';
+                        // ✅ Pakai helper untuk status
+                        const badge = getLogStatusBadge(log);
 
                         return `
                             <div class="log-item">
                                 <div class="flex items-center gap-2.5">
-                                    <div class="log-icon ${isLate ? 'late' : 'ok'}">
-                                        <i class="fa-regular ${isLate ? 'fa-clock' : 'fa-check-circle'}"></i>
+                                    <div class="log-icon ${badge.class}">
+                                        <i class="fa-regular ${badge.icon}"></i>
                                     </div>
                                     <div>
                                         <div class="log-date">${formattedDate}</div>
                                         <div class="log-time">${formattedTime} WIB</div>
                                     </div>
                                 </div>
-                                <span class="log-badge ${isLate ? 'late' : 'ok'}">
-                                    ${status}
+                                <span class="log-badge ${badge.class}">
+                                    ${badge.label}
                                 </span>
                             </div>
                         `;

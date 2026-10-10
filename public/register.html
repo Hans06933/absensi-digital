@@ -23,17 +23,28 @@
             font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
         }
 
-        /* ===== Background ===== */
+        /* ===== Background pakai gambar smartbuilding.jpg ===== */
         body {
-            background: #f8fafc;
-            background-image:
-                radial-gradient(circle at 0% 0%, rgba(31,41,55,.04), transparent 40%),
-                radial-gradient(circle at 100% 100%, rgba(212,160,23,.05), transparent 40%);
             color: #1f2937;
             overflow-x: hidden;
+            min-height: 100vh;
+            background-color: #1f2937;
+            background-image: url('smartbuilding.jpg');
+            background-size: cover;
+            background-position: center center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
         }
 
-        .portal-bg { display: none; }
+        /* Overlay gelap tipis supaya konten terbaca */
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.55);
+            z-index: 0;
+            pointer-events: none;
+        }
 
         /* ===== Page ===== */
         .register-page {
@@ -57,14 +68,16 @@
         /* ===== Card ===== */
         .register-card {
             position: relative;
-            background: #ffffff;
+            background: rgba(255, 255, 255, 0.98);
             color: #1f2937;
             border: 1px solid #e5e7eb;
             border-radius: 14px;
             padding: 36px 42px 32px;
             box-shadow:
-                0 1px 2px rgba(0,0,0,.03),
-                0 8px 24px rgba(31,41,55,.06);
+                0 8px 32px rgba(0, 0, 0, 0.18),
+                0 2px 8px rgba(0, 0, 0, 0.08);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
         }
 
         /* ===== Brand ===== */
@@ -339,17 +352,21 @@
 
         /* ===== Footer ===== */
         .register-footer {
+            position: relative;
+            z-index: 1;
             width: 100vw;
             margin-top: 28px;
             padding: 18px 20px 22px;
             text-align: center;
-            color: #9ca3af;
+            color: rgba(255,255,255,.85);
             font-size: 12px;
-            background: transparent;
-            border-top: 1px solid #e5e7eb;
+            background: rgba(15, 23, 42, 0.55);
+            border-top: 1px solid rgba(255,255,255,.1);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
         }
 
-        .register-footer span { color: #6b7280; font-weight: 600; }
+        .register-footer span { color: #d4a017; font-weight: 600; }
 
         /* ===== Mobile ===== */
         @media (max-width: 640px) {
@@ -373,6 +390,11 @@
             .photo-preview {
                 width: 96px;
                 height: 96px;
+            }
+
+            /* Mobile: background pakai fixed juga */
+            body {
+                background-attachment: scroll;
             }
         }
     </style>
