@@ -167,6 +167,40 @@ app.put('/api/users/:id', async (req, res) => {
     }
 });
 
+// ==========================================
+// ✅ PUT: Update FOTO PROFIL pegawai (baru!)
+// ==========================================
+app.put('/api/users/:id/photo', upload.single('photo'), (req, res) => {
+    const { id } = req.params;
+
+    console.log('📸 Update Foto User ID:', id);
+
+    if (!req.file) {
+        return res.status(400).json({ success: false, message: 'Tidak ada file yang diupload' });
+    }
+
+    const photoPath = `/uploads/${req.file.filename}`;
+
+    db.query('UPDATE users SET photo = ? WHERE id = ?', [photoPath, id], (err, result) => {
+        if (err) {
+            console.error('❌ Error PUT /api/users/:id/photo:', err);
+            return res.status(500).json({ success: false, message: 'Gagal update foto profil: ' + err.message });
+        }
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ success: false, message: 'Pegawai tidak ditemukan' });
+        }
+
+        console.log('✅ Foto berhasil diperbarui:', photoPath);
+
+        res.json({
+            success: true,
+            message: 'Foto profil berhasil diperbarui',
+            photo: photoPath
+        });
+    });
+});
+
 // DELETE pegawai
 app.delete('/api/users/:id', (req, res) => {
     const { id } = req.params;
@@ -420,8 +454,6 @@ db.query(createLeavesTable, (err) => {
 // ==========================================
 // CREATE COLUMN PHOTO (kalau belum ada)
 // ==========================================
-// Ini opsional — kalau Anda sudah jalankan ALTER TABLE manual di phpMyAdmin,
-// query ini akan skip otomatis karena sudah ada.
 const checkPhotoColumn = `
     SELECT COUNT(*) AS col_exists 
     FROM information_schema.COLUMNS 
@@ -449,9 +481,15 @@ db.query(checkPhotoColumn, (err, results) => {
     }
 });
 
-// ==========================================
-// JALANKAN SERVER
-// ==========================================
+const fs = require('fs');
+const uploadsDir = path.join(__dirname, 'public', 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+    console.log('📁 Folder "public/uploads" berhasil dibuat');
+} else {
+    console.log('📁 Folder "public/uploads" sudah ada');
+}
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
@@ -461,6 +499,7 @@ app.listen(PORT, () => {
     console.log(`   - GET  /api/users/:id`);
     console.log(`   - POST /api/users`);
     console.log(`   - PUT  /api/users/:id`);
+    console.log(`   - PUT  /api/users/:id/photo`);
     console.log(`   - DELETE /api/users/:id`);
     console.log(`   - POST /api/attendance/scan`);
     console.log(`   - GET  /api/attendance`);

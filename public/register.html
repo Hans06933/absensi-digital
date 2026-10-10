@@ -305,6 +305,36 @@
             box-shadow: 0 0 0 3px rgba(31,41,55,.08);
         }
 
+        /* ✅ Input error state */
+        .register-input.input-error {
+            border-color: #ef4444;
+            background: #fef2f2;
+        }
+
+        .register-input.input-error:focus {
+            border-color: #ef4444;
+            box-shadow: 0 0 0 3px rgba(239,68,68,.1);
+        }
+
+        /* ✅ Helper text (validasi) */
+        .field-helper {
+            display: block;
+            margin-top: 5px;
+            font-size: 11px;
+            color: #9ca3af;
+            transition: color .15s ease;
+        }
+
+        .field-helper.error {
+            color: #ef4444;
+            font-weight: 600;
+        }
+
+        .field-helper.success {
+            color: #059669;
+            font-weight: 600;
+        }
+
         /* ===== Button ===== */
         .register-btn {
             width: 100%;
@@ -456,10 +486,22 @@
                             NIP (Nomor Induk Pegawai)
                         </label>
                         <div class="input-wrap">
-                            <input type="text" id="nip" placeholder="Contoh: 3603020612040004" required
+                            <input
+                                type="text"
+                                id="nip"
+                                placeholder="16-18 digit angka (contoh: 3603020612040004)"
+                                required
+                                inputmode="numeric"
+                                pattern="[0-9]{16,18}"
+                                minlength="16"
+                                maxlength="18"
+                                autocomplete="off"
                                 class="register-input">
                             <i class="fa-regular fa-id-card"></i>
                         </div>
+                        <small id="nip-helper" class="field-helper">
+                            NIP harus <strong>16-18 digit angka</strong>
+                        </small>
                     </div>
 
                     <div class="field">
@@ -577,6 +619,80 @@
         });
 
         // ============================================================
+        // ✅ VALIDASI NIP LIVE — hanya angka, 16-18 digit
+        // ============================================================
+        const nipInput = document.getElementById('nip');
+        const nipHelper = document.getElementById('nip-helper');
+
+        function validateNip(value, showHelper = true) {
+            // Hapus semua karakter selain angka
+            const cleanValue = value.replace(/\D/g, '');
+
+            // Sync isi input kalau ada karakter aneh
+            if (cleanValue !== value) {
+                nipInput.value = cleanValue;
+            }
+
+            const len = cleanValue.length;
+
+            let isValid = false;
+            let helperText = 'NIP harus <strong>16-18 digit angka</strong>';
+            let helperClass = '';
+
+            if (len === 0) {
+                // Kosong — biarkan default
+                helperText = 'NIP harus <strong>16-18 digit angka</strong>';
+                helperClass = '';
+            } else if (len < 16) {
+                helperText = `Kurang <strong>${16 - len} digit</strong> lagi (minimal 16 digit)`;
+                helperClass = 'error';
+            } else if (len > 18) {
+                helperText = `Kelebihan <strong>${len - 18} digit</strong> (maksimal 18 digit)`;
+                helperClass = 'error';
+            } else {
+                // 16-18 digit → VALID
+                helperText = `✓ NIP valid (${len} digit)`;
+                helperClass = 'success';
+                isValid = true;
+            }
+
+            if (showHelper) {
+                nipHelper.innerHTML = helperText;
+                nipHelper.className = 'field-helper ' + helperClass;
+
+                if (helperClass === 'error') {
+                    nipInput.classList.add('input-error');
+                } else {
+                    nipInput.classList.remove('input-error');
+                }
+            }
+
+            return isValid;
+        }
+
+        // Live validation saat mengetik
+        nipInput.addEventListener('input', (e) => {
+            validateNip(e.target.value);
+        });
+
+        // Blokir karakter non-angka saat mengetik
+        nipInput.addEventListener('keypress', (e) => {
+            const char = String.fromCharCode(e.which);
+            if (!/[0-9]/.test(char)) {
+                e.preventDefault();
+            }
+        });
+
+        // Blokir paste karakter non-angka
+        nipInput.addEventListener('paste', (e) => {
+            e.preventDefault();
+            const pasted = (e.clipboardData || window.clipboardData).getData('text');
+            const cleaned = pasted.replace(/\D/g, '').substring(0, 18);
+            nipInput.value = cleaned;
+            validateNip(cleaned);
+        });
+
+        // ============================================================
         // HANDLE REGISTER — KIRIM SEBAGAI FormData (multipart/form-data)
         // ============================================================
         async function handleRegister(e) {
@@ -589,21 +705,40 @@
             const password = document.getElementById('password').value;
             const photo = photoInput.files[0];
 
-            // Validasi dasar
-            if (nip.length < 3) {
-                alert('NIP minimal 3 karakter!');
-                document.getElementById('nip').focus();
+            // ============================================================
+            // ✅ VALIDASI NIP — 16 s.d. 18 digit, hanya angka
+            // ============================================================
+            if (!/^[0-9]+$/.test(nip)) {
+                alert('❌ NIP hanya boleh berisi angka (0-9)!');
+                nipInput.focus();
                 return;
             }
 
+            if (nip.length < 16) {
+                alert(`❌ NIP minimal 16 digit!\n\nNIP Anda baru ${nip.length} digit.\nMohon lengkapi ${16 - nip.length} digit lagi.`);
+                nipInput.focus();
+                validateNip(nip);
+                return;
+            }
+
+            if (nip.length > 18) {
+                alert(`❌ NIP maksimal 18 digit!\n\nNIP Anda ${nip.length} digit.\nMohon kurangi ${nip.length - 18} digit.`);
+                nipInput.focus();
+                validateNip(nip);
+                return;
+            }
+
+            // ============================================================
+            // Validasi lain
+            // ============================================================
             if (password.length < 6) {
-                alert('Password minimal 6 karakter!');
+                alert('❌ Password minimal 6 karakter!');
                 document.getElementById('password').focus();
                 return;
             }
 
             // ============================================================
-            // BANGUN FORMDATA (bukan JSON — supaya server bisa parse file)
+            // BANGUN FORMDATA
             // ============================================================
             const formData = new FormData();
             formData.append('nip', nip);
@@ -625,8 +760,6 @@
                     method: 'POST',
                     body: formData
                     // ⚠️ JANGAN set 'Content-Type' manual!
-                    // Browser otomatis set:
-                    //    multipart/form-data; boundary=...
                 });
 
                 const result = await res.json();
