@@ -363,6 +363,21 @@
                     </div>
 
                     <div class="flex items-center gap-2 sm:gap-3">
+                        <!-- TANGGAL & JAM REALTIME -->
+                        <div class="flex items-center gap-2 sm:gap-3 rounded-lg border border-slate-200 bg-slate-50 px-2 sm:px-3 py-1.5"
+                             aria-label="Tanggal dan jam realtime">
+                            <div class="hidden sm:flex h-8 w-8 items-center justify-center rounded-lg bg-blue-100 text-blue-700">
+                                <i class="fa-regular fa-calendar-days"></i>
+                            </div>
+                            <div class="text-right leading-tight">
+                                <div id="realtime-day-date" class="text-[10px] sm:text-xs font-semibold text-slate-700">Memuat tanggal...</div>
+                                <div class="flex items-center justify-end gap-1 text-blue-700">
+                                    <i class="fa-regular fa-clock text-[10px]"></i>
+                                    <span id="realtime-clock" class="text-xs sm:text-sm font-bold tabular-nums">00:00:00</span>
+                                    <span class="hidden sm:inline text-[10px] text-slate-400">WIB</span>
+                                </div>
+                            </div>
+                        </div>
                         <button onclick="openScannerModal()" class="px-2.5 sm:px-4 py-1.5 sm:py-2 bg-[#1f2937] hover:bg-[#111827] text-white font-semibold rounded-lg shadow-sm transition flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm touch-target">
                             <i class="fa-solid fa-camera text-xs sm:text-sm"></i>
                             <span class="hidden xs:inline">Scan</span>
@@ -837,8 +852,45 @@
         let currentLeaveFilter = 'all';
         let html5QrcodeScanner = null;
 
+        // Jam dan tanggal realtime menggunakan zona waktu Indonesia (WIB).
+        function updateRealtimeDateTime() {
+            const now = new Date();
+            const dateOptions = {
+                weekday: 'long',
+                day: '2-digit',
+                month: 'long',
+                year: 'numeric',
+                timeZone: 'Asia/Jakarta'
+            };
+            const timeOptions = {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false,
+                timeZone: 'Asia/Jakarta'
+            };
+
+            const dateElement = document.getElementById('realtime-day-date');
+            const clockElement = document.getElementById('realtime-clock');
+            if (dateElement) {
+                dateElement.textContent = new Intl.DateTimeFormat('id-ID', dateOptions).format(now);
+            }
+            if (clockElement) {
+                clockElement.textContent = new Intl.DateTimeFormat('id-ID', timeOptions).format(now);
+            }
+        }
+
+        updateRealtimeDateTime();
+        setInterval(updateRealtimeDateTime, 1000);
+
         document.addEventListener('DOMContentLoaded', () => {
-            const today = new Date().toISOString().split('T')[0];
+            const now = new Date();
+            const today = new Intl.DateTimeFormat('en-CA', {
+                timeZone: 'Asia/Jakarta',
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit'
+            }).format(now);
             document.getElementById('attendance-date').value = today;
 
             setActiveSidebar();
