@@ -261,19 +261,89 @@
             padding-right: env(safe-area-inset-right, 0px);
         }
 
-        /* Header dapat padding top tambahan di mobile
-           supaya tidak nempel dengan jam & battery HP */
         @media (max-width: 640px) {
             body {
                 padding-top: max(env(safe-area-inset-top), 24px);
             }
-
-            /* Header mobile dikasih padding horizontal
-               biar tombol tidak kena curve layar */
             header .header-inner {
                 padding-left: max(12px, env(safe-area-inset-left, 12px));
                 padding-right: max(12px, env(safe-area-inset-right, 12px));
             }
+        }
+
+        /* ============================================================
+           ✅ SCANNER CONTINUOUS MODE — STYLING
+           ============================================================ */
+        .scan-history-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            animation: scanItemIn 0.25s ease;
+        }
+
+        @keyframes scanItemIn {
+            from { opacity: 0; transform: translateY(-6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .scan-history-item.success {
+            background: #ecfdf5;
+            border: 1px solid #a7f3d0;
+            color: #065f46;
+        }
+
+        .scan-history-item.error {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+        }
+
+        .scan-history-item.info {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            color: #1e40af;
+        }
+
+        /* Indikator live scan */
+        .scan-live-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #10b981;
+            box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+            animation: pulseDot 1.5s infinite;
+        }
+
+        @keyframes pulseDot {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
+        .scan-live-dot.paused {
+            background: #f59e0b;
+            animation: none;
+            box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7);
+        }
+
+        /* Flash animasi saat berhasil scan */
+        .scan-flash-success {
+            animation: flashGreen 0.5s ease;
+        }
+        .scan-flash-error {
+            animation: flashRed 0.5s ease;
+        }
+
+        @keyframes flashGreen {
+            0%, 100% { background: transparent; }
+            50% { background: rgba(16, 185, 129, 0.15); }
+        }
+        @keyframes flashRed {
+            0%, 100% { background: transparent; }
+            50% { background: rgba(239, 68, 68, 0.15); }
         }
     </style>
 </head>
@@ -340,7 +410,7 @@
         <!-- KONTEN UTAMA -->
         <main class="flex-1 flex flex-col h-full overflow-hidden bg-slate-50 relative">
 
-            <!-- ✅ HEADER STATIS — dengan padding safe area -->
+            <!-- ✅ HEADER STATIS -->
             <header class="bg-white border-b border-slate-200 shadow-sm flex-shrink-0 z-30">
                 <div class="header-inner px-3 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between">
                     <button onclick="toggleSidebar()" class="md:hidden text-slate-600 hover:text-slate-900 text-xl touch-target p-2 -ml-2">
@@ -363,7 +433,6 @@
                     </div>
 
                     <div class="flex items-center gap-2 sm:gap-3">
-                        <!-- TANGGAL & JAM REALTIME -->
                         <div class="flex items-center gap-2 sm:gap-3 rounded-lg border border-slate-200 bg-slate-50 px-2 sm:px-3 py-1.5"
                              aria-label="Tanggal dan jam realtime">
                             <div class="hidden sm:flex h-8 w-8 items-center justify-center rounded-lg bg-blue-100 text-blue-700">
@@ -752,15 +821,66 @@
         </div>
     </div>
 
-    <div id="modal-scanner" class="fixed inset-0 bg-slate-900/50 modal-backdrop z-50 flex items-center justify-center hidden p-4">
-        <div class="bg-white rounded-xl shadow-2xl p-4 sm:p-6 max-w-md w-full">
-            <h3 class="text-base sm:text-lg font-bold text-slate-900 mb-2 flex items-center gap-2">
-                <i class="fa-solid fa-qrcode text-[#1f2937]"></i>
-                <span>Scan QR Code</span>
-            </h3>
-            <div id="reader" class="w-full rounded-lg overflow-hidden border border-slate-200"></div>
-            <div id="scan-result" class="mt-4 p-3 rounded-lg text-xs sm:text-sm font-semibold text-center hidden"></div>
-            <button onclick="closeScannerModal()" class="w-full mt-4 py-2 bg-[#1f2937] hover:bg-[#111827] text-white font-semibold rounded-lg text-xs sm:text-sm transition touch-target">Batal / Tutup</button>
+    <!-- ============================================================
+         ✅ MODAL SCANNER CONTINUOUS MODE — DIPERBARUI
+         ============================================================ -->
+    <div id="modal-scanner" class="fixed inset-0 bg-slate-900/50 modal-backdrop z-50 flex items-center justify-center hidden p-2 sm:p-4">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg flex flex-col max-h-[95vh] overflow-hidden">
+
+            <!-- Header Scanner -->
+            <div class="px-4 sm:px-6 py-3 sm:py-4 border-b border-slate-200 flex items-center justify-between flex-shrink-0">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-qrcode text-[#1f2937] text-lg"></i>
+                    <div>
+                        <h3 class="text-sm sm:text-base font-bold text-slate-900 leading-tight">Scan QR Code</h3>
+                        <div class="flex items-center gap-1.5 mt-0.5">
+                            <span id="scan-live-dot" class="scan-live-dot"></span>
+                            <span id="scan-status-text" class="text-[10px] sm:text-xs font-semibold text-emerald-600">Scanner aktif — silakan scan</span>
+                        </div>
+                    </div>
+                </div>
+                <button onclick="closeScannerModal()" class="text-slate-400 hover:text-slate-700 text-xl touch-target p-1">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Area Kamera -->
+            <div class="p-3 sm:p-4 flex-shrink-0">
+                <div id="reader" class="w-full rounded-lg overflow-hidden border border-slate-200 bg-slate-50"></div>
+            </div>
+
+            <!-- Notifikasi scan terakhir -->
+            <div class="px-3 sm:px-4 flex-shrink-0">
+                <div id="scan-result" class="p-3 rounded-lg text-xs sm:text-sm font-semibold text-center hidden">
+                    <!-- diisi oleh JS -->
+                </div>
+            </div>
+
+            <!-- Riwayat Scan -->
+            <div class="px-3 sm:px-4 pb-2 flex-shrink-0">
+                <div class="flex items-center justify-between mb-1.5">
+                    <p class="text-[10px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider">
+                        <i class="fa-solid fa-clock-rotate-left mr-1"></i> Riwayat Scan Sesi Ini
+                    </p>
+                    <span id="scan-history-count" class="text-[10px] sm:text-xs font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded-full">0</span>
+                </div>
+                <div id="scan-history" class="max-h-32 overflow-y-auto space-y-1.5 pr-1">
+                    <p class="text-[10px] sm:text-xs text-slate-400 text-center py-2 italic">Belum ada scan</p>
+                </div>
+            </div>
+
+            <!-- Footer Tombol -->
+            <div class="px-3 sm:px-4 py-3 border-t border-slate-200 flex gap-2 flex-shrink-0 bg-slate-50">
+                <button id="btn-toggle-scan" onclick="toggleScanPause()" class="flex-1 py-2.5 bg-amber-500 hover:bg-amber-400 text-white font-semibold rounded-lg text-xs sm:text-sm transition touch-target flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-pause"></i> <span>Jeda</span>
+                </button>
+                <button onclick="clearScanHistory()" class="py-2.5 px-3 bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold rounded-lg text-xs sm:text-sm transition touch-target flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-trash-can"></i> <span class="hidden sm:inline">Hapus Riwayat</span>
+                </button>
+                <button onclick="closeScannerModal()" class="flex-1 py-2.5 bg-[#1f2937] hover:bg-[#111827] text-white font-semibold rounded-lg text-xs sm:text-sm transition touch-target flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-xmark"></i> <span>Selesai</span>
+                </button>
+            </div>
         </div>
     </div>
 
@@ -850,34 +970,35 @@
         let globalUsersData = [];
         let globalLeavesData = [];
         let currentLeaveFilter = 'all';
-        let html5QrcodeScanner = null;
 
-        // Jam dan tanggal realtime menggunakan zona waktu Indonesia (WIB).
+        // ============================================================
+        // ✅ SCANNER CONTINUOUS MODE — STATE
+        // ============================================================
+        let html5QrcodeScanner = null;
+        let isScanPaused = false;          // sedang di-pause manual?
+        let isProcessingScan = false;       // sedang kirim ke server?
+        let lastScannedText = '';           // untuk cegah duplikat beruntun
+        let lastScannedTime = 0;            // waktu scan terakhir
+        const SCAN_COOLDOWN_MS = 2500;      // jeda minimal antar scan QR yang sama
+        let scanHistory = [];               // riwayat scan sesi ini
+        let scanPausedByProcessing = false; // pause otomatis saat kirim data
+
+        // Jam dan tanggal realtime
         function updateRealtimeDateTime() {
             const now = new Date();
             const dateOptions = {
-                weekday: 'long',
-                day: '2-digit',
-                month: 'long',
-                year: 'numeric',
+                weekday: 'long', day: '2-digit', month: 'long', year: 'numeric',
                 timeZone: 'Asia/Jakarta'
             };
             const timeOptions = {
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit',
-                hour12: false,
-                timeZone: 'Asia/Jakarta'
+                hour: '2-digit', minute: '2-digit', second: '2-digit',
+                hour12: false, timeZone: 'Asia/Jakarta'
             };
 
             const dateElement = document.getElementById('realtime-day-date');
             const clockElement = document.getElementById('realtime-clock');
-            if (dateElement) {
-                dateElement.textContent = new Intl.DateTimeFormat('id-ID', dateOptions).format(now);
-            }
-            if (clockElement) {
-                clockElement.textContent = new Intl.DateTimeFormat('id-ID', timeOptions).format(now);
-            }
+            if (dateElement) dateElement.textContent = new Intl.DateTimeFormat('id-ID', dateOptions).format(now);
+            if (clockElement) clockElement.textContent = new Intl.DateTimeFormat('id-ID', timeOptions).format(now);
         }
 
         updateRealtimeDateTime();
@@ -886,10 +1007,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             const now = new Date();
             const today = new Intl.DateTimeFormat('en-CA', {
-                timeZone: 'Asia/Jakarta',
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit'
+                timeZone: 'Asia/Jakarta', year: 'numeric', month: '2-digit', day: '2-digit'
             }).format(now);
             document.getElementById('attendance-date').value = today;
 
@@ -1673,29 +1791,77 @@
             document.getElementById('modal-detail').classList.add('hidden');
         }
 
+        // ============================================================
+        // ✅ SCANNER CONTINUOUS MODE — IMPLEMENTASI BARU
+        // ============================================================
         function openScannerModal() {
             document.getElementById('modal-scanner').classList.remove('hidden');
+
+            // Reset state
+            isScanPaused = false;
+            isProcessingScan = false;
+            scanPausedByProcessing = false;
+            lastScannedText = '';
+            lastScannedTime = 0;
+
+            updateScanStatusUI('active');
+
+            // Reset notifikasi hasil
             const resultDiv = document.getElementById('scan-result');
             resultDiv.classList.add('hidden');
-            resultDiv.className = 'mt-4 p-3 rounded-lg text-sm font-semibold text-center hidden';
+            resultDiv.className = 'p-3 rounded-lg text-xs sm:text-sm font-semibold text-center hidden';
 
-            html5QrcodeScanner = new Html5QrcodeScanner("reader", {
-                fps: 10,
-                qrbox: 250,
-                aspectRatio: 1.0
-            });
+            // Reset riwayat
+            scanHistory = [];
+            renderScanHistory();
+
+            // Init scanner baru
+            startScanner();
+        }
+
+        function startScanner() {
+            if (html5QrcodeScanner) return;
+
+            html5QrcodeScanner = new Html5QrcodeScanner(
+                "reader",
+                {
+                    fps: 10,
+                    qrbox: { width: 250, height: 250 },
+                    aspectRatio: 1.0,
+                    rememberLastUsedCamera: true,
+                    supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA]
+                },
+                /* verbose= */ false
+            );
+
             html5QrcodeScanner.render(onScanSuccess, onScanError);
         }
 
+        /**
+         * ✅ SCAN SUCCESS — CONTINUOUS MODE
+         * Setelah scan berhasil, scanner TIDAK ditutup.
+         * Scanner otomatis lanjut scan QR berikutnya.
+         */
         async function onScanSuccess(decodedText) {
-            if (html5QrcodeScanner) {
-                html5QrcodeScanner.clear().catch(() => {});
+            const now = Date.now();
+
+            // Jika sedang di-pause manual → abaikan
+            if (isScanPaused) return;
+
+            // Cegah duplikat scan QR yang sama dalam waktu singkat
+            if (decodedText === lastScannedText && (now - lastScannedTime) < SCAN_COOLDOWN_MS) {
+                return;
             }
 
-            const resultDiv = document.getElementById('scan-result');
-            resultDiv.classList.remove('hidden', 'bg-red-100', 'text-red-700', 'bg-emerald-100', 'text-emerald-700');
-            resultDiv.innerText = '⏳ Memproses...';
-            resultDiv.className = 'mt-4 p-3 rounded-lg text-sm font-semibold text-center bg-blue-100 text-blue-700';
+            // Jika masih proses kirim data sebelumnya → skip
+            if (isProcessingScan) return;
+
+            isProcessingScan = true;
+            lastScannedText = decodedText;
+            lastScannedTime = now;
+
+            // Tampilkan notifikasi "memproses"
+            showScanResult('processing', '⏳ Memproses: ' + decodedText);
 
             try {
                 const res = await fetch(API_SCAN, {
@@ -1706,21 +1872,146 @@
                 const result = await res.json();
 
                 if (result.success) {
-                    resultDiv.className = 'mt-4 p-3 rounded-lg text-sm font-semibold text-center bg-emerald-100 text-emerald-700';
-                    resultDiv.innerText = '✅ ' + result.message;
+                    showScanResult('success', '✅ ' + result.message);
+                    addScanHistory('success', result.message || 'Absensi berhasil', decodedText);
                     loadAttendanceRecap();
                 } else {
-                    resultDiv.className = 'mt-4 p-3 rounded-lg text-sm font-semibold text-center bg-red-100 text-red-700';
-                    resultDiv.innerText = '❌ ' + result.message;
+                    showScanResult('error', '❌ ' + result.message);
+                    addScanHistory('error', result.message || 'Gagal', decodedText);
                 }
             } catch (err) {
                 console.error('Error scanning:', err);
-                resultDiv.className = 'mt-4 p-3 rounded-lg text-sm font-semibold text-center bg-red-100 text-red-700';
-                resultDiv.innerText = '❌ Gagal terhubung ke server API!';
+                showScanResult('error', '❌ Gagal terhubung ke server API!');
+                addScanHistory('error', 'Gagal terhubung ke server', decodedText);
+            } finally {
+                isProcessingScan = false;
             }
         }
 
-        function onScanError(error) {}
+        function onScanError(error) {
+            // Abaikan error minor (misal frame tidak ada QR)
+        }
+
+        /**
+         * ✅ TAMPILKAN HASIL SCAN — non-blocking, auto-hide
+         */
+        function showScanResult(type, message) {
+            const resultDiv = document.getElementById('scan-result');
+            resultDiv.classList.remove('hidden');
+
+            // Reset class
+            resultDiv.className = 'p-3 rounded-lg text-xs sm:text-sm font-semibold text-center';
+
+            if (type === 'success') {
+                resultDiv.classList.add('bg-emerald-100', 'text-emerald-700', 'scan-flash-success');
+            } else if (type === 'error') {
+                resultDiv.classList.add('bg-red-100', 'text-red-700', 'scan-flash-error');
+            } else {
+                resultDiv.classList.add('bg-blue-100', 'text-blue-700');
+            }
+
+            resultDiv.innerText = message;
+
+            // Auto-hide setelah 2.5 detik (kecuali processing)
+            if (type !== 'processing') {
+                clearTimeout(resultDiv._hideTimeout);
+                resultDiv._hideTimeout = setTimeout(() => {
+                    resultDiv.classList.add('hidden');
+                }, 2500);
+            }
+        }
+
+        /**
+         * ✅ TAMBAH RIWAYAT SCAN
+         */
+        function addScanHistory(type, message, qrPayload) {
+            const time = new Date().toLocaleTimeString('id-ID', {
+                hour: '2-digit', minute: '2-digit', second: '2-digit'
+            });
+
+            scanHistory.unshift({
+                type,
+                message,
+                qrPayload,
+                time
+            });
+
+            // Batasi riwayat max 20 item
+            if (scanHistory.length > 20) scanHistory.pop();
+
+            renderScanHistory();
+        }
+
+        function renderScanHistory() {
+            const container = document.getElementById('scan-history');
+            const countEl = document.getElementById('scan-history-count');
+
+            countEl.innerText = scanHistory.length;
+
+            if (scanHistory.length === 0) {
+                container.innerHTML = `<p class="text-[10px] sm:text-xs text-slate-400 text-center py-2 italic">Belum ada scan</p>`;
+                return;
+            }
+
+            container.innerHTML = scanHistory.map(item => {
+                const icon = item.type === 'success'
+                    ? '<i class="fa-solid fa-check-circle"></i>'
+                    : item.type === 'error'
+                        ? '<i class="fa-solid fa-circle-xmark"></i>'
+                        : '<i class="fa-solid fa-circle-info"></i>';
+
+                return `
+                    <div class="scan-history-item ${item.type}">
+                        <span class="flex-shrink-0">${icon}</span>
+                        <div class="flex-1 min-w-0">
+                            <div class="font-semibold truncate">${escapeHtml(item.message)}</div>
+                            <div class="text-[10px] opacity-75 font-mono truncate">${escapeHtml(item.qrPayload)}</div>
+                        </div>
+                        <span class="flex-shrink-0 text-[10px] font-mono opacity-75">${item.time}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function clearScanHistory() {
+            if (scanHistory.length === 0) return;
+            if (!confirm('Hapus semua riwayat scan sesi ini?')) return;
+            scanHistory = [];
+            renderScanHistory();
+        }
+
+        /**
+         * ✅ TOGGLE PAUSE SCAN
+         */
+        function toggleScanPause() {
+            isScanPaused = !isScanPaused;
+
+            const btn = document.getElementById('btn-toggle-scan');
+            if (isScanPaused) {
+                btn.innerHTML = '<i class="fa-solid fa-play"></i> <span>Lanjut</span>';
+                btn.className = 'flex-1 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-white font-semibold rounded-lg text-xs sm:text-sm transition touch-target flex items-center justify-center gap-1.5';
+                updateScanStatusUI('paused');
+            } else {
+                btn.innerHTML = '<i class="fa-solid fa-pause"></i> <span>Jeda</span>';
+                btn.className = 'flex-1 py-2.5 bg-amber-500 hover:bg-amber-400 text-white font-semibold rounded-lg text-xs sm:text-sm transition touch-target flex items-center justify-center gap-1.5';
+                updateScanStatusUI('active');
+            }
+        }
+
+        function updateScanStatusUI(state) {
+            const dot = document.getElementById('scan-live-dot');
+            const text = document.getElementById('scan-status-text');
+
+            if (state === 'paused') {
+                dot.classList.add('paused');
+                text.innerText = 'Scanner dijeda — klik Lanjut';
+                text.className = 'text-[10px] sm:text-xs font-semibold text-amber-600';
+            } else {
+                dot.classList.remove('paused');
+                text.innerText = 'Scanner aktif — silakan scan';
+                text.className = 'text-[10px] sm:text-xs font-semibold text-emerald-600';
+            }
+        }
 
         function closeScannerModal() {
             if (html5QrcodeScanner) {
@@ -1728,6 +2019,13 @@
                 html5QrcodeScanner = null;
             }
             document.getElementById('modal-scanner').classList.add('hidden');
+
+            // Reset state
+            isScanPaused = false;
+            isProcessingScan = false;
+            scanPausedByProcessing = false;
+            lastScannedText = '';
+            lastScannedTime = 0;
         }
 
         document.addEventListener('keydown', (e) => {

@@ -571,11 +571,13 @@
         .log-badge.ok { background: #d1fae5; color: #059669; }
         .log-badge.late { background: #fef3c7; color: #d97706; }
 
-        /* ===== User Avatar ===== */
+        /* ============================================================
+           ✅ USER AVATAR — DIPERBARUI (TANPA EFEK BINGKAI)
+           ============================================================ */
         .user-avatar-wrapper {
             position: relative;
-            width: 88px;
-            height: 88px;
+            width: 96px;
+            height: 96px;
             margin: 0 auto;
         }
 
@@ -588,11 +590,18 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 32px;
-            border: 3px solid #d4a017;
+            font-size: 36px;
+            /* ✅ Bingkai bersih: border tipis, tanpa shadow berlebih */
+            border: 2px solid #e5e7eb;
             overflow: hidden;
             position: relative;
-            box-shadow: 0 4px 14px rgba(31,41,55,.2);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            transition: border-color 0.2s ease;
+        }
+
+        /* Efek hover halus pada avatar */
+        .user-avatar:hover {
+            border-color: #d4a017;
         }
 
         .user-avatar img {
@@ -608,6 +617,8 @@
             justify-content: center;
             width: 100%;
             height: 100%;
+            background: #1f2937;
+            color: #d4a017;
         }
 
         .user-avatar.has-photo .avatar-fallback {
@@ -618,35 +629,41 @@
             display: none;
         }
 
-        /* ✅ Tombol edit foto (pojok kanan bawah avatar) */
+        /* ✅ Tombol edit foto (pojok kanan bawah avatar) — desain bersih */
         .edit-avatar-btn {
             position: absolute;
-            bottom: 0;
-            right: 0;
-            width: 30px;
-            height: 30px;
+            bottom: 2px;
+            right: 2px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
             background: #1f2937;
-            color: #d4a017;
-            border: 3px solid #ffffff;
+            color: #ffffff;
+            border: 2px solid #ffffff;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 12px;
+            font-size: 13px;
             cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0,0,0,.2);
-            transition: transform .2s ease, background .15s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            transition: transform 0.2s ease, background 0.15s ease, box-shadow 0.2s ease;
             z-index: 3;
         }
 
         .edit-avatar-btn:hover {
-            background: #111827;
-            transform: scale(1.1);
+            background: #d4a017;
+            color: #1f2937;
+            transform: scale(1.08);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .edit-avatar-btn:active {
+            transform: scale(0.95);
         }
 
         .user-nip-badge {
             display: inline-block;
-            padding: 4px 12px;
+            padding: 5px 14px;
             background: #f3f4f6;
             border: 1px solid #e5e7eb;
             border-radius: 999px;
@@ -654,7 +671,8 @@
             font-family: ui-monospace, monospace;
             font-weight: 600;
             color: #374151;
-            margin-top: 6px;
+            margin-top: 8px;
+            letter-spacing: 0.02em;
         }
 
         /* ===== Tombol Logout ===== */
@@ -747,18 +765,20 @@
             }
 
             .user-avatar-wrapper {
-                width: 76px;
-                height: 76px;
+                width: 82px;
+                height: 82px;
             }
 
             .user-avatar {
-                font-size: 28px;
+                font-size: 30px;
             }
 
             .edit-avatar-btn {
-                width: 26px;
-                height: 26px;
-                font-size: 10px;
+                width: 28px;
+                height: 28px;
+                font-size: 11px;
+                bottom: 1px;
+                right: 1px;
             }
         }
     </style>
@@ -782,7 +802,7 @@
                 </div>
 
                 <div class="portal-heading">
-                    <h1>PORTAL <span>PEGAWAI</span></h1>
+                    <h1>PORTAL <span> PEGAWAI</span></h1>
                     <h2 class="welcome-title">Selamat Datang</h2>
                     <p class="welcome-desc">
                         Silakan masukkan NIP Anda untuk mengakses portal presensi pegawai Kominfo Kabupaten Tangerang.
@@ -833,7 +853,7 @@
                         </div>
                     </div>
 
-                    <!-- ✅ Avatar + Tombol Edit Foto -->
+                    <!-- ✅ Avatar + Tombol Edit Foto — Tampilan Bersih & Profesional -->
                     <div class="user-avatar-wrapper">
                         <div class="user-avatar" id="user-avatar">
                             <img id="user-avatar-img" src="" alt="Foto Profil">
@@ -856,7 +876,7 @@
                             onchange="handleAvatarUpload(event)">
                     </div>
 
-                    <h2 id="user-name" class="text-lg font-bold mt-3">-</h2>
+                    <h2 id="user-name" class="text-lg font-bold mt-4">-</h2>
                     <p id="user-nip-display" class="user-nip-badge">NIP: -</p>
                 </div>
 
@@ -1083,9 +1103,10 @@
                     avatarEl.classList.add('has-photo');
                 };
 
-                setTimeout(() => {
+                // Fallback: jika gambar sudah di cache, onload mungkin tidak terpanggil
+                if (imgEl.complete && imgEl.naturalHeight !== 0) {
                     avatarEl.classList.add('has-photo');
-                }, 500);
+                }
             } else {
                 avatarEl.classList.remove('has-photo');
                 imgEl.src = '';
@@ -1129,25 +1150,19 @@
             formData.append('photo', file);
 
             try {
-                // Tampilkan loading di avatar
                 const avatarEl = document.getElementById('user-avatar');
                 const imgEl = document.getElementById('user-avatar-img');
                 const originalSrc = imgEl.src;
 
-                imgEl.style.opacity = '0.5';
+                // Tampilkan loading halus
+                imgEl.style.opacity = '0.4';
 
                 const res = await fetch(`/api/users/${activeUser.id}/photo`, {
                     method: 'PUT',
                     body: formData
-                    // ⚠️ JANGAN set Content-Type manual
                 });
 
-                // Handle kalau endpoint belum ada → pakai alternatif
                 if (res.status === 404) {
-                    // Fallback: pakai endpoint update user biasa dengan FormData
-                    // Tapi endpoint PUT /api/users/:id pakai JSON, jadi kita perlu kirim sebagai FormData
-                    // Solusi: buat endpoint khusus, atau gunakan endpoint PUT /api/users/:id/photo
-
                     alert('⚠️ Endpoint update foto belum tersedia di server.\n\n' +
                           'Silakan tambahkan endpoint berikut di server.js:\n\n' +
                           'app.put("/api/users/:id/photo", upload.single("photo"), (req, res) => {\n' +
@@ -1167,7 +1182,6 @@
                 const result = await res.json();
 
                 if (result.success) {
-                    // Update local user
                     activeUser.photo = result.photo;
                     setUserAvatar(result.photo);
                     alert('✅ Foto profil berhasil diperbarui!');
@@ -1192,11 +1206,9 @@
 
             let isLate = false;
 
-            // 1. Cek dari field status
             if (rawStatus === 'terlambat' || rawStatus === 'late') {
                 isLate = true;
             } else if (rawStatus === 'masuk' || rawStatus === 'hadir' || rawStatus === 'present' || rawStatus === '') {
-                // 2. Kalau status "Masuk"/"Hadir"/kosong → hitung dari jam scan
                 const timeStamp = log.scan_time || log.created_at;
                 if (timeStamp) {
                     const scanDate = new Date(timeStamp);
@@ -1204,9 +1216,7 @@
                     const minutes = scanDate.getMinutes();
                     isLate = hours > 10 || (hours === 10 && minutes > 0);
                 }
-            }
-            // 3. Status lain (pulang, sakit, izin, cuti) → tetap hitung dari jam
-            else {
+            } else {
                 const timeStamp = log.scan_time || log.created_at;
                 if (timeStamp) {
                     const scanDate = new Date(timeStamp);
@@ -1267,7 +1277,6 @@
                         const formattedDate = dateObj.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
                         const formattedTime = dateObj.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
 
-                        // ✅ Pakai helper untuk status
                         const badge = getLogStatusBadge(log);
 
                         return `
